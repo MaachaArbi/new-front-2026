@@ -10,6 +10,14 @@
     @apply border-border;
   }
 
+  /* Chaîne de hauteur (S3c §3) : sans cela, le `grow` du panneau de contenu ne
+     produit aucun effet et le panneau s'arrête à mi-hauteur. */
+  html,
+  body,
+  #root {
+    height: 100%;
+  }
+
   *:focus-visible {
     @apply outline-ring rounded-xs shadow-none outline-2 outline-offset-3 transition-none!;
   }

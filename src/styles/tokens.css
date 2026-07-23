@@ -5,7 +5,12 @@
  * Écarts assumés à l'import (ADR-F18) :
  *  - `--color-mono` / `--color-mono-foreground` NON prélevés : ils aliasaient
  *    `--mono` / `--mono-foreground`, jamais définis dans la source (défaut connu).
- *  - `--primary` en clair passé de `blue-500` (3,68:1) à `blue-600` (WCAG AA) — §3.4.
+ *  - `--primary` en clair passé de `blue-500` (3,68:1) à `blue-600` (WCAG AA) — S3a §3.4.
+ *
+ * S3c — palette sombre à trois niveaux de surface + token `--sidebar` (rail/menu
+ * le plus sombre) + états pastel. Voir docs/decisions/2026-07-24-palette-sombre-trois-niveaux.md.
+ * Le mode clair n'est PAS modifié (tokens existants inchangés) ; S3c n'y AJOUTE
+ * que les nouveaux tokens `--sidebar` et `--color-*` d'état.
  */
 
 /** Colors - https://tailwindcss.com/docs/colors **/
@@ -39,23 +44,38 @@
   --input: var(--color-zinc-200);
   --ring: var(--color-zinc-400);
   --radius: 0.5rem;
+
+  /* S3c — surface la plus sombre du rail/menu ; en clair, gris très pâle */
+  --sidebar: var(--color-zinc-100);
+  --sidebar-foreground: var(--color-zinc-950);
+
+  /* S3c — états pastel (clair : fond tendre + texte foncé de la même famille).
+     Consommés par badge.tsx via var(--color-*-accent / --color-*-foreground). */
+  --color-success-accent: #dcfce7;
+  --color-success-foreground: #166534;
+  --color-warning-accent: #fef9c3;
+  --color-warning-foreground: #854d0e;
+  --color-info-accent: #dbeafe;
+  --color-info-foreground: #1e40af;
 }
 
 .dark {
-  --background: var(--color-zinc-950);
-  --foreground: var(--color-zinc-50);
-  --card: var(--color-zinc-950);
-  --card-foreground: var(--color-zinc-50);
-  --popover: var(--color-zinc-950);
-  --popover-foreground: var(--color-zinc-50);
-  --primary: var(--color-blue-600);
+  /* Trois niveaux de surface (S3c §4.2/§4.3) :
+     rail/menu (--sidebar) < fond de page (--background) < cartes (--card). */
+  --background: #1f1f23; /* fond de page — intermédiaire */
+  --foreground: #e4e4e7; /* texte principal adouci (pas de blanc pur) */
+  --card: #27272a; /* cartes/panneaux — le plus clair */
+  --card-foreground: #e4e4e7;
+  --popover: #27272a;
+  --popover-foreground: #e4e4e7;
+  --primary: var(--color-blue-600); /* accent vif, rare — inchangé */
   --primary-foreground: var(--color-white);
-  --secondary: var(--color-zinc-800);
-  --secondary-foreground: var(--color-zinc-50);
-  --muted: var(--color-zinc-900);
-  --muted-foreground: var(--color-zinc-500);
-  --accent: var(--color-zinc-900);
-  --accent-foreground: var(--color-zinc-50);
+  --secondary: #27272a;
+  --secondary-foreground: #e4e4e7;
+  --muted: #27272a;
+  --muted-foreground: #a1a1aa; /* texte secondaire — 6,4:1 sur le fond */
+  --accent: #27272a;
+  --accent-foreground: #e4e4e7;
   --destructive: var(--color-red-600);
   --destructive-foreground: var(--color-white);
   --chart-1: var(--color-blue-500);
@@ -63,9 +83,21 @@
   --chart-3: var(--color-yellow-500);
   --chart-4: var(--color-red-500);
   --chart-5: var(--color-purple-500);
-  --border: var(--color-zinc-800);
-  --input: var(--color-zinc-800);
-  --ring: var(--color-zinc-600);
+  --border: #3f3f46;
+  --input: #3f3f46;
+  --ring: #52525b;
+
+  /* Rail et menu latéral — surface la plus sombre */
+  --sidebar: #18181b;
+  --sidebar-foreground: #e4e4e7;
+
+  /* États pastel (sombre : fond très sourd + texte clair de la même famille) */
+  --color-success-accent: #16291f;
+  --color-success-foreground: #86efac;
+  --color-warning-accent: #2a2415;
+  --color-warning-foreground: #fcd34d;
+  --color-info-accent: #1b2436;
+  --color-info-foreground: #93c5fd;
 }
 
 /** Theme Setup **/
@@ -94,6 +126,10 @@
 
   --color-destructive: var(--destructive);
   --color-destructive-foreground: var(--destructive-foreground);
+
+  /* Surface rail/menu (S3c) → utilitaires bg-sidebar / text-sidebar-foreground */
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
 
   /** Base Styles **/
   --color-border: var(--border);

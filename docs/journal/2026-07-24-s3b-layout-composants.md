@@ -166,14 +166,14 @@ Vérifié au niveau build / serveur :
 
 **Non exécuté cette session (à faire au navigateur dès que le port est joignable)** :
 
-| # | Point | État |
-| --- | --- | --- |
-| 1 | Layout s'affiche (rail + barre + fil d'Ariane + contenu) | à confirmer à l'œil |
-| 2 | Clic module → change le menu de la barre | logique en place, à confirmer |
-| 3 | Bascule clair/sombre sans zone illisible | mécanisme S3a validé, à confirmer |
-| 4 | Arabe : rail à droite + **déroulants du bon côté** | DirectionProvider monté, à confirmer |
-| 5 | Repli barre + page large pleine largeur | logique en place, à confirmer |
-| 6 | Menu utilisateur s'ouvre et est rempli | en place, à confirmer |
+| #   | Point                                                    | État                                 |
+| --- | -------------------------------------------------------- | ------------------------------------ |
+| 1   | Layout s'affiche (rail + barre + fil d'Ariane + contenu) | à confirmer à l'œil                  |
+| 2   | Clic module → change le menu de la barre                 | logique en place, à confirmer        |
+| 3   | Bascule clair/sombre sans zone illisible                 | mécanisme S3a validé, à confirmer    |
+| 4   | Arabe : rail à droite + **déroulants du bon côté**       | DirectionProvider monté, à confirmer |
+| 5   | Repli barre + page large pleine largeur                  | logique en place, à confirmer        |
+| 6   | Menu utilisateur s'ouvre et est rempli                   | en place, à confirmer                |
 
 > Honnêteté assumée (comme en S3a) : je ne coche pas ce que je n'ai pas vu à
 > l'écran. Le mécanisme est en place et compile ; la validation perceptuelle

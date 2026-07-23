@@ -17,7 +17,7 @@ export function SidebarSecondary() {
   const activeModule = moduleFromPath(pathname)
 
   return (
-    <div className="border-border bg-background overflow-hidden border lg:rounded-s-xl">
+    <div className="border-border bg-sidebar text-sidebar-foreground overflow-hidden border lg:rounded-s-xl">
       <SidebarHeader />
       <ScrollArea className="mt-0 mb-2.5 h-[calc(100vh-4.5rem)] shrink-0 lg:h-[calc(100vh-5.5rem)]">
         <SidebarSearch />

@@ -1,6 +1,6 @@
 # STATUS — OsTravel Front
 
-**Date de mise à jour** : 2026-07-24 (S3b clôturée)  
+**Date de mise à jour** : 2026-07-24 (S3c clôturée)  
 **Projet** : OS-TRAVEL Back Office (React/Vite)  
 **Éditeur** : OctaSoft
 
@@ -14,8 +14,9 @@
 | **S1-bis** | ✅ COMPLET                         | 7 corrections + protection `reference/` par SHA-256              | S2        |
 | **S2**     | ✅ COMPLET                         | Infrastructure i18n/thème + layout de base (jetable)             | S3a       |
 | **S3a**    | ✅ COMPLET                         | Tokens ReUI, thème next-themes, `npm ci` réparé                  | S3b       |
-| **S3b**    | ✅ COMPLET                         | Layout-21 réel, 12 composants ReUI, RTL Radix, règle ESLint      | S4        |
-| **S4**     | ⏳                                 | i18n & RTL — infra posée en S2, à consolider (FormatJS)          |           |
+| **S3b**    | ✅ COMPLET                         | Layout-21 réel, 12 composants ReUI, RTL Radix, règle ESLint      | S3c       |
+| **S3c**    | ✅ COMPLET                         | Mise en page, palette sombre à trois niveaux, états pastel        | S5        |
+| **S5**     | ⏳                                 | Client API typé (OpenAPI + bouchons) — bloqué : `openapi.json`   |           |
 | ...        | ⏳                                 | —                                                                |           |
 
 ---
@@ -44,7 +45,8 @@
 
 ## Prochaine action
 
-**Validation visuelle S3b** au navigateur dès que le port 5180 est joignable
-(6 points : affichage, navigation modules, thème, RTL arabe déroulants, mode
-large, menu utilisateur), puis **S4 — i18n & RTL** (passage à FormatJS/react-intl
-pour le pluriel arabe et `Intl`, tests bidirectionnels).
+**S5 — Client API typé depuis OpenAPI** (ADR-F09), avec bouchons.
+⚠️ Bloquant connu : `openapi.json` n'existe pas encore (demande backend n°1).
+
+Validation visuelle S3b/S3c au navigateur possible à tout moment (serveur dev
+sur 5180) : mise en page, palette sombre à trois niveaux, RTL arabe.

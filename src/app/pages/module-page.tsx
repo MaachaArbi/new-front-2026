@@ -1,6 +1,10 @@
 import { useLocation } from 'react-router-dom'
 import { useI18n } from '@/app/providers/i18n-provider'
-import { moduleFromPath, MODULE_MENUS } from '@/shared/layout/menu.config'
+import {
+  moduleFromPath,
+  MODULE_MENUS,
+  flattenMenu,
+} from '@/shared/layout/menu.config'
 import { useWideMode } from '@/shared/layout/hooks/use-wide-mode'
 import {
   Toolbar,
@@ -26,11 +30,11 @@ export function ModulePage() {
   useWideMode(activeModule ? WIDE_MODULES.has(activeModule.id) : false)
 
   const menu = activeModule ? (MODULE_MENUS[activeModule.id] ?? []) : []
-  const entry = menu.find((item) => item.path === pathname)
+  const entry = flattenMenu(menu).find((item) => item.path === pathname)
   const isWide = activeModule ? WIDE_MODULES.has(activeModule.id) : false
 
   return (
-    <div className="container-fluid">
+    <div>
       <Toolbar>
         <ToolbarHeading>
           <ToolbarPageTitle>

@@ -105,7 +105,7 @@ export function LayoutProvider({
     <LayoutContext.Provider value={value}>
       <div
         data-slot="layout-wrapper"
-        className="flex grow"
+        className="flex h-full min-h-0"
         data-sidebar-open={isSidebarOpen}
         style={style}
       >

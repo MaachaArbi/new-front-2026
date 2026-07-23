@@ -1,7 +1,7 @@
 import { useLocation } from 'react-router-dom'
 import { PanelRight } from 'lucide-react'
 import { useI18n } from '@/app/providers/i18n-provider'
-import { MODULE_MENUS, moduleFromPath } from '../menu.config'
+import { MODULE_MENUS, flattenMenu, moduleFromPath } from '../menu.config'
 import { useLayout } from './context'
 import { Button } from '@/shared/ui/button'
 import {
@@ -23,7 +23,7 @@ export function HeaderBreadcrumbs() {
 
   const activeModule = moduleFromPath(pathname)
   const menu = activeModule ? (MODULE_MENUS[activeModule.id] ?? []) : []
-  const activeEntry = menu.find((item) => item.path === pathname)
+  const activeEntry = flattenMenu(menu).find((item) => item.path === pathname)
 
   return (
     <div className="mb-5 flex flex-row flex-wrap items-center gap-1 px-4 pt-3.5 lg:mb-0 lg:px-0 lg:pt-0">

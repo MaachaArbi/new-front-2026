@@ -12,8 +12,8 @@
 Certains écrans (grilles denses : catalogue, tarification, lettrage) ont besoin
 de toute la largeur. ADR-F02 prévoit explicitement un axe de paramétrage
 « densité / repli de la barre » **sans** composition d'écran configurable, et
-pose une réserve : *« Toute grille dense doit être conçue et testée barre
-repliée. »*
+pose une réserve : _« Toute grille dense doit être conçue et testée barre
+repliée. »_
 
 La tentation naturelle serait de créer un **second layout** « pleine largeur ».
 ADR-F02 l'interdit : chaque variante de layout se croise avec clair/sombre et

@@ -27,6 +27,8 @@ export interface MenuItem {
   permission?: string
   entitlement?: string
   badgeKey?: string
+  /** Badge numérique (compteur) — donnée, pas une chaîne d'interface. */
+  badgeCount?: number
   children?: MenuConfig
 }
 
@@ -87,82 +89,22 @@ export const MODULES: ModuleItem[] = [
 ]
 
 /**
- * Menu de la barre latérale par module. Libellés métier réalistes (pas de
- * « Menu Item 1 »), tous en clés i18n. `permission` posée à titre d'exemple sur
- * quelques entrées, non exploitée (S8).
+ * Menu de la barre latérale par module. Le CONTENU factice (groupes, entrées,
+ * badges) vit dans `src/shared/dev/mock-menus.ts` (préfixe mock-, S3c §5) ; il
+ * sera remplacé par l'API. Ici on n'expose que la structure et les helpers.
  */
-export const MODULE_MENUS: Record<string, MenuConfig> = {
-  parties: [
-    {
-      titleKey: 'menu.parties.clients',
-      path: '/parties/clients',
-      permission: 'party.client.view',
-    },
-    {
-      titleKey: 'menu.parties.suppliers',
-      path: '/parties/suppliers',
-      permission: 'party.supplier.view',
-    },
-    { titleKey: 'menu.parties.contacts', path: '/parties/contacts' },
-    { titleKey: 'menu.parties.addresses', path: '/parties/addresses' },
-    { titleKey: 'menu.parties.balances', path: '/parties/balances' },
-  ],
-  bookings: [
-    { titleKey: 'menu.bookings.list', path: '/bookings/list' },
-    { titleKey: 'menu.bookings.quotes', path: '/bookings/quotes' },
-    { titleKey: 'menu.bookings.services', path: '/bookings/services' },
-    { titleKey: 'menu.bookings.passengers', path: '/bookings/passengers' },
-  ],
-  settlements: [
-    { titleKey: 'menu.settlements.receipts', path: '/settlements/receipts' },
-    { titleKey: 'menu.settlements.payments', path: '/settlements/payments' },
-    { titleKey: 'menu.settlements.matching', path: '/settlements/matching' },
-    {
-      titleKey: 'menu.settlements.statements',
-      path: '/settlements/statements',
-    },
-  ],
-  cash: [
-    { titleKey: 'menu.cash.journals', path: '/cash/journals' },
-    { titleKey: 'menu.cash.movements', path: '/cash/movements' },
-    { titleKey: 'menu.cash.reconciliation', path: '/cash/reconciliation' },
-  ],
-  invoicing: [
-    { titleKey: 'menu.invoicing.invoices', path: '/invoicing/invoices' },
-    { titleKey: 'menu.invoicing.creditNotes', path: '/invoicing/credit-notes' },
-    { titleKey: 'menu.invoicing.schedule', path: '/invoicing/schedule' },
-  ],
-  catalogue: [
-    { titleKey: 'menu.catalogue.products', path: '/catalogue/products' },
-    { titleKey: 'menu.catalogue.hotels', path: '/catalogue/hotels' },
-    { titleKey: 'menu.catalogue.flights', path: '/catalogue/flights' },
-    { titleKey: 'menu.catalogue.transfers', path: '/catalogue/transfers' },
-  ],
-  pricing: [
-    { titleKey: 'menu.pricing.grids', path: '/pricing/grids' },
-    { titleKey: 'menu.pricing.margins', path: '/pricing/margins' },
-    { titleKey: 'menu.pricing.promotions', path: '/pricing/promotions' },
-  ],
-  settings: [
-    { titleKey: 'menu.settings.offices', path: '/settings/offices' },
-    {
-      titleKey: 'menu.settings.users',
-      path: '/settings/users',
-      permission: 'core.user.view',
-    },
-    {
-      titleKey: 'menu.settings.roles',
-      path: '/settings/roles',
-      permission: 'core.role.view',
-    },
-    { titleKey: 'menu.settings.currencies', path: '/settings/currencies' },
-    { titleKey: 'menu.settings.general', path: '/settings/general' },
-  ],
-}
+export { MODULE_MENUS } from '@/shared/dev/mock-menus'
 
 /** Retrouve le module auquel appartient un chemin (`/parties/clients` → parties). */
 export function moduleFromPath(pathname: string): ModuleItem | undefined {
   return MODULES.find(
     (m) => pathname === m.path || pathname.startsWith(m.path + '/')
+  )
+}
+
+/** Aplatit un menu (groupes compris) en ses seules entrées portant un `path`. */
+export function flattenMenu(items: MenuConfig): MenuItem[] {
+  return items.flatMap((item) =>
+    item.children ? flattenMenu(item.children) : item.path ? [item] : []
   )
 }

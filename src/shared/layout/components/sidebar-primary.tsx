@@ -57,7 +57,7 @@ export function SidebarPrimary() {
     : -1
 
   return (
-    <div className="flex w-[70px] shrink-0 flex-col items-center justify-between gap-5 py-2.5 lg:w-(--sidebar-collapsed-width)">
+    <div className="bg-sidebar text-sidebar-foreground flex w-[70px] shrink-0 flex-col items-center justify-between gap-5 py-2.5 lg:w-(--sidebar-collapsed-width)">
       {/* Rail des modules */}
       <div className="relative w-full grow">
         <div className="relative flex grow flex-col items-center gap-[10px]">

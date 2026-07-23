@@ -6,10 +6,13 @@ import {
   AccordionMenu,
   AccordionMenuGroup,
   AccordionMenuItem,
+  AccordionMenuLabel,
 } from '@/shared/ui/accordion-menu'
+import { Badge } from '@/shared/ui/badge'
 
-// Réécrit de layout-21/components/sidebar-primary-menu.tsx : affiche le menu du
-// MODULE COURANT (depuis menu.config), libellés métier via i18n (ADR-F06/F19).
+// Réécrit de layout-21/components/sidebar-primary-menu.tsx : menu du MODULE
+// COURANT depuis menu.config, en groupes de section (rythme, S3c §5), libellés
+// et badges via i18n (ADR-F06/F19).
 export function SidebarPrimaryMenu() {
   const { t } = useI18n()
   const { pathname } = useLocation()
@@ -21,30 +24,47 @@ export function SidebarPrimaryMenu() {
   )
 
   const activeModule = moduleFromPath(pathname)
-  const items = activeModule ? (MODULE_MENUS[activeModule.id] ?? []) : []
+  const groups = activeModule ? (MODULE_MENUS[activeModule.id] ?? []) : []
 
   return (
     <AccordionMenu
       selectedValue={pathname}
       matchPath={matchPath}
       type="multiple"
-      className="space-y-7.5 px-2.5"
+      className="space-y-6 px-2.5"
       classNames={{
         label: 'text-xs font-normal text-muted-foreground mb-2',
         item: 'h-8.5 px-2.5 text-sm font-normal text-foreground hover:text-primary data-[selected=true]:bg-muted data-[selected=true]:text-foreground',
         group: '',
       }}
     >
-      <AccordionMenuGroup>
-        {items.map((child) => (
-          <AccordionMenuItem key={child.path} value={child.path ?? '#'}>
-            <Link to={child.path ?? '#'}>
-              {child.icon && <child.icon />}
-              <span>{t(child.titleKey)}</span>
-            </Link>
-          </AccordionMenuItem>
-        ))}
-      </AccordionMenuGroup>
+      {groups.map((group) => (
+        <AccordionMenuGroup key={group.titleKey}>
+          <AccordionMenuLabel>{t(group.titleKey)}</AccordionMenuLabel>
+          {(group.children ?? []).map((child) => (
+            <AccordionMenuItem key={child.path} value={child.path ?? '#'}>
+              <Link to={child.path ?? '#'}>
+                <span>{t(child.titleKey)}</span>
+                {child.badgeKey && (
+                  <Badge
+                    variant="info"
+                    appearance="light"
+                    size="sm"
+                    className="ms-auto"
+                  >
+                    {t(child.badgeKey)}
+                  </Badge>
+                )}
+                {child.badgeCount !== undefined && (
+                  <Badge variant="secondary" size="sm" className="ms-auto">
+                    {child.badgeCount}
+                  </Badge>
+                )}
+              </Link>
+            </AccordionMenuItem>
+          ))}
+        </AccordionMenuGroup>
+      ))}
     </AccordionMenu>
   )
 }
