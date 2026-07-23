@@ -20,10 +20,10 @@ cinquante entre une question d'aide et l'extraction d'un contrat hôtelier de
 
 Cela transforme la notion d'entitlement, telle qu'elle existait dans le cadrage :
 
-| Type | Exemple | Question posée |
-|---|---|---|
-| **Interrupteur** (connu) | Module Caisse acheté ou non | *Est-ce autorisé ?* |
-| **Compteur** (nouveau) | 500 extractions / mois | *Est-ce autorisé, et combien reste-t-il ?* |
+| Type                     | Exemple                     | Question posée                             |
+| ------------------------ | --------------------------- | ------------------------------------------ |
+| **Interrupteur** (connu) | Module Caisse acheté ou non | _Est-ce autorisé ?_                        |
+| **Compteur** (nouveau)   | 500 extractions / mois      | _Est-ce autorisé, et combien reste-t-il ?_ |
 
 ---
 
@@ -36,10 +36,10 @@ règlements réels.
 
 **Mais ce n'est pas le même grand livre** :
 
-| Grand livre | Qui doit à qui | Où il vit |
-|---|---|---|
-| **Règlements** (`reglement_*`) | L'agence ↔ ses clients et fournisseurs | Dans l'ERP, base client |
-| **Crédits IA** | **OctaSoft ↔ l'agence** | **Chez OctaSoft**, pas dans la base client |
+| Grand livre                    | Qui doit à qui                         | Où il vit                                  |
+| ------------------------------ | -------------------------------------- | ------------------------------------------ |
+| **Règlements** (`reglement_*`) | L'agence ↔ ses clients et fournisseurs | Dans l'ERP, base client                    |
+| **Crédits IA**                 | **OctaSoft ↔ l'agence**                | **Chez OctaSoft**, pas dans la base client |
 
 Le compteur qui sert à facturer ne peut pas vivre sur le serveur de celui qui
 paie. Modèle 1 serveur = 1 client (ADR-004).
@@ -72,8 +72,8 @@ Sans préjuger des réponses :
   Choix commercial avant d'être technique.
 - **Réservation de crédits.** Décision UX actée : on ne coupe **jamais** au
   milieu d'une opération. Une extraction de 40 pages qui épuiserait le solde à la
-  page 30 ne doit pas planter. Implique une notion de crédits *réservés* puis
-  *consommés ou libérés* — à confirmer.
+  page 30 ne doit pas planter. Implique une notion de crédits _réservés_ puis
+  _consommés ou libérés_ — à confirmer.
 - **Append-only** : à reconduire, par cohérence avec Règlements et Cash. Une
   consommation constatée ne se modifie jamais ; une correction est une écriture
   nouvelle.

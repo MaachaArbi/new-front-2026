@@ -1,64 +1,6 @@
-import {
-  Users,
-  Calendar,
-  FileText,
-  DollarSign,
-  ShoppingCart,
-  BarChart3,
-  Settings,
-  Clock,
-} from 'lucide-react'
-
-export const MODULES = [
-  {
-    id: 'parties',
-    key: 'nav.module.parties',
-    icon: Users,
-    color: 'bg-blue-500',
-  },
-  {
-    id: 'bookings',
-    key: 'nav.module.bookings',
-    icon: Calendar,
-    color: 'bg-purple-500',
-  },
-  {
-    id: 'settlements',
-    key: 'nav.module.settlements',
-    icon: FileText,
-    color: 'bg-green-500',
-  },
-  {
-    id: 'cash',
-    key: 'nav.module.cash',
-    icon: DollarSign,
-    color: 'bg-orange-500',
-  },
-  {
-    id: 'invoicing',
-    key: 'nav.module.invoicing',
-    icon: ShoppingCart,
-    color: 'bg-red-500',
-  },
-  {
-    id: 'catalogue',
-    key: 'nav.module.catalogue',
-    icon: BarChart3,
-    color: 'bg-indigo-500',
-  },
-  {
-    id: 'pricing',
-    key: 'nav.module.pricing',
-    icon: Clock,
-    color: 'bg-pink-500',
-  },
-  {
-    id: 'settings',
-    key: 'nav.module.settings',
-    icon: Settings,
-    color: 'bg-slate-500',
-  },
-]
+// Données de démonstration du socle. Les modules (rail) et leurs menus vivent
+// désormais dans `src/shared/layout/menu.config.ts` (ADR-F19). Ici ne restent
+// que le bureau courant et l'utilisateur, en attendant l'API (S5) et l'auth (S6).
 
 export const OFFICES = [
   { id: '1', name: 'Bureau Tunisie' },

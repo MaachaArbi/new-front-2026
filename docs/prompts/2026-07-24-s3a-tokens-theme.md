@@ -92,10 +92,10 @@ Source, **en lecture seule** :
 Tu **lis**. Tu ne copies **jamais** en bloc. Tu ne les ajoutes **jamais** au
 dépôt. (ADR-F01)
 
-| Prends | Vers |
-|---|---|
-| `config.reui.css` (bloc `:root`, bloc `.dark`, bloc `@theme inline`) | `src/styles/tokens.css` |
-| de `styles.css` : le `@layer base` et les `@custom-variant` | `src/styles/globals.css` |
+| Prends                                                               | Vers                     |
+| -------------------------------------------------------------------- | ------------------------ |
+| `config.reui.css` (bloc `:root`, bloc `.dark`, bloc `@theme inline`) | `src/styles/tokens.css`  |
+| de `styles.css` : le `@layer base` et les `@custom-variant`          | `src/styles/globals.css` |
 
 `globals.css` doit finir par ressembler à :
 
@@ -108,8 +108,12 @@ dépôt. (ADR-F01)
 @custom-variant light (&:not(.dark *));
 
 @layer base {
-  * { @apply border-border; }
-  *:focus-visible { @apply outline-ring rounded-xs shadow-none outline-2 outline-offset-3 transition-none!; }
+  * {
+    @apply border-border;
+  }
+  *:focus-visible {
+    @apply outline-ring rounded-xs shadow-none outline-2 outline-offset-3 transition-none!;
+  }
 }
 ```
 
@@ -190,7 +194,7 @@ laisse-les, ou sépare les hooks des composants si c'est trivial.
 ## 6. HORS PÉRIMÈTRE — ne l'anticipe pas
 
 ❌ **Le layout-21** — c'est S3b, la vague suivante. `App.tsx` reste tel quel,
-   même s'il est laid : il sera **supprimé** en S3b.
+même s'il est laid : il sera **supprimé** en S3b.
 ❌ Les 12 composants ReUI, `npx shadcn add` → S3b
 ❌ `RadixDirectionProvider`, règle ESLint RTL, `vendor-imports.md` → S3b
 ❌ `useDocumentTitle` → S3b

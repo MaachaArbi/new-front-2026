@@ -7,11 +7,61 @@
   "nav.module.catalogue": "Catalogue",
   "nav.module.pricing": "Pricing",
   "nav.module.settings": "Settings",
-  "layout.officeName": "Office",
-  "layout.userName": "User",
-  "layout.logout": "Logout",
-  "layout.preferences": "Preferences",
-  "layout.theme": "Theme",
+
+  "menu.parties.clients": "Clients",
+  "menu.parties.suppliers": "Suppliers",
+  "menu.parties.contacts": "Contacts",
+  "menu.parties.addresses": "Addresses",
+  "menu.parties.balances": "Balances",
+
+  "menu.bookings.list": "Bookings",
+  "menu.bookings.quotes": "Quotes",
+  "menu.bookings.services": "Services",
+  "menu.bookings.passengers": "Passengers",
+
+  "menu.settlements.receipts": "Receipts",
+  "menu.settlements.payments": "Payments",
+  "menu.settlements.matching": "Matching",
+  "menu.settlements.statements": "Statements",
+
+  "menu.cash.journals": "Cash journals",
+  "menu.cash.movements": "Movements",
+  "menu.cash.reconciliation": "Reconciliation",
+
+  "menu.invoicing.invoices": "Invoices",
+  "menu.invoicing.creditNotes": "Credit notes",
+  "menu.invoicing.schedule": "Schedule",
+
+  "menu.catalogue.products": "Products",
+  "menu.catalogue.hotels": "Hotels",
+  "menu.catalogue.flights": "Flights",
+  "menu.catalogue.transfers": "Transfers",
+
+  "menu.pricing.grids": "Rate grids",
+  "menu.pricing.margins": "Margins",
+  "menu.pricing.promotions": "Promotions",
+
+  "menu.settings.offices": "Offices",
+  "menu.settings.users": "Users",
+  "menu.settings.roles": "Roles",
+  "menu.settings.currencies": "Currencies",
+  "menu.settings.general": "General",
+
+  "layout.office": "Office",
+  "layout.search": "Search",
+  "layout.home": "Home",
   "layout.language": "Language",
-  "layout.addModule": "Add Module"
+  "layout.logout": "Sign out",
+  "layout.preferences": "Preferences",
+  "layout.addModule": "Add a module",
+  "layout.toggleSidebar": "Collapse sidebar",
+  "layout.openMenu": "Open menu",
+  "layout.theme.dark": "Dark mode",
+  "layout.theme.light": "Light mode",
+  "layout.user.profile": "Profile",
+  "layout.user.security": "Security",
+  "layout.plan.pro": "Pro plan",
+
+  "page.placeholder": "Screen coming in a later wave.",
+  "page.wideMode": "This page uses the full width (wide mode)."
 }

@@ -7,11 +7,61 @@
   "nav.module.catalogue": "Catalogue",
   "nav.module.pricing": "Tarification",
   "nav.module.settings": "Configuration",
-  "layout.officeName": "Bureau",
-  "layout.userName": "Utilisateur",
+
+  "menu.parties.clients": "Clients",
+  "menu.parties.suppliers": "Fournisseurs",
+  "menu.parties.contacts": "Contacts",
+  "menu.parties.addresses": "Adresses",
+  "menu.parties.balances": "Soldes",
+
+  "menu.bookings.list": "Réservations",
+  "menu.bookings.quotes": "Devis",
+  "menu.bookings.services": "Services",
+  "menu.bookings.passengers": "Passagers",
+
+  "menu.settlements.receipts": "Encaissements",
+  "menu.settlements.payments": "Décaissements",
+  "menu.settlements.matching": "Lettrage",
+  "menu.settlements.statements": "Relevés",
+
+  "menu.cash.journals": "Journaux de caisse",
+  "menu.cash.movements": "Mouvements",
+  "menu.cash.reconciliation": "Rapprochement",
+
+  "menu.invoicing.invoices": "Factures",
+  "menu.invoicing.creditNotes": "Avoirs",
+  "menu.invoicing.schedule": "Échéancier",
+
+  "menu.catalogue.products": "Produits",
+  "menu.catalogue.hotels": "Hôtels",
+  "menu.catalogue.flights": "Vols",
+  "menu.catalogue.transfers": "Transferts",
+
+  "menu.pricing.grids": "Grilles tarifaires",
+  "menu.pricing.margins": "Marges",
+  "menu.pricing.promotions": "Promotions",
+
+  "menu.settings.offices": "Bureaux",
+  "menu.settings.users": "Utilisateurs",
+  "menu.settings.roles": "Rôles",
+  "menu.settings.currencies": "Devises",
+  "menu.settings.general": "Général",
+
+  "layout.office": "Bureau",
+  "layout.search": "Rechercher",
+  "layout.home": "Accueil",
+  "layout.language": "Langue",
   "layout.logout": "Déconnexion",
   "layout.preferences": "Préférences",
-  "layout.theme": "Thème",
-  "layout.language": "Langue",
-  "layout.addModule": "Ajouter un module"
+  "layout.addModule": "Ajouter un module",
+  "layout.toggleSidebar": "Replier la barre latérale",
+  "layout.openMenu": "Ouvrir le menu",
+  "layout.theme.dark": "Mode sombre",
+  "layout.theme.light": "Mode clair",
+  "layout.user.profile": "Profil",
+  "layout.user.security": "Sécurité",
+  "layout.plan.pro": "Offre Pro",
+
+  "page.placeholder": "Écran à venir dans une prochaine vague.",
+  "page.wideMode": "Cette page occupe toute la largeur (mode large)."
 }

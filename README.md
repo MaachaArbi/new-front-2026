@@ -98,19 +98,19 @@ http://localhost:5180
 
 ## Prochaines vagues
 
-| Vague   | Sujet                       | État        |
-| ------- | --------------------------- | ----------- |
-| **S1**  | ✅ Squelette & purge        | **COMPLET** |
+| Vague   | Sujet                       | État         |
+| ------- | --------------------------- | ------------ |
+| **S1**  | ✅ Squelette & purge        | **COMPLET**  |
 | **S2**  | ✅ Socle visuel             | **EN COURS** |
-| **S3**  | Layout unique               | ⏳          |
-| **S4**  | i18n & RTL                  | ⏳          |
-| **S5**  | Client API typé             | ⏳          |
-| **S6**  | Authentification            | ⏳          |
-| **S7**  | Noyau Money                 | ⏳          |
-| **S8**  | Permissions & entitlements  | ⏳          |
-| **S9**  | Patterns liste & formulaire | ⏳          |
-| **S10** | Erreur & observabilité      | ⏳          |
-| **S11** | Tests & CI                  | ⏳          |
+| **S3**  | Layout unique               | ⏳           |
+| **S4**  | i18n & RTL                  | ⏳           |
+| **S5**  | Client API typé             | ⏳           |
+| **S6**  | Authentification            | ⏳           |
+| **S7**  | Noyau Money                 | ⏳           |
+| **S8**  | Permissions & entitlements  | ⏳           |
+| **S9**  | Patterns liste & formulaire | ⏳           |
+| **S10** | Erreur & observabilité      | ⏳           |
+| **S11** | Tests & CI                  | ⏳           |
 
 ## Documentation
 

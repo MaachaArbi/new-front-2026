@@ -43,10 +43,10 @@ répare ces deux points et pose les tokens ReUI, sans anticiper le layout-21 (S3
 - En clair, `--primary` passé de `var(--color-blue-500)` à `var(--color-blue-600)`.
 - **Contraste mesuré** (script oklch→sRGB linéaire→WCAG, blanc sur fond) :
 
-  | Couleur | Hex ≈ | Blanc dessus | Verdict |
-  |---|---|---|---|
-  | blue-500 | `#2b7fff` | **3,76:1** | ❌ sous AA 4,5:1 |
-  | blue-600 | `#155dfc` | **5,26:1** | ✅ au-dessus de AA |
+  | Couleur  | Hex ≈     | Blanc dessus | Verdict            |
+  | -------- | --------- | ------------ | ------------------ |
+  | blue-500 | `#2b7fff` | **3,76:1**   | ❌ sous AA 4,5:1   |
+  | blue-600 | `#155dfc` | **5,26:1**   | ✅ au-dessus de AA |
 
   Cohérent avec les valeurs annoncées dans le prompt (3,68 / 5,17 ; l'écart tient
   à la précision oklch). Le mode sombre était déjà en blue-600 — non touché.
@@ -194,7 +194,7 @@ RTL arabe    non-régression : i18n-provider inchangé sur le dir ; à confirmer
 ### Visuel
 
 - [~] Bascule / persistance / lisibilité / RTL : **mécanisme prouvé au build**,
-      clic navigateur différé (port 5180 non joignable cette session).
+  clic navigateur différé (port 5180 non joignable cette session).
 
 ---
 

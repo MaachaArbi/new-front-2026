@@ -1,6 +1,6 @@
 # STATUS — OsTravel Front
 
-**Date de mise à jour** : 2026-07-24 (S3a clôturée)  
+**Date de mise à jour** : 2026-07-24 (S3b clôturée)  
 **Projet** : OS-TRAVEL Back Office (React/Vite)  
 **Éditeur** : OctaSoft
 
@@ -14,8 +14,8 @@
 | **S1-bis** | ✅ COMPLET                         | 7 corrections + protection `reference/` par SHA-256              | S2        |
 | **S2**     | ✅ COMPLET                         | Infrastructure i18n/thème + layout de base (jetable)             | S3a       |
 | **S3a**    | ✅ COMPLET                         | Tokens ReUI, thème next-themes, `npm ci` réparé                  | S3b       |
-| **S3b**    | ⏳                                 | Layout-21 — non commencé                                         |           |
-| **S4**     | ⏳                                 | i18n & RTL — infra posée en S2, à consolider                     |           |
+| **S3b**    | ✅ COMPLET                         | Layout-21 réel, 12 composants ReUI, RTL Radix, règle ESLint      | S4        |
+| **S4**     | ⏳                                 | i18n & RTL — infra posée en S2, à consolider (FormatJS)          |           |
 | ...        | ⏳                                 | —                                                                |           |
 
 ---
@@ -44,6 +44,7 @@
 
 ## Prochaine action
 
-**S3b — layout-21** : prélever et adapter le layout Metronic (rail + barre
-latérale + fil d'Ariane + onglets), remplacer `App.tsx`, réintroduire
-`react-helmet-async` sous forme d'un hook maison `useDocumentTitle`.
+**Validation visuelle S3b** au navigateur dès que le port 5180 est joignable
+(6 points : affichage, navigation modules, thème, RTL arabe déroulants, mode
+large, menu utilisateur), puis **S4 — i18n & RTL** (passage à FormatJS/react-intl
+pour le pluriel arabe et `Intl`, tests bidirectionnels).

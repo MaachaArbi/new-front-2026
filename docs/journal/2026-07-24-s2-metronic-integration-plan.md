@@ -9,9 +9,11 @@
 ## Fichiers à prélever (18 fichiers)
 
 ### Index
+
 - `index.tsx` — Export racine du layout
 
 ### Components (17 fichiers)
+
 1. `context.tsx` — Layout context + hook
 2. `header.tsx` — Composant header principal
 3. `header-breadcrumbs.tsx` — Breadcrumbs
@@ -35,6 +37,7 @@
 ## Stratégie de prélèvement
 
 ### Phase 1 : Extraction brute (pas de modifications)
+
 ```
 src/app/layouts/
 ├── layout-21/
@@ -45,16 +48,18 @@ src/app/layouts/
 ```
 
 ### Phase 2 : Adaptation au contexte OsTravel
+
 - ✅ Garder structure Metronic (flexibilité future)
 - ✅ Intégrer i18n (useI18n hook)
 - ✅ Intégrer thème (useTheme hook)
-- ✅ RTL : remplacer left-* par start-*, right-* par end-*
+- ✅ RTL : remplacer left-* par start-_, right-_ par end-*
 - ✅ Remplacer icônes Metronic par lucide-react
 - ✅ Remplacer données mock Metronic par nos données (MODULES, OFFICES, etc.)
 - ✅ Remplacer routing Metronic par notre contexte
 - ✅ Supprimer dépendances Metronic propriétaires (clés API, etc.)
 
 ### Phase 3 : Intégration dans App.tsx
+
 - ✅ Importer Layout21 au lieu de AppLayout actuel
 - ✅ Wrapper dans les mêmes providers (ThemeProvider → I18nProvider)
 - ✅ Tester au navigateur
@@ -90,6 +95,7 @@ done
 ## Dépendances Metronic à compléter
 
 Vérifier si layout-21 utilise :
+
 - Icônes Metronic propriétaires → remplacer par lucide-react
 - Assets CSS Metronic → adapter à Tailwind v4
 - Utilitaires Metronic → réimplémenter si nécessaire
@@ -140,4 +146,3 @@ src/
 - **S2-ext** : Prélèvement + adaptation layout-21 (1-2h estimées)
 - **S2-ext-bis** : Prélèvement + adaptation composants ReUI (1h)
 - **S3** : Tests visuels complets + itérations
-

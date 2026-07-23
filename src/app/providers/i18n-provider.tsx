@@ -7,6 +7,7 @@ import React, {
   useEffect,
   useMemo,
 } from 'react'
+import { DirectionProvider as RadixDirectionProvider } from '@radix-ui/react-direction'
 import { DEFAULT_LANGUAGE, LANGUAGES } from '@/shared/i18n/config'
 import type { LanguageCode, I18nContextType } from '@/shared/i18n/types'
 import en from '@/shared/i18n/messages/en.json'
@@ -76,7 +77,18 @@ export function I18nProvider({ children }: { children: React.ReactNode }) {
 
   if (!mounted) return null
 
-  return <I18nContext.Provider value={value}>{children}</I18nContext.Provider>
+  // Piège RTL (S3b §5) : sans DirectionProvider, les primitives Radix (menus
+  // déroulants, infobulles, tiroir) s'ouvrent du mauvais côté en arabe. On
+  // propage la direction de la langue courante à tout l'arbre Radix.
+  const direction = LANGUAGES[currentLanguage]?.direction ?? 'ltr'
+
+  return (
+    <I18nContext.Provider value={value}>
+      <RadixDirectionProvider dir={direction}>
+        {children}
+      </RadixDirectionProvider>
+    </I18nContext.Provider>
+  )
 }
 
 export function useI18n(): I18nContextType {

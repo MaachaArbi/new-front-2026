@@ -11,6 +11,7 @@
 La vague S2 fusionne trois vagues initiales (tokens, layout, i18n/RTL) en un socle visuel minimal mais fonctionnel, vérifiable immédiatement au navigateur à `http://localhost:5180`.
 
 **Livrables** :
+
 - ✅ Infrastructure i18n React avec 3 langues (en/fr/ar) + persistance localStorage
 - ✅ Thème clair/sombre avec basculement + persistance
 - ✅ Layout de base : rail (8 modules) + barre latérale + contenu
@@ -19,6 +20,7 @@ La vague S2 fusionne trois vagues initiales (tokens, layout, i18n/RTL) en un soc
 - ✅ Dev server prêt sur port 5180
 
 **Validation** :
+
 - `npm run build` → ✅ succès (4.66s, 205 ko JS)
 - `npm run lint` → ⚠️ 4 warnings non-bloquants, 0 erreur
 - `npm run dev` → Prêt pour navigateur
@@ -111,14 +113,14 @@ docs/
 
 ```json
 {
-  "motion": "^12",              // Animation (framer-motion)
-  "next-themes": "^0.4",        // Gestion thème
-  "react-intl": "^7",           // FormatJS i18n
-  "react-helmet-async": "^2",   // Head management (⚠️ peer conflict React 19)
-  "react-router-dom": "^7",     // Routage (structure prête, non utilisé)
-  "react-hook-form": "^7",      // Formulaires (futures vagues)
-  "zod": "^3",                  // Validation schémas
-  "@radix-ui/react-direction": "^1"  // Direction RTL Radix
+  "motion": "^12", // Animation (framer-motion)
+  "next-themes": "^0.4", // Gestion thème
+  "react-intl": "^7", // FormatJS i18n
+  "react-helmet-async": "^2", // Head management (⚠️ peer conflict React 19)
+  "react-router-dom": "^7", // Routage (structure prête, non utilisé)
+  "react-hook-form": "^7", // Formulaires (futures vagues)
+  "zod": "^3", // Validation schémas
+  "@radix-ui/react-direction": "^1" // Direction RTL Radix
 }
 ```
 
@@ -129,20 +131,24 @@ docs/
 ## Tests validés
 
 ### TypeScript
+
 - ✅ `tsc -b` passe sans erreur
 - ✅ Strict mode avec `noUncheckedIndexedAccess: true` (ADR-F05)
 - ✅ Pas de `any`, `require()` correctement remplacé par imports ES6
 
 ### Linting
+
 - ✅ ESLint : 0 erreur, 4 warnings non-bloquants
   - react-hooks : dépendances strictes (correctes sémantiquement)
   - react-refresh : export-only-components (mineur)
 
 ### Build & Run
+
 - ✅ Production build : 4.66s, 205 ko JS (64 ko gzip)
 - ✅ Dev server : port 5180, hydratation React correcte
 
 ### Code Quality
+
 - ✅ Prettier : formatage appliqué
 - ✅ ESLint : pas de `any`, imports bien typés
 - ✅ Imports JSON : passages de `require()` à imports ES6 ✅
@@ -151,14 +157,14 @@ docs/
 
 ## Documentations créées
 
-| Fichier | Contenu |
-|---------|---------|
-| `docs/journal/2026-07-24-s2-socle-visuel.md` | Journal détaillé de S2 : infra, layout, traductions, données, build |
-| `docs/prompts/2026-07-24-s2-socle-visuel.md` | Prompt S2 archivé (fidèle au prompt envoyé) |
-| `docs/test-checklist-s2-visual.md` | Checklist visuelle détaillée (37 items) pour tester au navigateur |
-| `docs/METRONIC-INTEGRATION-PLAN.md` | Plan d'action pour S2-ext : prélèvement layout-21 + shadcn components |
-| `docs/S2-COMPLETION-REPORT.md` | Ce rapport |
-| `docs/vendor-imports.md` | Manifeste prélèvement (template créé S1-bis, à compléter en S2-ext) |
+| Fichier                                      | Contenu                                                               |
+| -------------------------------------------- | --------------------------------------------------------------------- |
+| `docs/journal/2026-07-24-s2-socle-visuel.md` | Journal détaillé de S2 : infra, layout, traductions, données, build   |
+| `docs/prompts/2026-07-24-s2-socle-visuel.md` | Prompt S2 archivé (fidèle au prompt envoyé)                           |
+| `docs/test-checklist-s2-visual.md`           | Checklist visuelle détaillée (37 items) pour tester au navigateur     |
+| `docs/METRONIC-INTEGRATION-PLAN.md`          | Plan d'action pour S2-ext : prélèvement layout-21 + shadcn components |
+| `docs/S2-COMPLETION-REPORT.md`               | Ce rapport                                                            |
+| `docs/vendor-imports.md`                     | Manifeste prélèvement (template créé S1-bis, à compléter en S2-ext)   |
 
 ---
 
@@ -196,18 +202,18 @@ docs/
 
 ## Statut final
 
-| Étape | État | Détail |
-|-------|------|--------|
-| Infrastructure i18n | ✅ | 3 langues, localStorage, provider |
-| Thème clair/sombre | ✅ | Toggle, persistance, document.dir |
-| Layout de base | ✅ | Rail (8 modules) + sidebar + content |
-| Traductions complètes | ✅ | en.json, fr.json, ar.json |
-| Données mock | ✅ | Centralisées src/shared/dev/ |
-| TypeScript strict | ✅ | 0 erreur, noUncheckedIndexedAccess |
-| ESLint | ✅ | 0 erreur, 4 warnings non-bloquants |
-| Build prod | ✅ | 4.66s, 205 ko JS, 64 ko gzip |
-| Dev server | ✅ | Port 5180, hydratation OK |
-| **Prêt pour tests visuels** | ✅ | ✅ |
+| Étape                       | État | Détail                               |
+| --------------------------- | ---- | ------------------------------------ |
+| Infrastructure i18n         | ✅   | 3 langues, localStorage, provider    |
+| Thème clair/sombre          | ✅   | Toggle, persistance, document.dir    |
+| Layout de base              | ✅   | Rail (8 modules) + sidebar + content |
+| Traductions complètes       | ✅   | en.json, fr.json, ar.json            |
+| Données mock                | ✅   | Centralisées src/shared/dev/         |
+| TypeScript strict           | ✅   | 0 erreur, noUncheckedIndexedAccess   |
+| ESLint                      | ✅   | 0 erreur, 4 warnings non-bloquants   |
+| Build prod                  | ✅   | 4.66s, 205 ko JS, 64 ko gzip         |
+| Dev server                  | ✅   | Port 5180, hydratation OK            |
+| **Prêt pour tests visuels** | ✅   | ✅                                   |
 
 ---
 
@@ -222,4 +228,3 @@ docs/
 ---
 
 **Fin du rapport S2**. En attente de validation visuelle.
-

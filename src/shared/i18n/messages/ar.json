@@ -7,11 +7,61 @@
   "nav.module.catalogue": "الكتالوج",
   "nav.module.pricing": "التسعير",
   "nav.module.settings": "الإعدادات",
-  "layout.officeName": "المكتب",
-  "layout.userName": "المستخدم",
+
+  "menu.parties.clients": "العملاء",
+  "menu.parties.suppliers": "الموردون",
+  "menu.parties.contacts": "جهات الاتصال",
+  "menu.parties.addresses": "العناوين",
+  "menu.parties.balances": "الأرصدة",
+
+  "menu.bookings.list": "الحجوزات",
+  "menu.bookings.quotes": "عروض الأسعار",
+  "menu.bookings.services": "الخدمات",
+  "menu.bookings.passengers": "المسافرون",
+
+  "menu.settlements.receipts": "المقبوضات",
+  "menu.settlements.payments": "المدفوعات",
+  "menu.settlements.matching": "المطابقة",
+  "menu.settlements.statements": "الكشوف",
+
+  "menu.cash.journals": "دفاتر الصندوق",
+  "menu.cash.movements": "الحركات",
+  "menu.cash.reconciliation": "التسوية البنكية",
+
+  "menu.invoicing.invoices": "الفواتير",
+  "menu.invoicing.creditNotes": "إشعارات الدائن",
+  "menu.invoicing.schedule": "جدول الاستحقاق",
+
+  "menu.catalogue.products": "المنتجات",
+  "menu.catalogue.hotels": "الفنادق",
+  "menu.catalogue.flights": "الرحلات الجوية",
+  "menu.catalogue.transfers": "التنقلات",
+
+  "menu.pricing.grids": "جداول الأسعار",
+  "menu.pricing.margins": "الهوامش",
+  "menu.pricing.promotions": "العروض الترويجية",
+
+  "menu.settings.offices": "المكاتب",
+  "menu.settings.users": "المستخدمون",
+  "menu.settings.roles": "الأدوار",
+  "menu.settings.currencies": "العملات",
+  "menu.settings.general": "عام",
+
+  "layout.office": "المكتب",
+  "layout.search": "بحث",
+  "layout.home": "الرئيسية",
+  "layout.language": "اللغة",
   "layout.logout": "تسجيل الخروج",
   "layout.preferences": "التفضيلات",
-  "layout.theme": "المظهر",
-  "layout.language": "اللغة",
-  "layout.addModule": "إضافة وحدة"
+  "layout.addModule": "إضافة وحدة",
+  "layout.toggleSidebar": "طي الشريط الجانبي",
+  "layout.openMenu": "فتح القائمة",
+  "layout.theme.dark": "الوضع الداكن",
+  "layout.theme.light": "الوضع الفاتح",
+  "layout.user.profile": "الملف الشخصي",
+  "layout.user.security": "الأمان",
+  "layout.plan.pro": "الباقة الاحترافية",
+
+  "page.placeholder": "الشاشة قادمة في مرحلة لاحقة.",
+  "page.wideMode": "تستخدم هذه الصفحة العرض الكامل (الوضع العريض)."
 }
