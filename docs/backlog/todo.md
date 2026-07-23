@@ -3,6 +3,7 @@
 ## Socle
 
 - [x] **S1** — Squelette & purge (2026-07-23)
+- [x] **S1-bis** — Corrections & protection `reference/` (2026-07-24)
 - [ ] **S2** — Tokens & thème
 - [ ] **S3** — Layout unique
 - [ ] **S4** — i18n & RTL

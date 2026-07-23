@@ -11,23 +11,23 @@
 
 Colonne « Backend HTTP » vérifiée dans le code du dépôt, pas dans la documentation.
 
-| Module BDD                                | BDD               | Backend HTTP                                                                                               | Front |
-| ----------------------------------------- | ----------------- | ---------------------------------------------------------------------------------------------------------- | ----- |
-| **Party** (tiers unifié)                  | ✅ V1.4           | ✅ CRUD + liste paginée + assignations rôle/fonction/groupe                                                | ⏳    |
-| **Core** (identité/auth)                  | ✅ V1.2           | ⚠️ **login JWT seul** — pas de `/me`, pas de MFA, pas de session                                           | ⏳    |
-| **Booking**                               | ✅ V1.3           | ✅ create/get/list + voyageurs, hôtel, transport, location, annulation, charges, settlements, payer-splits | ⏳    |
-| **Règlements**                            | ✅ V1.0           | ✅ instrument, transition, crédit, lettrage, solde                                                         | ⏳    |
-| **Cash Management**                       | ✅ V1.0           | ⚠️ **Domain partiel, aucun HTTP**                                                                          | ⏳    |
-| **Référentiel commun** (langues, devises) | ✅ V1.2           | ❌ **rien**                                                                                                | ⏳    |
-| **Référentiel Hébergement & Géographie**  | ✅ V1.0           | ❌ rien                                                                                                    | ⏳    |
-| **Point de vente**                        | ✅ V1.0           | ❌ rien                                                                                                    | ⏳    |
-| **Facturation / Avoirs**                  | ✅ V1.0           | ❌ rien                                                                                                    | ⏳    |
-| **Product / Catalogue**                   | ✅ V1.0           | ❌ rien                                                                                                    | ⏳    |
-| **Pricing**                               | ✅ V1.1           | ❌ rien                                                                                                    | ⏳    |
-| **Log** (activité + audit)                | ✅ V1.0           | ❌ rien                                                                                                    | ⏳    |
-| **Permissions / Franchises / Config**     | ✅ V1.0           | ❌ **rien** — bloquant transverse                                                                          | ⏳    |
-| **Provider Integration**                  | ✅ V1.0           | ❌ rien                                                                                                    | ⏳    |
-| **Contracting hôtelier avancé**           | ❌ dernier module | ❌                                                                                                         | ⏳    |
+| Module BDD | BDD | Backend HTTP | Front |
+|---|---|---|---|
+| **Party** (tiers unifié) | ✅ V1.4 | ✅ CRUD + liste paginée + assignations rôle/fonction/groupe | ⏳ |
+| **Core** (identité/auth) | ✅ V1.2 | ⚠️ **login JWT seul** — pas de `/me`, pas de MFA, pas de session | ⏳ |
+| **Booking** | ✅ V1.3 | ✅ create/get/list + voyageurs, hôtel, transport, location, annulation, charges, settlements, payer-splits | ⏳ |
+| **Règlements** | ✅ V1.0 | ✅ instrument, transition, crédit, lettrage, solde | ⏳ |
+| **Cash Management** | ✅ V1.0 | ⚠️ **Domain partiel, aucun HTTP** | ⏳ |
+| **Référentiel commun** (langues, devises) | ✅ V1.2 | ❌ **rien** | ⏳ |
+| **Référentiel Hébergement & Géographie** | ✅ V1.0 | ❌ rien | ⏳ |
+| **Point de vente** | ✅ V1.0 | ❌ rien | ⏳ |
+| **Facturation / Avoirs** | ✅ V1.0 | ❌ rien | ⏳ |
+| **Product / Catalogue** | ✅ V1.0 | ❌ rien | ⏳ |
+| **Pricing** | ✅ V1.1 | ❌ rien | ⏳ |
+| **Log** (activité + audit) | ✅ V1.0 | ❌ rien | ⏳ |
+| **Permissions / Franchises / Config** | ✅ V1.0 | ❌ **rien** — bloquant transverse | ⏳ |
+| **Provider Integration** | ✅ V1.0 | ❌ rien | ⏳ |
+| **Contracting hôtelier avancé** | ❌ dernier module | ❌ | ⏳ |
 
 **Lecture** : le backend couvre bien 4 modules sur 14. Mais **aucun référentiel n'est exposé**, et un ERP c'est majoritairement des listes déroulantes. C'est le vrai goulot, plus que le nombre de modules.
 
@@ -39,19 +39,19 @@ Colonne « Backend HTTP » vérifiée dans le code du dépôt, pas dans la docum
 
 Une vague = un prompt = un journal = une clôture chiffrée.
 
-| #       | Vague                       | Contenu                                                                                                                                   | Dépend de                |
-| ------- | --------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------- | ------------------------ |
-| **S1**  | Squelette & purge           | Dépôt, Vite 7, TS strict + `noUncheckedIndexedAccess`, ESLint/Prettier, purge ADR-F18, `base` corrigée, `reference/` initial              | —                        |
-| **S2**  | Tokens & thème              | Un seul jeu de tokens, 3-5 thèmes dont sombre, variables manquantes corrigées, contraste vérifié par thème                                | S1                       |
-| **S3**  | Layout unique               | `layout-21` importé et nettoyé, `left-1.75` → `start-1.75`, `layout.css` supprimé, axes de paramétrage exposés, état de layout en Zustand | S2                       |
-| **S4**  | i18n & RTL                  | `react-intl`, catalogues en/fr/ar, bascule `dir`, **règle ESLint classes physiques**, rendu testé dans les deux directions                | S1                       |
-| **S5**  | Client API                  | Génération de types depuis `openapi.json`, client à deux implémentations, diff de contrat en CI, `Accept-Language`, `X-Request-Id`        | S1 · **demande #1**      |
-| **S6**  | Authentification            | Login, stockage du jeton, expiration, `/me` (bouchonné si absent), route protégée                                                         | S5 · **demandes #2, #3** |
-| **S7**  | Noyau Money                 | `minor_unit`, `Intl.NumberFormat`, composant de saisie, tests des cas limites (TND 3 décimales)                                           | S4                       |
-| **S8**  | Permissions & entitlements  | `can()` à deux ensembles (ADR-F08), `<Permission>`, `<Entitlement>`, `data-acl`, mode Capture paresseux                                   | S6 · **demande #2**      |
-| **S9**  | Patterns liste & formulaire | Data Grid ReUI + pagination serveur, Filters à état URL, formulaire RHF+Zod avec remontée des `violations` sur les champs                 | S5 · S7                  |
-| **S10** | Erreur & observabilité      | Enveloppe d'erreur, mapping 404/409/422/400, error boundaries, `X-Request-Id` affiché                                                     | S5                       |
-| **S11** | Tests & CI                  | Vitest + Testing Library + Playwright, budget de bundle, bloc de clôture chiffré                                                          | toutes                   |
+| # | Vague | Contenu | Dépend de |
+|---|---|---|---|
+| **S1** | Squelette & purge | Dépôt, Vite 7, TS strict + `noUncheckedIndexedAccess`, ESLint/Prettier, purge ADR-F18, `base` corrigée, `reference/` initial | — |
+| **S2** | Tokens & thème | Un seul jeu de tokens, 3-5 thèmes dont sombre, variables manquantes corrigées, contraste vérifié par thème | S1 |
+| **S3** | Layout unique | `layout-21` importé et nettoyé, `left-1.75` → `start-1.75`, `layout.css` supprimé, axes de paramétrage exposés, état de layout en Zustand | S2 |
+| **S4** | i18n & RTL | `react-intl`, catalogues en/fr/ar, bascule `dir`, **règle ESLint classes physiques**, rendu testé dans les deux directions | S1 |
+| **S5** | Client API | Génération de types depuis `openapi.json`, client à deux implémentations, diff de contrat en CI, `Accept-Language`, `X-Request-Id` | S1 · **demande #1** |
+| **S6** | Authentification | Login, stockage du jeton, expiration, `/me` (bouchonné si absent), route protégée | S5 · **demandes #2, #3** |
+| **S7** | Noyau Money | `minor_unit`, `Intl.NumberFormat`, composant de saisie, tests des cas limites (TND 3 décimales) | S4 |
+| **S8** | Permissions & entitlements | `can()` à deux ensembles (ADR-F08), `<Permission>`, `<Entitlement>`, `data-acl`, mode Capture paresseux | S6 · **demande #2** |
+| **S9** | Patterns liste & formulaire | Data Grid ReUI + pagination serveur, Filters à état URL, formulaire RHF+Zod avec remontée des `violations` sur les champs | S5 · S7 |
+| **S10** | Erreur & observabilité | Enveloppe d'erreur, mapping 404/409/422/400, error boundaries, `X-Request-Id` affiché | S5 |
+| **S11** | Tests & CI | Vitest + Testing Library + Playwright, budget de bundle, bloc de clôture chiffré | toutes |
 
 **S1 à S4 sont totalement indépendantes du backend.** S5 peut démarrer sur un `openapi.json` partiel.
 
@@ -63,14 +63,14 @@ Une vague = un prompt = un journal = une clôture chiffrée.
 
 Une par fichier dans `docs/demandes-backend/`, avec statut. Aucune ne bloque le socle grâce aux bouchons (ADR-F09).
 
-| #     | Demande                       | Détail                                                                                                                                                                                             | Bloque            |
-| ----- | ----------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------- |
-| **1** | **OpenAPI**                   | `openapi.json` généré (NelmioApiDocBundle, déjà prescrit dans `06-api-contracts.md`), commité et versionné                                                                                         | S5, tout écran    |
-| **2** | **`/me`**                     | identité · bureau · langue · thème · **catalogue** des permissions · permissions **accordées** · entitlements. Les **deux listes** de permissions sont indispensables à l'opt-in inversé (ADR-F08) | S6, S8            |
-| **3** | **Refresh token**             | `POST /api/v1/auth/refresh`. Spécifié dans le document hérité, jamais implémenté. Définit l'UX d'expiration de session                                                                             | S6                |
-| **4** | **Référentiels**              | devises (+ `minor_unit`), langues, pays/villes, `party_role`, `party_function`, types de service, modes de paiement, statuts, types de charge                                                      | Tout écran métier |
-| **5** | **Harmonisation d'enveloppe** | Les listes renvoient `{data, meta}`, les GET unitaires l'objet **nu**. Deux formes pour deux cas                                                                                                   | S5                |
-| **6** | **Tri & filtres**             | `sort`, `filter[champ][op]` normalisés. Aujourd'hui seuls `page`, `limit`, `nature`, `search` existent sur Party                                                                                   | S9                |
+| # | Demande | Détail | Bloque |
+|---|---|---|---|
+| **1** | **OpenAPI** | `openapi.json` généré (NelmioApiDocBundle, déjà prescrit dans `06-api-contracts.md`), commité et versionné | S5, tout écran |
+| **2** | **`/me`** | identité · bureau · langue · thème · **catalogue** des permissions · permissions **accordées** · entitlements. Les **deux listes** de permissions sont indispensables à l'opt-in inversé (ADR-F08) | S6, S8 |
+| **3** | **Refresh token** | `POST /api/v1/auth/refresh`. Spécifié dans le document hérité, jamais implémenté. Définit l'UX d'expiration de session | S6 |
+| **4** | **Référentiels** | devises (+ `minor_unit`), langues, pays/villes, `party_role`, `party_function`, types de service, modes de paiement, statuts, types de charge | Tout écran métier |
+| **5** | **Harmonisation d'enveloppe** | Les listes renvoient `{data, meta}`, les GET unitaires l'objet **nu**. Deux formes pour deux cas | S5 |
+| **6** | **Tri & filtres** | `sort`, `filter[champ][op]` normalisés. Aujourd'hui seuls `page`, `limit`, `nature`, `search` existent sur Party | S9 |
 
 **Deux points transverses à signaler au chat backend**, hors demande front :
 
@@ -101,7 +101,7 @@ Liste et fiche. La création multi-services viendra après : c'est le formulaire
 
 HTTP complet côté backend. Attention ADR-F15 : **aucune mise à jour optimiste** sur le grand livre.
 
-> À rouvrir ici : le **lettrage automatique**, explicitement différé côté backend le 23/07 — _« difficile à trancher sans voir les écrans, à reprendre pendant le chantier frontend »_. Trois mécanismes distincts, dont un nécessitant des jobs asynchrones inexistants.
+> À rouvrir ici : le **lettrage automatique**, explicitement différé côté backend le 23/07 — *« difficile à trancher sans voir les écrans, à reprendre pendant le chantier frontend »*. Trois mécanismes distincts, dont un nécessitant des jobs asynchrones inexistants.
 
 ### Ensuite
 
@@ -113,17 +113,17 @@ Cash Management, Facturation, Product/Catalogue, Pricing, Point de vente, Permis
 
 ## 5. Sujets ouverts
 
-| Sujet                                                         | Statut                                                                                        |
-| ------------------------------------------------------------- | --------------------------------------------------------------------------------------------- |
-| Chiffres arabo-indiens selon la locale                        | 🟡 reporté, ADR-F04                                                                           |
-| Calendrier hégirien en affichage secondaire                   | 🟡 reporté, ADR-F04                                                                           |
-| Couleurs du rail : une par module ou teinte unique            | 🟡 à trancher en S2/S3                                                                        |
-| Préfixe `kt-` des classes utilitaires : renommer ou conserver | 🟡 à trancher en S1                                                                           |
-| Stockage du jeton (mémoire + refresh, ou cookie httpOnly)     | 🟡 CORS actuel en `allow_credentials: false` — le cookie httpOnly exige un changement backend |
-| Redis pour le cache de permissions                            | 🟡 non tranché côté backend                                                                   |
-| Rate limiting                                                 | 🟡 non implémenté, peu prioritaire en back-office                                             |
-| Politique de résiliation (dégradation lecture seule)          | 🟡 à écrire avant la première vente de module optionnel                                       |
-| Observabilité (Sentry / GlitchTip)                            | 🟡 décision d'infrastructure transverse, hors périmètre front seul                            |
+| Sujet | Statut |
+|---|---|
+| Chiffres arabo-indiens selon la locale | 🟡 reporté, ADR-F04 |
+| Calendrier hégirien en affichage secondaire | 🟡 reporté, ADR-F04 |
+| Couleurs du rail : une par module ou teinte unique | 🟡 à trancher en S2/S3 |
+| Préfixe `kt-` des classes utilitaires : renommer ou conserver | 🟡 à trancher en S1 |
+| Stockage du jeton (mémoire + refresh, ou cookie httpOnly) | 🟡 CORS actuel en `allow_credentials: false` — le cookie httpOnly exige un changement backend |
+| Redis pour le cache de permissions | 🟡 non tranché côté backend |
+| Rate limiting | 🟡 non implémenté, peu prioritaire en back-office |
+| Politique de résiliation (dégradation lecture seule) | 🟡 à écrire avant la première vente de module optionnel |
+| Observabilité (Sentry / GlitchTip) | 🟡 décision d'infrastructure transverse, hors périmètre front seul |
 
 ---
 

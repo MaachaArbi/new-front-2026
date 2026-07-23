@@ -15,7 +15,7 @@ Chaque décision porte un statut, comme côté backend :
 
 # PARTIE 1 — ADR hérités, réexaminés
 
-Les ADR-011 à 015 dataient de la réflexion « équipe de 5 », antérieure à React 19, Tailwind v4, ReUI, et aux 293 tables figées. Le chat backend les avait explicitement laissées de côté (_« non réexaminés dans cette session — hors périmètre backend »_). Elles le sont ici.
+Les ADR-011 à 015 dataient de la réflexion « équipe de 5 », antérieure à React 19, Tailwind v4, ReUI, et aux 293 tables figées. Le chat backend les avait explicitement laissées de côté (*« non réexaminés dans cette session — hors périmètre backend »*). Elles le sont ici.
 
 ## ADR-011 : React SPA (Vite) pour le back-office — 🔁 REFORMULÉ
 
@@ -43,7 +43,7 @@ Outil disponible, usage à définir au cas par cas. À ne pas confondre avec les
 
 ## ADR-017 : Permissions dynamiques opt-in inversé — ✅ CONFIRMÉ (principe) / 🟡 EN ATTENTE (implémentation)
 
-Le principe est conforme au schéma figé (`core_permission` : _« une ligne ici = action fermée par défaut »_). Le front l'implémente selon ADR-F08.
+Le principe est conforme au schéma figé (`core_permission` : *« une ligne ici = action fermée par défaut »*). Le front l'implémente selon ADR-F08.
 
 L'implémentation d'origine — application `user_management` séparée appelée en HTTP — est **abandonnée** : le module est interne au monolithe. L'endpoint n'existe pas encore.
 
@@ -59,15 +59,15 @@ Le front ne manipule **jamais** la clé technique. Tous les identifiants en URL,
 
 **Contexte.** Licence Metronic 9.4 étendue (clients illimités). Audit du paquet : Tailwind v4, Radix, shadcn, React 19, TypeScript `strict`, build bloquant sur `tsc`.
 
-**Découverte structurante** : la couche de composants de Metronic **est ReUI**, édité par KeenThemes, **sous licence MIT, en dépôt public**. Leur propre README le confirme. Le modèle affiché est _« Copy-and-Own — No npm package, no lock-in »_.
+**Découverte structurante** : la couche de composants de Metronic **est ReUI**, édité par KeenThemes, **sous licence MIT, en dépôt public**. Leur propre README le confirme. Le modèle affiché est *« Copy-and-Own — No npm package, no lock-in »*.
 
 **Décision.**
 
-| Couche                      | Source                 | Mode                                     |
-| --------------------------- | ---------------------- | ---------------------------------------- |
-| Composants                  | **ReUI (MIT)**         | `npx shadcn add @reui/…`, à la demande   |
+| Couche | Source | Mode |
+|---|---|---|
+| Composants | **ReUI (MIT)** | `npx shadcn add @reui/…`, à la demande |
 | Layout + direction visuelle | **Metronic** (licence) | `layout-21` uniquement, copié et nettoyé |
-| Icônes                      | **lucide**             | Keenicons abandonné (ADR-F17)            |
+| Icônes | **lucide** | Keenicons abandonné (ADR-F17) |
 
 **Gouvernance, non négociable :**
 
@@ -89,20 +89,19 @@ Le front ne manipule **jamais** la clé technique. Tous les identifiants en URL,
 
 **Pourquoi celui-ci** — il correspond au modèle de données :
 
-| Élément du layout                   | Correspondance projet                                                                      |
-| ----------------------------------- | ------------------------------------------------------------------------------------------ |
-| Rail d'icônes                       | Un module = une icône. Granularité exacte des **entitlements**                             |
-| « + » en bas du rail                | Point d'entrée **unique** du catalogue commercial (ADR-F08)                                |
-| Sélecteur en tête de barre latérale | **Bureau** courant (`party_account_office`)                                                |
-| Onglets dans le contenu             | Fiche d'entité : un `party_account` a identité, rôles, fonctions, adresses, groupes, solde |
-| ⌘K                                  | Palette de commandes (`cmdk`, déjà présent)                                                |
+| Élément du layout | Correspondance projet |
+|---|---|
+| Rail d'icônes | Un module = une icône. Granularité exacte des **entitlements** |
+| « + » en bas du rail | Point d'entrée **unique** du catalogue commercial (ADR-F08) |
+| Sélecteur en tête de barre latérale | **Bureau** courant (`party_account_office`) |
+| Onglets dans le contenu | Fiche d'entité : un `party_account` a identité, rôles, fonctions, adresses, groupes, solde |
+| ⌘K | Palette de commandes (`cmdk`, déjà présent) |
 
 **Audit** : 19 fichiers bien découpés, **aucun CSS dédié** (100 % Tailwind en TSX — mieux que `demo1` qui traîne un fichier CSS), et **une seule fuite RTL** dans tout le layout (`left-1.75` sur l'indicateur de module actif → `start-1.75`).
 
 **Axes de paramétrage exposés** : position de navigation, repli de la barre latérale, densité (compact / confortable). **Pas de composition d'écran configurable par le client** — hors périmètre.
 
 **Réserves actées.**
-
 - Rail + barre latérale ≈ 290 px avant le contenu. **Toute grille dense doit être conçue et testée barre repliée**, pas seulement dépliée.
 - Le principe UX du 18/07 (« centraliser et minimiser la navigation ») n'est respecté que si le rail reste à 6-8 domaines stables. À surveiller au plan de navigation.
 
@@ -115,7 +114,6 @@ Le front ne manipule **jamais** la clé technique. Tous les identifiants en URL,
 L'infrastructure existe déjà dans le paquet : variables sémantiques (`--primary`, `--background`, `--foreground`, `--border`, `--radius`…) exposées via `@theme inline`. **Un thème = surcharger une douzaine de variables.**
 
 **Règles.**
-
 - Aucune couleur, espacement ou rayon en dur dans un composant. Jamais.
 - Contraste vérifié une fois **par thème** — c'est ce qui rend l'accessibilité tenable.
 - Le rail multicolore de la démo est à trancher : une couleur par module, ou une teinte unique dérivée du thème.
@@ -128,11 +126,11 @@ L'infrastructure existe déjà dans le paquet : variables sémantiques (`--prima
 
 **Audit du paquet Metronic** (729 fichiers TSX, 9 CSS) :
 
-|                             | Occurrences                                                         |
-| --------------------------- | ------------------------------------------------------------------- |
-| Classes **logiques**        | **530**                                                             |
-| Classes **physiques**       | **103** (dont une part légitime : centrage symétrique, `inset-x-0`) |
-| Variantes `rtl:` explicites | 21                                                                  |
+| | Occurrences |
+|---|---|
+| Classes **logiques** | **530** |
+| Classes **physiques** | **103** (dont une part légitime : centrage symétrique, `inset-x-0`) |
+| Variantes `rtl:` explicites | 21 |
 
 **~84 % de discipline logique** — bonne, mais trouée. Les fuites se concentrent dans `components/ui/` (17 fichiers) et `layout-37` (7).
 
@@ -180,13 +178,13 @@ Sans elle, `liste[0]` est typé `T` et non `T | undefined`. Sur un ERP qui conso
 
 **Contexte.** Deux mécanismes distincts, souvent confondus :
 
-|             | Entitlements (licences)              | Permissions (ADR-017)       |
-| ----------- | ------------------------------------ | --------------------------- |
-| Dépend de   | Contrat commercial du **client**     | L'**utilisateur** connecté  |
-| Granularité | Module, fonctionnalité vendable      | Bouton, colonne, champ      |
-| Écran       | **Visible et verrouillé** + accroche | **Masqué**, silencieusement |
+| | Entitlements (licences) | Permissions (ADR-017) |
+|---|---|---|
+| Dépend de | Contrat commercial du **client** | L'**utilisateur** connecté |
+| Granularité | Module, fonctionnalité vendable | Bouton, colonne, champ |
+| Écran | **Visible et verrouillé** + accroche | **Masqué**, silencieusement |
 
-Deux portes en série : _ce client a-t-il acheté ?_ puis _cet utilisateur a-t-il le droit ?_ Deux familles de composants distinctes, pas une.
+Deux portes en série : *ce client a-t-il acheté ?* puis *cet utilisateur a-t-il le droit ?* Deux familles de composants distinctes, pas une.
 
 **Composition** : « voir l'offre commerciale » est elle-même une permission.
 
@@ -195,8 +193,8 @@ Deux portes en série : _ce client a-t-il acheté ?_ puis _cet utilisateur a-t-i
 `16-permissions-system.md` propose :
 
 ```tsx
-if (!permissions?.includes(code)) return true // tableau
-return permissions[code] === true // objet
+if (!permissions?.includes(code)) return true;   // tableau
+return permissions[code] === true;               // objet
 ```
 
 `permissions` ne peut pas être les deux. Si c'est un tableau, `permissions[code]` avec une clé texte vaut toujours `undefined` → **toute permission existante est systématiquement refusée**. Le code ne fonctionne pas.
@@ -236,12 +234,12 @@ Un endpoint manquant n'arrête pas un écran : il alimente `docs/demandes-backen
 
 Le document hérité recommandait Zustand contre le props drilling, avec `user` comme exemple. **C'est le cas où il ne faut pas le faire** : `user` vient de `/me`, donc du serveur. Le mettre dans Zustand crée deux caches, sans revalidation ni invalidation — et contredit ADR-013.
 
-| Donnée                                                              | Où                 |
-| ------------------------------------------------------------------- | ------------------ |
-| Identité, permissions, entitlements, référentiels, données métier   | **TanStack Query** |
-| Repli de la barre, module actif, bureau sélectionné, thème, densité | **Zustand**        |
+| Donnée | Où |
+|---|---|
+| Identité, permissions, entitlements, référentiels, données métier | **TanStack Query** |
+| Repli de la barre, module actif, bureau sélectionné, thème, densité | **Zustand** |
 
-Test : _est-ce que ça existerait si le serveur n'existait pas ?_ Oui → Zustand. Non → TanStack Query.
+Test : *est-ce que ça existerait si le serveur n'existait pas ?* Oui → Zustand. Non → TanStack Query.
 
 ## ADR-F11 : Formulaires — React Hook Form + Zod — ✅ ACCEPTÉ
 
@@ -261,12 +259,12 @@ Le patron hérité (`CustomerTable`, 100 lignes de TanStack Table à la main) es
 
 Le paquet Metronic ne contient **aucun outillage de test**.
 
-| Niveau     | Outil                                         | Cible                                                        |
-| ---------- | --------------------------------------------- | ------------------------------------------------------------ |
-| Composants | Vitest + Testing Library                      | Composants du socle, noyau Money, résolution des permissions |
-| Parcours   | Playwright                                    | Parcours métier bout en bout                                 |
-| Contrat    | Diff `openapi.json` en CI                     | Dérive front/back                                            |
-| RTL        | Règle ESLint + rendu dans les deux directions | Régression directionnelle                                    |
+| Niveau | Outil | Cible |
+|---|---|---|
+| Composants | Vitest + Testing Library | Composants du socle, noyau Money, résolution des permissions |
+| Parcours | Playwright | Parcours métier bout en bout |
+| Contrat | Diff `openapi.json` en CI | Dérive front/back |
+| RTL | Règle ESLint + rendu dans les deux directions | Régression directionnelle |
 
 Le risque principal en solo + IA n'est pas l'absence de tests : ce sont **des tests qui valident un mauvais comportement généré**. Les assertions des cas limites sur Règlements, Facturation et Caisse sont écrites à la main.
 
@@ -311,15 +309,15 @@ Keenicons est abandonné : une **police d'icônes** ne se miroite pas automatiqu
 
 L'installation Metronic exige `npm install --force` : conflits de dépendances pairs de l'éditeur. Chaque doublon est une décision à prendre **une fois**, pas à chaque écran.
 
-| Doublon      | Gardé                      | Supprimé                                             |
-| ------------ | -------------------------- | ---------------------------------------------------- |
-| État serveur | `@tanstack/react-query` v5 | `react-query` v3 (**déprécié**)                      |
-| Formulaires  | `react-hook-form` + `zod`  | `formik`                                             |
-| Head         | `react-helmet-async`       | `react-helmet` (non maintenu, incompatible React 19) |
-| Graphiques   | `recharts` (choix ReUI)    | `apexcharts`, `react-apexcharts`                     |
-| Toasts       | `sonner` (choix ReUI)      | `notistack`                                          |
-| Primitives   | `radix-ui`                 | `react-aria-components`                              |
-| Icônes       | `lucide-react`             | `@remixicon/react`, Keenicons                        |
+| Doublon | Gardé | Supprimé |
+|---|---|---|
+| État serveur | `@tanstack/react-query` v5 | `react-query` v3 (**déprécié**) |
+| Formulaires | `react-hook-form` + `zod` | `formik` |
+| Head | `react-helmet-async` | `react-helmet` (non maintenu, incompatible React 19) |
+| Graphiques | `recharts` (choix ReUI) | `apexcharts`, `react-apexcharts` |
+| Toasts | `sonner` (choix ReUI) | `notistack` |
+| Primitives | `radix-ui` | `react-aria-components` |
+| Icônes | `lucide-react` | `@remixicon/react`, Keenicons |
 
 **Poids mort retiré** : `vite-plugin-windicss` (WindiCSS est archivé, présent à côté de Tailwind v4), `@supabase/supabase-js`, `@auth0/auth0-spa-js` (auth de démonstration — l'auth réelle est JWT Lexik), `@faker-js/faker`.
 
@@ -339,13 +337,7 @@ L'installation Metronic exige `npm install --force` : conflits de dépendances p
 `config/types.ts` de Metronic définit :
 
 ```ts
-interface MenuItem {
-  title?: string
-  icon?: LucideIcon
-  path?: string
-  badge?: string
-  children?: MenuConfig
-}
+interface MenuItem { title?: string; icon?: LucideIcon; path?: string; badge?: string; children?: MenuConfig; }
 ```
 
 Trois manques structurants : `title` est une **chaîne en dur** (aucune clé de traduction), **aucun champ permission**, **aucun champ entitlement**.
@@ -360,18 +352,18 @@ Trois documents relus. **Bilan : 6 confirmés, 5 reformulés, 11 remplacés, 4 e
 
 ## `component_patterns.md`
 
-| Élément                                                                                     | Statut                                                       |
-| ------------------------------------------------------------------------------------------- | ------------------------------------------------------------ |
-| Structure de composant standard (schéma, types, hooks, handlers, sorties anticipées, rendu) | ✅                                                           |
-| Hooks métier par module encapsulant TanStack Query                                          | ✅                                                           |
-| Anti-patron #1 — état serveur dans `useState`                                               | ✅                                                           |
-| Mises à jour optimistes                                                                     | ✅ avec restriction ADR-F15                                  |
-| Anti-patron #3 — props drilling → Zustand                                                   | 🔁 ADR-F10 (l'exemple choisi est le contre-exemple)          |
-| `useDebounce` maison                                                                        | 🔁 conservé pour le local ; filtres serveur via ReUI Filters |
-| « patterns pour équipe junior »                                                             | 🔁 solo + IA                                                 |
-| **Anti-patron #2 — fonctions inline → `data-id`**                                           | 🔴 **REMPLACÉ**                                              |
-| `CustomerTable` écrit à la main                                                             | 🔴 ADR-F12                                                   |
-| `CustomerFilters` maison                                                                    | 🔴 ADR-F12                                                   |
+| Élément | Statut |
+|---|---|
+| Structure de composant standard (schéma, types, hooks, handlers, sorties anticipées, rendu) | ✅ |
+| Hooks métier par module encapsulant TanStack Query | ✅ |
+| Anti-patron #1 — état serveur dans `useState` | ✅ |
+| Mises à jour optimistes | ✅ avec restriction ADR-F15 |
+| Anti-patron #3 — props drilling → Zustand | 🔁 ADR-F10 (l'exemple choisi est le contre-exemple) |
+| `useDebounce` maison | 🔁 conservé pour le local ; filtres serveur via ReUI Filters |
+| « patterns pour équipe junior » | 🔁 solo + IA |
+| **Anti-patron #2 — fonctions inline → `data-id`** | 🔴 **REMPLACÉ** |
+| `CustomerTable` écrit à la main | 🔴 ADR-F12 |
+| `CustomerFilters` maison | 🔴 ADR-F12 |
 
 **Sur l'anti-patron #2**, à enterrer explicitement pour qu'il ne ressorte pas : la prémisse est faible (une fonction recréée ne coûte que si l'enfant est mémoïsé **et** la liste longue ; React 19 mémoïse automatiquement avec son compilateur), et le remède est pire — `e.currentTarget.dataset.id` est de type `string | undefined`, ce qui réintroduit du non-typé **sur le bouton qui supprime**, en contradiction directe avec ADR-F05. Il est en outre incompatible avec Radix/ReUI, qui exposent des callbacks typés (`onSelect`, `onCheckedChange`) et non des événements DOM. Pour une liste réellement lourde, la réponse est la **virtualisation**, pas la micro-optimisation d'un callback.
 
@@ -379,41 +371,41 @@ Deux détails révélateurs : `className="text-left"` — une fuite RTL **dans l
 
 ## `16-permissions-system.md`
 
-| Élément                                                                              | Statut                                                                                                                                                                                                                  |
-| ------------------------------------------------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Opt-in inversé                                                                       | ✅ conforme au schéma figé                                                                                                                                                                                              |
-| Backend seule autorité, front = confort                                              | ✅                                                                                                                                                                                                                      |
-| Codes pointés `module.entité.action`                                                 | ✅                                                                                                                                                                                                                      |
-| Virtualisation obligatoire                                                           | ✅                                                                                                                                                                                                                      |
-| `data-acl` et ses interdits                                                          | 🔁 + ancrage entitlement                                                                                                                                                                                                |
-| Mode « Capture »                                                                     | 🔁 chargé paresseusement, déclencheur redéfini                                                                                                                                                                          |
-| Cache Redis 5-10 min                                                                 | 🟡 Redis non tranché côté backend                                                                                                                                                                                       |
+| Élément | Statut |
+|---|---|
+| Opt-in inversé | ✅ conforme au schéma figé |
+| Backend seule autorité, front = confort | ✅ |
+| Codes pointés `module.entité.action` | ✅ |
+| Virtualisation obligatoire | ✅ |
+| `data-acl` et ses interdits | 🔁 + ancrage entitlement |
+| Mode « Capture » | 🔁 chargé paresseusement, déclencheur redéfini |
+| Cache Redis 5-10 min | 🟡 Redis non tranché côté backend |
 | **Tout le SQL** (`permissions`, `roles`, `user_roles`, PK UUID, `granted`, `active`) | 🔴 le schéma figé est `core_permission`, `core_role`, `core_role_permission`, `core_account_role`, `core_permission_grant`, `core_permission_category` — BIGINT + `public_id`, **l'octroi est l'existence de la ligne** |
-| `HttpPermissionChecker` vers `user_management`                                       | 🔴 module interne au monolithe                                                                                                                                                                                          |
-| Hook `usePermissions`                                                                | 🔴 **cassé** — voir ADR-F08                                                                                                                                                                                             |
-| AG-Grid                                                                              | 🔴 ADR-F14 hérité                                                                                                                                                                                                       |
+| `HttpPermissionChecker` vers `user_management` | 🔴 module interne au monolithe |
+| Hook `usePermissions` | 🔴 **cassé** — voir ADR-F08 |
+| AG-Grid | 🔴 ADR-F14 hérité |
 
 Le schéma figé apporte ce que le document ignore : octroi direct à un compte, plafond de délégation (`is_delegable`), arbre de catégories, traductions, historisation `valid_from`/`valid_to`, rôles propres à une franchise (`owner_account_id`). Et une règle absente : **le RBAC ne filtre pas les données**.
 
 ## `06-api-contracts.md`
 
-| Élément                                                      | Statut                                                                    |
-| ------------------------------------------------------------ | ------------------------------------------------------------------------- |
-| Versioning `/api/v1`, méthodes HTTP                          | ✅                                                                        |
-| JWT Bearer                                                   | ✅                                                                        |
-| Enveloppe `{data, meta}` sur les listes                      | ✅ implémentée                                                            |
-| Politique de dépréciation (`Deprecation`, `Sunset`, 12 mois) | ✅ à garder pour v2                                                       |
-| Pagination défaut 50                                         | 🔁 défaut réel **20**, max 100 ; `hasNext`/`hasPrevious` inexistants      |
-| `id` UUID en payload                                         | 🔴 **`publicId`** (ADR-018)                                               |
-| Ressources `snake_case`                                      | 🔴 **kebab-case** réel                                                    |
-| `CUSTOMER_NOT_FOUND`                                         | 🔴 **`party_account.not_found`**                                          |
-| `details` + `timestamp` + `path`                             | 🔴 **`context`** ; corrélation par `X-Request-Id`                         |
-| `details.fields{}`                                           | 🔴 **`violations: [{field, message}]`**                                   |
-| JWT portant `roles: [...]`                                   | 🔴 ne porte que `public_id` ; `getRoles()` renvoie `['ROLE_USER']` en dur |
-| OpenAPI / NelmioApiDoc                                       | 🟡 prescrit, absent → demande n°1                                         |
-| Refresh token                                                | 🟡 spécifié, absent → demande n°3                                         |
-| `sort=-createdAt`, `filter[champ][gte]`                      | 🟡 bonne convention cible, non implémentée                                |
-| Rate limiting                                                | 🟡 non implémenté, peu prioritaire pour un back-office                    |
+| Élément | Statut |
+|---|---|
+| Versioning `/api/v1`, méthodes HTTP | ✅ |
+| JWT Bearer | ✅ |
+| Enveloppe `{data, meta}` sur les listes | ✅ implémentée |
+| Politique de dépréciation (`Deprecation`, `Sunset`, 12 mois) | ✅ à garder pour v2 |
+| Pagination défaut 50 | 🔁 défaut réel **20**, max 100 ; `hasNext`/`hasPrevious` inexistants |
+| `id` UUID en payload | 🔴 **`publicId`** (ADR-018) |
+| Ressources `snake_case` | 🔴 **kebab-case** réel |
+| `CUSTOMER_NOT_FOUND` | 🔴 **`party_account.not_found`** |
+| `details` + `timestamp` + `path` | 🔴 **`context`** ; corrélation par `X-Request-Id` |
+| `details.fields{}` | 🔴 **`violations: [{field, message}]`** |
+| JWT portant `roles: [...]` | 🔴 ne porte que `public_id` ; `getRoles()` renvoie `['ROLE_USER']` en dur |
+| OpenAPI / NelmioApiDoc | 🟡 prescrit, absent → demande n°1 |
+| Refresh token | 🟡 spécifié, absent → demande n°3 |
+| `sort=-createdAt`, `filter[champ][gte]` | 🟡 bonne convention cible, non implémentée |
+| Rate limiting | 🟡 non implémenté, peu prioritaire pour un back-office |
 
 **Incohérence trouvée dans le code** (pas dans le document) : les **listes** renvoient `{data, meta}`, les **GET unitaires** renvoient l'objet **nu**. → demande n°5.
 
@@ -431,7 +423,7 @@ Conservé : TypeScript strict sans `any` · interface de props explicite · TanS
 - [ ] **Montants** — jamais de formatage manuel, toujours le noyau `Money`
 - [ ] **`X-Request-Id`** — remonté dans l'affichage d'erreur
 
-**Ajusté** : avec Radix, ARIA et navigation clavier sont largement acquis. La règle devient _« ne pas casser ce que Radix fournit »_ — ne pas remplacer une primitive par un `div`, ne pas écraser les `aria-*` en diffusant des props.
+**Ajusté** : avec Radix, ARIA et navigation clavier sont largement acquis. La règle devient *« ne pas casser ce que Radix fournit »* — ne pas remplacer une primitive par un `div`, ne pas écraser les `aria-*` en diffusant des props.
 
 ---
 

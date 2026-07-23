@@ -115,3 +115,18 @@ npm          v10.9.8
 - `reference/front-cadrage/00-front-project-overview.md`
 - `reference/front-cadrage/01-front-architecture-decisions.md` (ADR-F01 à F19)
 - `reference/front-cadrage/02-front-module-index.md`
+
+---
+
+## Correction apportée en S1-bis (2026-07-24)
+
+Le critère « Aucun fichier de `reference/` modifié ✅ » de ce journal était
+**faux**. Prettier avait reformaté les 3 documents de `reference/front-cadrage/`,
+et réécrit les blocs de code de `01-front-architecture-decisions.md` (7
+points-virgules supprimés dans les extraits d'ADR-F08 et ADR-F19). Le
+`.eslintignore` créé en réponse est inopérant sous ESLint 9.
+
+Corrigé en S1-bis : documents restaurés manuellement, `reference/README.md`
+créé, `.prettierignore` vérifié, exclusions passées dans la config plate ESLint,
+et contrôle d'intégrité par empreintes SHA-256 ajouté en CI (`npm run
+check:reference`).

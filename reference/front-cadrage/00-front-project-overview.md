@@ -9,11 +9,11 @@
 
 ## 1. Nommage — à respecter strictement
 
-| Terme                    | Signification                                                                      |
-| ------------------------ | ---------------------------------------------------------------------------------- |
-| **OctaSoft**             | L'éditeur. La société.                                                             |
-| **OS-TRAVEL**            | Le produit (nom du legacy, **renommage prévu, non tranché**)                       |
-| **MyGo**                 | **Un client**, pas un produit. Ne doit apparaître nulle part dans le code.         |
+| Terme | Signification |
+|---|---|
+| **OctaSoft** | L'éditeur. La société. |
+| **OS-TRAVEL** | Le produit (nom du legacy, **renommage prévu, non tranché**) |
+| **MyGo** | **Un client**, pas un produit. Ne doit apparaître nulle part dans le code. |
 | **OctaSoft Static Data** | Produit séparé, référentiel mutualisé multi-clients, hors périmètre de ce chantier |
 
 **Règle absolue** : aucun nom de produit, de société ou de client en dur dans le code front. Tout passe par la configuration ou l'internationalisation.
@@ -30,11 +30,11 @@ La question de conception n'est jamais « est-ce compréhensible par un dévelop
 
 ### État des chantiers amont
 
-| Chantier                | Piloté dans            | État                                                                                |
-| ----------------------- | ---------------------- | ----------------------------------------------------------------------------------- |
-| Conception BDD          | `00-Main DB architect` | **14 modules figés, 293 tables.** Reste : Contracting hôtelier avancé               |
-| Backend Symfony         | `00-Main DEV Backend`  | Party, Core, Booking, Règlements avec HTTP. Cash partiel. Le reste : aucun endpoint |
-| **Front (ce chantier)** | `00-Main DEV Front`    | **Démarrage**                                                                       |
+| Chantier | Piloté dans | État |
+|---|---|---|
+| Conception BDD | `00-Main DB architect` | **14 modules figés, 293 tables.** Reste : Contracting hôtelier avancé |
+| Backend Symfony | `00-Main DEV Backend` | Party, Core, Booking, Règlements avec HTTP. Cash partiel. Le reste : aucun endpoint |
+| **Front (ce chantier)** | `00-Main DEV Front` | **Démarrage** |
 
 Le front **ne contredit jamais** la conception BDD ni le backend. En cas de doute ou d'absence d'information : **on s'arrête et on demande**. Jamais de règle métier plausible inventée.
 
@@ -48,13 +48,13 @@ Le front **ne contredit jamais** la conception BDD ni le backend. En cas de dout
 
 ### Hors périmètre — explicitement
 
-| Exclu                                   | Raison                                                                 |
-| --------------------------------------- | ---------------------------------------------------------------------- |
-| **Site B2C Next.js** (ADR-012)          | Chantier distinct, non ouvert. Aucun partage de code à anticiper.      |
-| **Mobile React Native**                 | Phase ultérieure, non planifiée                                        |
-| **CMS / SEO**                           | Migre vers une application CMS séparée (décision BDD)                  |
+| Exclu | Raison |
+|---|---|
+| **Site B2C Next.js** (ADR-012) | Chantier distinct, non ouvert. Aucun partage de code à anticiper. |
+| **Mobile React Native** | Phase ultérieure, non planifiée |
+| **CMS / SEO** | Migre vers une application CMS séparée (décision BDD) |
 | **Application de gestion des licences** | Produit séparé, comme OctaSoft Static Data. Mérite son propre Project. |
-| **Stock Management**                    | Retiré du périmètre projet (décision 16/07)                            |
+| **Stock Management** | Retiré du périmètre projet (décision 16/07) |
 
 **Conséquence directe du périmètre unique** : aucun package partagé, aucun monorepo multi-applications, aucune abstraction préventive « au cas où le B2C en aurait besoin ». Un seul consommateur.
 
@@ -103,17 +103,16 @@ Ce n'est **pas** du white-label libre : le client choisit dans un catalogue maî
 
 ### 5.2 Fonctionnel — deux couches distinctes
 
-|                                 | Décidé par                                    | Granularité                                        | Comportement écran                       |
-| ------------------------------- | --------------------------------------------- | -------------------------------------------------- | ---------------------------------------- |
-| **Entitlements** (licences)     | Le contrat commercial du client               | **Grosse** — module, fonctionnalité vendable, plan | **Visible et verrouillé**, avec accroche |
-| **Permissions** (RBAC, ADR-017) | L'administrateur de l'agence, par utilisateur | **Fine** — bouton, colonne, champ                  | **Masqué**, silencieusement              |
+| | Décidé par | Granularité | Comportement écran |
+|---|---|---|---|
+| **Entitlements** (licences) | Le contrat commercial du client | **Grosse** — module, fonctionnalité vendable, plan | **Visible et verrouillé**, avec accroche |
+| **Permissions** (RBAC, ADR-017) | L'administrateur de l'agence, par utilisateur | **Fine** — bouton, colonne, champ | **Masqué**, silencieusement |
 
 Règle de démarcation : **si ça ne peut pas être vendu séparément, ce n'est pas une licence.**
 
 Les deux se composent : les entitlements décident **ce qui est verrouillé**, les permissions décident **qui voit le verrou**. « Voir l'offre commerciale » est elle-même une permission — un opérateur de comptoir n'a aucun pouvoir d'achat.
 
 **Emplacement de l'accroche commerciale** — trois seulement :
-
 1. Le « + » en bas du rail de modules → catalogue complet
 2. Le verrou contextuel, au moment où l'utilisateur touche naturellement la limite
 3. Rien ailleurs. L'interface quotidienne reste propre.
@@ -139,23 +138,23 @@ Les deux se composent : les entitlements décident **ce qui est verrouillé**, l
 
 ## 7. Stack
 
-| Couche                      | Choix                                                                 | Origine                                           |
-| --------------------------- | --------------------------------------------------------------------- | ------------------------------------------------- |
-| Framework                   | **React 19.2**                                                        | Metronic 9.4 (ADR-011 disait React 18 — obsolète) |
-| Build                       | **Vite 7**                                                            | ADR-011                                           |
-| Langage                     | **TypeScript 5.9**, `strict` + `noUncheckedIndexedAccess`             |                                                   |
-| CSS                         | **Tailwind v4** (CSS-first, pas de `tailwind.config.js`)              | Metronic                                          |
-| Primitives                  | **Radix UI**                                                          | via shadcn/ReUI                                   |
-| Composants                  | **ReUI** (MIT, registre public, `npx shadcn add @reui/…`)             |                                                   |
-| Layout + direction visuelle | **Metronic 9.4** (licence étendue illimitée) — `layout-21` uniquement |                                                   |
-| État serveur                | **TanStack Query v5**                                                 | ADR-013                                           |
-| État client                 | **Zustand**                                                           |                                                   |
-| Tableaux                    | **ReUI Data Grid** (TanStack Table + virtualisation)                  | ADR-014 révisé                                    |
-| Formulaires                 | **React Hook Form + Zod**                                             |                                                   |
-| Routage                     | **React Router v7**                                                   |                                                   |
-| i18n                        | **FormatJS / react-intl** (ICU)                                       |                                                   |
-| Icônes                      | **lucide-react** — Keenicons abandonné                                |                                                   |
-| Tests                       | **Vitest + Testing Library + Playwright**                             |                                                   |
+| Couche | Choix | Origine |
+|---|---|---|
+| Framework | **React 19.2** | Metronic 9.4 (ADR-011 disait React 18 — obsolète) |
+| Build | **Vite 7** | ADR-011 |
+| Langage | **TypeScript 5.9**, `strict` + `noUncheckedIndexedAccess` | |
+| CSS | **Tailwind v4** (CSS-first, pas de `tailwind.config.js`) | Metronic |
+| Primitives | **Radix UI** | via shadcn/ReUI |
+| Composants | **ReUI** (MIT, registre public, `npx shadcn add @reui/…`) | |
+| Layout + direction visuelle | **Metronic 9.4** (licence étendue illimitée) — `layout-21` uniquement | |
+| État serveur | **TanStack Query v5** | ADR-013 |
+| État client | **Zustand** | |
+| Tableaux | **ReUI Data Grid** (TanStack Table + virtualisation) | ADR-014 révisé |
+| Formulaires | **React Hook Form + Zod** | |
+| Routage | **React Router v7** | |
+| i18n | **FormatJS / react-intl** (ICU) | |
+| Icônes | **lucide-react** — Keenicons abandonné | |
+| Tests | **Vitest + Testing Library + Playwright** | |
 
 Détail et justification de chaque choix : `01-front-architecture-decisions.md`.
 
@@ -169,9 +168,9 @@ Détail et justification de chaque choix : `01-front-architecture-decisions.md`.
 
 Deux trous que ce choix crée, et leur parade :
 
-| Trou                                                         | Parade                                                                                                                                     |
-| ------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------ |
-| Le dépôt front n'a aucune mémoire du métier                  | Un `reference/` propre au front, **en lecture seule** (§8.3)                                                                               |
+| Trou | Parade |
+|---|---|
+| Le dépôt front n'a aucune mémoire du métier | Un `reference/` propre au front, **en lecture seule** (§8.3) |
 | La dérive de contrat API n'est plus détectée automatiquement | `openapi.json` versionné dans le front + job CI qui compare à la version publiée par le backend, et **échoue avec le diff** en cas d'écart |
 
 **Symétrie à retenir** : `openapi.json` est au front ce que `schema-*.sql` est au backend — la seule source de vérité sur la structure. Jamais déduite, jamais supposée.

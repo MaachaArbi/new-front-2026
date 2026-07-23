@@ -1,6 +1,6 @@
 # STATUS — OsTravel Front
 
-**Date de mise à jour** : 2026-07-23  
+**Date de mise à jour** : 2026-07-24  
 **Projet** : OS-TRAVEL Back Office (React/Vite)  
 **Édifeur** : OctaSoft
 
@@ -10,7 +10,8 @@
 
 | Vague  | État       | Livrables                                                        | Prochaine |
 | ------ | ---------- | ---------------------------------------------------------------- | --------- |
-| **S1** | ✅ COMPLET | Vite 7 + React 19 + TS strict + ESLint + Prettier + arborescence | S2        |
+| **S1** | ✅ COMPLET (retro-corrigée S1-bis) | Vite 7 + React 19 + TS strict + ESLint + Prettier + arborescence | S2 |
+| **S1-bis** | ✅ COMPLET | 7 corrections + protection `reference/` par SHA-256 | S2 |
 | **S2** | ⏳         | Tokens & thème — non commencé                                    |           |
 | **S3** | ⏳         | Layout — non commencé                                            |           |
 | **S4** | ⏳         | i18n & RTL — non commencé                                        |           |

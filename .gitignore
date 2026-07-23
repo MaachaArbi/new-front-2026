@@ -5,11 +5,15 @@ node_modules
 
 # testing
 coverage
+test-results/
+playwright-report/
 
 # production
 dist
 dist-ssr
 *.local
+*.tsbuildinfo
+.vite/
 
 # misc
 .DS_Store
