@@ -10,6 +10,8 @@ du matériel de lecture, jamais de modification.**
    architecturaux fondamentaux
 3. **`front-cadrage/02-front-module-index.md`** — état backend, séquencement des
    vagues, demandes backend
+4. **`front-cadrage/03-front-adr-ux-ia.md`** — ADR-F20 (UX), ADR-F21 (IA),
+   amendement ADR-F08 v2
 
 ## Règle absolue
 

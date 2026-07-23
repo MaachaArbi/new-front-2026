@@ -427,4 +427,9 @@ Conservé : TypeScript strict sans `any` · interface de props explicite · TanS
 
 ---
 
+**Suite** : ADR-F20 (UX), ADR-F21 (IA) et l'amendement ADR-F08 v2
+vivent dans `03-front-adr-ux-ia.md`.
+
+---
+
 **Dépend de** : `00-front-project-overview.md` · `01-architecture_decisions.md` (BDD) · `reference/backend-cadrage/01-backend-architecture-decisions.md`

@@ -1,7 +1,7 @@
 # OsTravel Back Office — Frontend
 
-Vague **S1 : Squelette & purge** ✅  
-React 19 + Vite 7 + TypeScript strict + Tailwind v4
+Vague **S1 : Squelette & purge** ✅ · **S2 : Socle visuel** ⏳ (en cours)  
+React 19 + Vite 7 + TypeScript strict + Tailwind v4 + i18n/RTL + thème clair/sombre
 
 ## Démarrage rapide
 
@@ -101,7 +101,7 @@ http://localhost:5180
 | Vague   | Sujet                       | État        |
 | ------- | --------------------------- | ----------- |
 | **S1**  | ✅ Squelette & purge        | **COMPLET** |
-| **S2**  | Tokens & thème              | ⏳          |
+| **S2**  | ✅ Socle visuel             | **EN COURS** |
 | **S3**  | Layout unique               | ⏳          |
 | **S4**  | i18n & RTL                  | ⏳          |
 | **S5**  | Client API typé             | ⏳          |
