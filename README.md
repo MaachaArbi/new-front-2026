@@ -82,11 +82,13 @@ http://localhost:5180
 ## Dépendances
 
 ### Runtime (9 packages)
+
 - `react@^19`, `react-dom@^19`
 - `tailwind-merge`, `clsx`, `class-variance-authority`
 - `lucide-react` (icônes — seul jeu retenu)
 
 ### Dev (22 packages)
+
 - Vite 7, TypeScript 5.9
 - ESLint + TypeScript ESLint + React plugins
 - Prettier + plugin Tailwind
@@ -96,19 +98,19 @@ http://localhost:5180
 
 ## Prochaines vagues
 
-| Vague | Sujet | État |
-|---|---|---|
-| **S1** | ✅ Squelette & purge | **COMPLET** |
-| **S2** | Tokens & thème | ⏳ |
-| **S3** | Layout unique | ⏳ |
-| **S4** | i18n & RTL | ⏳ |
-| **S5** | Client API typé | ⏳ |
-| **S6** | Authentification | ⏳ |
-| **S7** | Noyau Money | ⏳ |
-| **S8** | Permissions & entitlements | ⏳ |
-| **S9** | Patterns liste & formulaire | ⏳ |
-| **S10** | Erreur & observabilité | ⏳ |
-| **S11** | Tests & CI | ⏳ |
+| Vague   | Sujet                       | État        |
+| ------- | --------------------------- | ----------- |
+| **S1**  | ✅ Squelette & purge        | **COMPLET** |
+| **S2**  | Tokens & thème              | ⏳          |
+| **S3**  | Layout unique               | ⏳          |
+| **S4**  | i18n & RTL                  | ⏳          |
+| **S5**  | Client API typé             | ⏳          |
+| **S6**  | Authentification            | ⏳          |
+| **S7**  | Noyau Money                 | ⏳          |
+| **S8**  | Permissions & entitlements  | ⏳          |
+| **S9**  | Patterns liste & formulaire | ⏳          |
+| **S10** | Erreur & observabilité      | ⏳          |
+| **S11** | Tests & CI                  | ⏳          |
 
 ## Documentation
 

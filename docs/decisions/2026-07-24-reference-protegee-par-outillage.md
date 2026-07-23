@@ -8,8 +8,8 @@
 
 ## Contexte
 
-S1 a posé une règle documentée : *« Tu ne modifies **jamais** le contenu de
-`reference/`. »* Prettier l'a violée dès la première vague, reformatant les
+S1 a posé une règle documentée : _« Tu ne modifies **jamais** le contenu de
+`reference/`. »_ Prettier l'a violée dès la première vague, reformatant les
 trois documents de `front-cadrage/` et réécrivant les blocs de code d'ADR-F08 et
 ADR-F19 (suppression de 7 points-virgules critiques, transformant des extraits
 corrects en code syntaxiquement invalide).

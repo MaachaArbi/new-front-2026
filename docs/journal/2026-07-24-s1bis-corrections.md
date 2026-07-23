@@ -128,4 +128,23 @@ CSS sémantiques Tailwind, vérification des contrastes par thème.
 
 - Prompt source : `docs/prompts/2026-07-24-s1bis-corrections.md`
 - Branche git : `master`
-- Commits : [voir git log après vague]
+- Commits : `9a6fc3e` — fix(s1bis): dépendances déclarées, tsconfig assaini, reference/ protégée par empreintes
+
+---
+
+## Correction post-revue
+
+Deux points non signalés en section « Dérives & corrections » :
+
+1. **Prompt S1-bis non archivé** : Le prompt avait été copié dans ce document
+   mais n'avait pas été créé en `docs/prompts/2026-07-24-s1bis-corrections.md`.
+   Archivé lors de cette revue. **Règle permanente pour toutes les vagues** :
+   chaque prompt est archivé **avant** la clôture, tel quel, sans reformulation.
+   C'est le seul rempart quand un résultat part de travers.
+
+2. **lucide-react non mis à jour** : Le prompt 2.7 demandait la **dernière stable**
+   pour lucide-react. Il était en `^0.408`, aucune mise à jour effectuée. Le
+   critère d'acceptation section 6 n'exigeait pas de vérification explicite, d'où
+   l'oubli. **Deux leçons** : (a) les critères de section 6 doivent être
+   **exécutés** et vérifiés réellement, pas déduits, et (b) toute déviation par
+   rapport au prompt doit figurer en « Dérives & corrections ».

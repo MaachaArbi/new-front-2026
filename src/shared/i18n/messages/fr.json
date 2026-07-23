@@ -1,0 +1,17 @@
+{
+  "nav.module.parties": "Tiers",
+  "nav.module.bookings": "Réservations",
+  "nav.module.settlements": "Règlements",
+  "nav.module.cash": "Caisse",
+  "nav.module.invoicing": "Facturation",
+  "nav.module.catalogue": "Catalogue",
+  "nav.module.pricing": "Tarification",
+  "nav.module.settings": "Configuration",
+  "layout.officeName": "Bureau",
+  "layout.userName": "Utilisateur",
+  "layout.logout": "Déconnexion",
+  "layout.preferences": "Préférences",
+  "layout.theme": "Thème",
+  "layout.language": "Langue",
+  "layout.addModule": "Ajouter un module"
+}

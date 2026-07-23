@@ -1,6 +1,6 @@
 # STATUS — OsTravel Front
 
-**Date de mise à jour** : 2026-07-24  
+**Date de mise à jour** : 2026-07-24 (S2 en cours)  
 **Projet** : OS-TRAVEL Back Office (React/Vite)  
 **Édifeur** : OctaSoft
 
@@ -8,14 +8,14 @@
 
 ## État des socles
 
-| Vague  | État       | Livrables                                                        | Prochaine |
-| ------ | ---------- | ---------------------------------------------------------------- | --------- |
-| **S1** | ✅ COMPLET (retro-corrigée S1-bis) | Vite 7 + React 19 + TS strict + ESLint + Prettier + arborescence | S2 |
-| **S1-bis** | ✅ COMPLET | 7 corrections + protection `reference/` par SHA-256 | S2 |
-| **S2** | ⏳         | Tokens & thème — non commencé                                    |           |
-| **S3** | ⏳         | Layout — non commencé                                            |           |
-| **S4** | ⏳         | i18n & RTL — non commencé                                        |           |
-| ...    | ⏳         | —                                                                |           |
+| Vague      | État                               | Livrables                                                        | Prochaine |
+| ---------- | ---------------------------------- | ---------------------------------------------------------------- | --------- |
+| **S1**     | ✅ COMPLET (retro-corrigée S1-bis) | Vite 7 + React 19 + TS strict + ESLint + Prettier + arborescence | S2        |
+| **S1-bis** | ✅ COMPLET                         | 7 corrections + protection `reference/` par SHA-256              | S2        |
+| **S2**     | ⏳ EN COURS                        | Infrastructure i18n/thème + layout de base                       | Tests vis. |
+| **S3**     | ⏳                                 | Layout — non commencé                                            |           |
+| **S4**     | ⏳                                 | i18n & RTL — non commencé                                        |           |
+| ...        | ⏳                                 | —                                                                |           |
 
 ---
 

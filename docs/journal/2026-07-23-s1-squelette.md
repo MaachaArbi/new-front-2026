@@ -11,6 +11,7 @@
 Bootstrap complet du projet front OsTravel pour la vague S1 (squelette & purge).
 
 **Livrables** :
+
 - Vite 7 + React 19.2 + TypeScript 5.9 en mode strict + `noUncheckedIndexedAccess`
 - ESLint (config plate) + Prettier avec plugin Tailwind, intégration bidirectionnelle
 - Tailwind v4 (CSS-first, aucun `tailwind.config.js`)
@@ -24,6 +25,7 @@ Bootstrap complet du projet front OsTravel pour la vague S1 (squelette & purge).
 - Port dev fixé à 5180 (strictPort), non conflictuel
 
 **Code** :
+
 - 44 fichiers créés (config, sources, docs)
 - `src/shared/lib/cn.ts` — seul utilitaire S1 (clsx + tailwind-merge)
 - `.prettierignore` et `.eslintignore` pour protéger `reference/`
@@ -96,6 +98,7 @@ npm          v10.9.8
 **S2 — Tokens & thème** : choix des couleurs, définition des tokens sémantiques Tailwind, 3-5 thèmes (dont dark), vérification des contrastes par thème.
 
 **Demandes backend à signaler** :
+
 - Demande #1 : `openapi.json` (bloque S5+)
 - Demande #2 : `/me` avec permissions/entitlements en deux listes (bloque S6, S8)
 - Demande #3 : `POST /auth/refresh` (bloque S6)
@@ -112,6 +115,7 @@ npm          v10.9.8
 - Commit : `48a1e7b` — chore(s1): squelette Vite 7 + React 19 + TS strict, purge dépendances
 
 **Références lues et respectées** :
+
 - `reference/front-cadrage/00-front-project-overview.md`
 - `reference/front-cadrage/01-front-architecture-decisions.md` (ADR-F01 à F19)
 - `reference/front-cadrage/02-front-module-index.md`

@@ -1,0 +1,17 @@
+{
+  "nav.module.parties": "الأطراف",
+  "nav.module.bookings": "الحجوزات",
+  "nav.module.settlements": "التسويات",
+  "nav.module.cash": "الصندوق",
+  "nav.module.invoicing": "الفوترة",
+  "nav.module.catalogue": "الكتالوج",
+  "nav.module.pricing": "التسعير",
+  "nav.module.settings": "الإعدادات",
+  "layout.officeName": "المكتب",
+  "layout.userName": "المستخدم",
+  "layout.logout": "تسجيل الخروج",
+  "layout.preferences": "التفضيلات",
+  "layout.theme": "المظهر",
+  "layout.language": "اللغة",
+  "layout.addModule": "إضافة وحدة"
+}

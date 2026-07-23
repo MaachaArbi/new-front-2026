@@ -1,0 +1,17 @@
+{
+  "nav.module.parties": "Parties",
+  "nav.module.bookings": "Bookings",
+  "nav.module.settlements": "Settlements",
+  "nav.module.cash": "Cash",
+  "nav.module.invoicing": "Invoicing",
+  "nav.module.catalogue": "Catalogue",
+  "nav.module.pricing": "Pricing",
+  "nav.module.settings": "Settings",
+  "layout.officeName": "Office",
+  "layout.userName": "User",
+  "layout.logout": "Logout",
+  "layout.preferences": "Preferences",
+  "layout.theme": "Theme",
+  "layout.language": "Language",
+  "layout.addModule": "Add Module"
+}
