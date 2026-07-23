@@ -4,9 +4,10 @@
 
 - [x] **S1** — Squelette & purge (2026-07-23)
 - [x] **S1-bis** — Corrections & protection `reference/` (2026-07-24)
-- [ ] **S2** — Socle visuel (infrastructure i18n/thème) (2026-07-24 en cours)
-- [ ] **S3** — Layout unique
-- [ ] **S4** — i18n & RTL
+- [x] **S2** — Socle visuel (infrastructure i18n/thème, layout jetable) (2026-07-24)
+- [x] **S3a** — Tokens ReUI, thème next-themes, `npm ci` réparé (2026-07-24)
+- [ ] **S3b** — Layout-21 (prélèvement Metronic + `useDocumentTitle`)
+- [ ] **S4** — i18n & RTL (consolidation)
 - [ ] **S5** — Client API
 - [ ] **S6** — Authentification
 - [ ] **S7** — Noyau Money

@@ -1,6 +1,12 @@
 'use client'
 
-import React, { createContext, useContext, useEffect, useMemo } from 'react'
+import React, {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+} from 'react'
 import { DEFAULT_LANGUAGE, LANGUAGES } from '@/shared/i18n/config'
 import type { LanguageCode, I18nContextType } from '@/shared/i18n/types'
 import en from '@/shared/i18n/messages/en.json'
@@ -20,34 +26,44 @@ export function I18nProvider({ children }: { children: React.ReactNode }) {
     React.useState<LanguageCode>(DEFAULT_LANGUAGE as LanguageCode)
   const [mounted, setMounted] = React.useState(false)
 
+  const applyLanguage = useCallback((lang: LanguageCode) => {
+    const langConfig = LANGUAGES[lang]
+    if (langConfig) {
+      document.documentElement.setAttribute('dir', langConfig.direction)
+      document.documentElement.setAttribute('lang', lang)
+    }
+  }, [])
+
+  // Initialisation au montage, une seule fois : lit le choix stocké, sinon
+  // applique la langue par défaut. On référence DEFAULT_LANGUAGE — et non
+  // currentLanguage — car au montage les deux sont identiques ; l'effet reste
+  // ainsi honnêtement sans dépendance changeante.
   useEffect(() => {
     const stored = localStorage.getItem('i18n-language') as LanguageCode | null
     if (stored && stored in LANGUAGES) {
       setCurrentLanguageState(stored)
       applyLanguage(stored)
     } else {
-      applyLanguage(currentLanguage)
+      applyLanguage(DEFAULT_LANGUAGE as LanguageCode)
     }
     setMounted(true)
-  }, [])
+  }, [applyLanguage])
 
-  const applyLanguage = (lang: LanguageCode) => {
-    const langConfig = LANGUAGES[lang]
-    if (langConfig) {
-      document.documentElement.setAttribute('dir', langConfig.direction)
-      document.documentElement.setAttribute('lang', lang)
-    }
-  }
+  const setLanguage = useCallback(
+    (lang: LanguageCode) => {
+      setCurrentLanguageState(lang)
+      localStorage.setItem('i18n-language', lang)
+      applyLanguage(lang)
+    },
+    [applyLanguage]
+  )
 
-  const setLanguage = (lang: LanguageCode) => {
-    setCurrentLanguageState(lang)
-    localStorage.setItem('i18n-language', lang)
-    applyLanguage(lang)
-  }
-
-  const t = (key: string): string => {
-    return messages[currentLanguage][key] || key
-  }
+  const t = useCallback(
+    (key: string): string => {
+      return messages[currentLanguage][key] || key
+    },
+    [currentLanguage]
+  )
 
   const value: I18nContextType = useMemo(
     () => ({
@@ -55,7 +71,7 @@ export function I18nProvider({ children }: { children: React.ReactNode }) {
       setLanguage,
       t,
     }),
-    [currentLanguage]
+    [currentLanguage, setLanguage, t]
   )
 
   if (!mounted) return null

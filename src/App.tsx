@@ -1,14 +1,22 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
+import { useTheme } from 'next-themes'
 import { I18nProvider, useI18n } from './app/providers/i18n-provider'
-import { ThemeProvider, useTheme } from './app/providers/theme-provider'
+import { ThemeProvider } from './app/providers/theme-provider'
 import { MODULES, OFFICES, CURRENT_USER } from './shared/dev/mock-modules'
 import { LANGUAGES } from './shared/i18n/config'
 import { Sun, Moon, Plus } from 'lucide-react'
 
 function AppLayout() {
   const { currentLanguage, setLanguage, t } = useI18n()
-  const { theme, toggleTheme } = useTheme()
+  const { resolvedTheme, setTheme } = useTheme()
+  const [mounted, setMounted] = useState(false)
   const [currentModule, setCurrentModule] = useState('parties')
+
+  // next-themes ne connaît le thème résolu qu'après montage côté client
+  useEffect(() => setMounted(true), [])
+
+  const isDark = resolvedTheme === 'dark'
+  const toggleTheme = () => setTheme(isDark ? 'light' : 'dark')
 
   return (
     <div className="flex h-screen bg-white dark:bg-slate-950">
@@ -44,13 +52,14 @@ function AppLayout() {
           </button>
           <button
             onClick={toggleTheme}
-            title={theme === 'light' ? 'Dark mode' : 'Light mode'}
+            title={isDark ? 'Light mode' : 'Dark mode'}
             className="rounded-lg p-3 text-slate-600 hover:bg-slate-200 dark:text-slate-400 dark:hover:bg-slate-800"
           >
-            {theme === 'light' ? (
-              <Moon className="h-6 w-6" />
-            ) : (
+            {/* Avant montage, le thème résolu est inconnu : on évite un icône erroné */}
+            {mounted && isDark ? (
               <Sun className="h-6 w-6" />
+            ) : (
+              <Moon className="h-6 w-6" />
             )}
           </button>
         </div>

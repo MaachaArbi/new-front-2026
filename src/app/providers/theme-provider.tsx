@@ -1,72 +1,32 @@
-'use client'
+import { ThemeProvider as NextThemesProvider } from 'next-themes'
+import type { ComponentProps } from 'react'
 
-import React, { useEffect, useState } from 'react'
-
-export function ThemeProvider({ children }: { children: React.ReactNode }) {
-  const [theme, setTheme] = useState<'light' | 'dark'>('light')
-  const [mounted, setMounted] = useState(false)
-
-  useEffect(() => {
-    // Read stored theme or system preference
-    const stored = localStorage.getItem('theme') as 'light' | 'dark' | null
-    let initialTheme: 'light' | 'dark'
-
-    if (stored) {
-      initialTheme = stored
-    } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
-      initialTheme = 'dark'
-    } else {
-      initialTheme = 'light'
-    }
-
-    setTheme(initialTheme)
-    applyTheme(initialTheme)
-    setMounted(true)
-  }, [])
-
-  const applyTheme = (newTheme: 'light' | 'dark') => {
-    const root = document.documentElement
-    if (newTheme === 'dark') {
-      root.classList.add('dark')
-    } else {
-      root.classList.remove('dark')
-    }
-    localStorage.setItem('theme', newTheme)
-  }
-
-  const toggleTheme = () => {
-    const newTheme = theme === 'light' ? 'dark' : 'light'
-    setTheme(newTheme)
-    applyTheme(newTheme)
-  }
-
-  if (!mounted) return null
-
+/**
+ * Fournisseur de thème bâti sur next-themes (ADR-F03).
+ * Inspiré de vendor-metronic/full/src/providers/theme-provider.tsx, avec deux
+ * écarts assumés (S3a §4) :
+ *  - le TooltipProvider que Metronic y avait glissé est retiré : un fournisseur
+ *    de thème ne fournit pas d'infobulles (et le composant tooltip n'existe pas
+ *    encore) ;
+ *  - storageKey = 'ostravel-theme' (et non 'vite-theme').
+ *
+ * La bascule s'obtient via `useTheme()` importé directement de 'next-themes'.
+ */
+export function ThemeProvider({
+  children,
+  ...props
+}: ComponentProps<typeof NextThemesProvider>) {
   return (
-    <div
-      data-theme={theme}
-      style={{ colorScheme: theme }}
-      className={theme === 'dark' ? 'dark' : ''}
+    <NextThemesProvider
+      attribute="class"
+      defaultTheme="system"
+      storageKey="ostravel-theme"
+      enableSystem
+      disableTransitionOnChange
+      enableColorScheme
+      {...props}
     >
-      <ThemeContext.Provider value={{ theme, toggleTheme }}>
-        {children}
-      </ThemeContext.Provider>
-    </div>
+      {children}
+    </NextThemesProvider>
   )
-}
-
-const ThemeContext = React.createContext<
-  | {
-      theme: 'light' | 'dark'
-      toggleTheme: () => void
-    }
-  | undefined
->(undefined)
-
-export function useTheme() {
-  const context = React.useContext(ThemeContext)
-  if (!context) {
-    throw new Error('useTheme must be used within ThemeProvider')
-  }
-  return context
 }

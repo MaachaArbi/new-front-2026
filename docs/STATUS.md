@@ -1,8 +1,8 @@
 # STATUS — OsTravel Front
 
-**Date de mise à jour** : 2026-07-24 (S2 en cours)  
+**Date de mise à jour** : 2026-07-24 (S3a clôturée)  
 **Projet** : OS-TRAVEL Back Office (React/Vite)  
-**Édifeur** : OctaSoft
+**Éditeur** : OctaSoft
 
 ---
 
@@ -12,9 +12,10 @@
 | ---------- | ---------------------------------- | ---------------------------------------------------------------- | --------- |
 | **S1**     | ✅ COMPLET (retro-corrigée S1-bis) | Vite 7 + React 19 + TS strict + ESLint + Prettier + arborescence | S2        |
 | **S1-bis** | ✅ COMPLET                         | 7 corrections + protection `reference/` par SHA-256              | S2        |
-| **S2**     | ⏳ EN COURS                        | Infrastructure i18n/thème + layout de base                       | Tests vis. |
-| **S3**     | ⏳                                 | Layout — non commencé                                            |           |
-| **S4**     | ⏳                                 | i18n & RTL — non commencé                                        |           |
+| **S2**     | ✅ COMPLET                         | Infrastructure i18n/thème + layout de base (jetable)             | S3a       |
+| **S3a**    | ✅ COMPLET                         | Tokens ReUI, thème next-themes, `npm ci` réparé                  | S3b       |
+| **S3b**    | ⏳                                 | Layout-21 — non commencé                                         |           |
+| **S4**     | ⏳                                 | i18n & RTL — infra posée en S2, à consolider                     |           |
 | ...        | ⏳                                 | —                                                                |           |
 
 ---
@@ -43,4 +44,6 @@
 
 ## Prochaine action
 
-Lancer S2 : tokens & thème.
+**S3b — layout-21** : prélever et adapter le layout Metronic (rail + barre
+latérale + fil d'Ariane + onglets), remplacer `App.tsx`, réintroduire
+`react-helmet-async` sous forme d'un hook maison `useDocumentTitle`.
