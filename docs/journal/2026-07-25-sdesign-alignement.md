@@ -213,6 +213,35 @@ Visuel : logique prouvée par test ; perceptuel laissé à Arbi.
 
 ---
 
+## Correctif post-clôture — séquences de navigation rendues globales
+
+**Retour d'Arbi** : sur `/_dev/shortcuts`, `g→p` menait bien à Tiers, mais depuis
+la page Tiers, `g→b` ne faisait rien.
+
+**Cause** : les séquences `g→p` / `g→b` n'étaient enregistrées que **sur la page**
+`/_dev/shortcuts` (et sur `/_dev/ux`). Déclencher `g→p` navigue vers `/parties`,
+ce qui **démonte la page** et désenregistre ses raccourcis — donc `g→b` n'existe
+plus sur Tiers. Comportement logiquement correct vu le montage, mais inutile.
+
+**Correction** (conforme à ADR-F20.5, qui prévoit la navigation `g`+touche comme
+fonction **globale**) : nouveau composant `src/shared/navigation/navigation-shortcuts.tsx`
+qui enregistre les séquences de navigation, **monté globalement dans `App.tsx`**
+(à l'intérieur du routeur, à côté de la palette). Elles fonctionnent désormais
+depuis n'importe quelle page.
+
+- Enregistrement local retiré de `dev-shortcuts.tsx` (la page continue de les
+  **lister** via `useActiveShortcuts`) et de `dev-ux.tsx` (dé-duplication).
+- Le socle clavier lui-même n'est pas touché — `NavigationShortcuts` en est un
+  simple consommateur, comme `CommandPalette`.
+- Liste volontairement minimale (parties=`g p`, bookings=`g b`) et extensible.
+
+**Prouvé par test** (`navigation-shortcuts.test.tsx`) : depuis `/parties`, `g`
+puis `b` → `/bookings` ; depuis `/bookings`, `g` puis `p` → `/parties` ; et la
+position prime (mêmes `code` sous caractères arabes). Total : **96 tests**.
+Build/lint/tsc/`npm ci`/`check:reference` re-vérifiés verts.
+
+---
+
 ## Prochaine action
 
 Validation perceptuelle au navigateur (`/_dev/shortcuts`, rail vs template, RTL).

@@ -14,13 +14,8 @@
  */
 
 import * as React from 'react'
-import { useNavigate } from 'react-router-dom'
 import { useI18n } from '@/app/providers/i18n-provider'
-import {
-  useShortcut,
-  useActiveShortcuts,
-  type ShortcutDefinition,
-} from '@/shared/keyboard'
+import { useActiveShortcuts, type ShortcutDefinition } from '@/shared/keyboard'
 import { Kbd } from '@/shared/ui/kbd'
 
 /** Une ligne de raccourci : ses touches (Kbd) + sa description traduite. */
@@ -119,30 +114,15 @@ function KeyTester() {
 
 export function DevShortcutsPage() {
   const { t } = useI18n()
-  const navigate = useNavigate()
   const getActive = useActiveShortcuts()
   const [shortcuts, setShortcuts] = React.useState<ShortcutDefinition[]>([])
 
-  // Séquences de démonstration (façon Gmail), enregistrées via le socle réel :
-  // elles fonctionnent et apparaissent dans la liste extraite du registre.
-  useShortcut({
-    id: 'shortcuts-page.goto.parties',
-    sequence: [{ code: 'KeyG' }, { code: 'KeyP' }],
-    descriptionKey: 'shortcut.demo.gotoParties',
-    displayKeys: ['G', 'P'],
-    handler: () => navigate('/parties'),
-  })
-  useShortcut({
-    id: 'shortcuts-page.goto.bookings',
-    sequence: [{ code: 'KeyG' }, { code: 'KeyB' }],
-    descriptionKey: 'shortcut.demo.gotoBookings',
-    displayKeys: ['G', 'B'],
-    handler: () => navigate('/bookings'),
-  })
-
-  // Extraction du registre après stabilisation des effets de montage (les
-  // raccourcis globaux — palette, aide — sont enregistrés par des composants
-  // frères ; un rAF garantit qu'ils sont pris en compte).
+  // Les raccourcis (palette, aide, navigation g→…) sont enregistrés
+  // GLOBALEMENT au niveau de l'app, pas ici : ils fonctionnent depuis toutes les
+  // pages. Cette page se contente de les EXTRAIRE du registre en direct.
+  // Extraction après stabilisation des effets de montage (un rAF garantit que
+  // les composants frères — palette, aide, NavigationShortcuts — sont pris en
+  // compte).
   React.useEffect(() => {
     const id = requestAnimationFrame(() => setShortcuts(getActive()))
     return () => cancelAnimationFrame(id)

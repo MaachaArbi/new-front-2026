@@ -10,7 +10,6 @@
  */
 
 import * as React from 'react'
-import { useNavigate } from 'react-router-dom'
 import { useI18n } from '@/app/providers/i18n-provider'
 import { useShortcut, useShortcutScope } from '@/shared/keyboard'
 import { useUrlPanel } from '@/shared/navigation/use-url-panel'
@@ -41,29 +40,16 @@ function PanelScope({ children }: { children: React.ReactNode }) {
 
 export function DevUxPage() {
   const { t } = useI18n()
-  const navigate = useNavigate()
   const panel = useUrlPanel('open')
   const [createOpen, setCreateOpen] = React.useState(false)
   const [loading, setLoading] = React.useState(false)
   const [stale, setStale] = React.useState(false)
 
   // — Fondation 1 : raccourcis (position physique event.code) —
-  // Séquences façon Gmail : g puis p / g puis b.
-  useShortcut({
-    id: 'demo.goto.parties',
-    sequence: [{ code: 'KeyG' }, { code: 'KeyP' }],
-    descriptionKey: 'shortcut.demo.gotoParties',
-    displayKeys: ['G', 'P'],
-    handler: () => navigate('/parties'),
-  })
-  useShortcut({
-    id: 'demo.goto.bookings',
-    sequence: [{ code: 'KeyG' }, { code: 'KeyB' }],
-    descriptionKey: 'shortcut.demo.gotoBookings',
-    displayKeys: ['G', 'B'],
-    handler: () => navigate('/bookings'),
-  })
-  // Touche unique : ouvrir la modale de création.
+  // Les séquences de navigation g→p / g→b sont enregistrées GLOBALEMENT
+  // (NavigationShortcuts, montées dans App) : elles marchent depuis toutes les
+  // pages. Ici, deux démos locales à cette page : touche N (modale) et, en
+  // portée, touche S (fermer le panneau).
   useShortcut({
     id: 'demo.create',
     sequence: [{ code: 'KeyN' }],

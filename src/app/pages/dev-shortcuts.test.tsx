@@ -3,13 +3,17 @@ import { render, screen, fireEvent } from '@testing-library/react'
 import { MemoryRouter } from 'react-router-dom'
 import { I18nProvider } from '@/app/providers/i18n-provider'
 import { ShortcutProvider } from '@/shared/keyboard'
+import { NavigationShortcuts } from '@/shared/navigation/navigation-shortcuts'
 import { DevShortcutsPage } from './dev-shortcuts'
 
+// NavigationShortcuts est monté globalement dans l'app (App.tsx) ; on le monte
+// ici aussi pour que la page ait des raccourcis de navigation à extraire.
 function renderPage() {
   return render(
     <MemoryRouter initialEntries={['/_dev/shortcuts']}>
       <I18nProvider>
         <ShortcutProvider>
+          <NavigationShortcuts />
           <DevShortcutsPage />
         </ShortcutProvider>
       </I18nProvider>
