@@ -8,10 +8,14 @@
 - [x] **S3a** — Tokens ReUI, thème next-themes, `npm ci` réparé (2026-07-24)
 - [x] **S3b** — Layout-21 réel, 12 composants ReUI, RTL Radix, règle ESLint (2026-07-24)
 - [x] **S3c** — Mise en page, palette sombre à trois niveaux, états pastel (2026-07-24)
-- [ ] **S4** — i18n & RTL (consolidation FormatJS/react-intl)
+- [x] **S4** — Noyau Money (bigint/unités mineures), Vitest, règle ESLint toFixed (2026-07-25)
+  ⚠️ Le prompt de vague a renuméroté « Noyau Money » (planifié S7) en S4. La
+  **consolidation i18n FormatJS/react-intl** (l'ancienne S4, ci-dessous) reste à
+  faire. Numérotation à réconcilier avec le chat pilote (voir journal S4, dérive n°1).
+- [ ] **i18n & RTL** — consolidation FormatJS/react-intl (ex-S4, non faite)
 - [ ] **S5** — Client API
 - [ ] **S6** — Authentification
-- [ ] **S7** — Noyau Money
+- [ ] ~~**S7** — Noyau Money~~ → livré en S4 (voir ci-dessus)
 - [ ] **S8** — Permissions & entitlements
 - [ ] **S9** — Patterns liste & formulaire
 - [ ] **S10** — Erreur & observabilité
@@ -24,6 +28,17 @@
   écrans métier arriveront (S9+).
 - [ ] **Supprimer les données factices** `src/shared/dev/mock-*` quand l'API réelle
   alimente navigation, bureaux et utilisateur (S5/S6).
+- [ ] **Remplacer le registre local de devises par le référentiel API** (S4). Le
+  registre `src/shared/money/currency-registry.ts` est **provisoire** ; brancher
+  `loadCurrencyRegistry(...)` sur la réponse `ref_currency` de l'API (demande
+  backend n°4, Référentiels) au démarrage. Aucun appelant à changer.
+- [ ] **Montants transactionnels sérialisés en string côté backend** (S4). Demande
+  backend n°7 (`docs/demandes-backend/2026-07-25-montants-json-string.md`) : les
+  BIGINT émis en nombre JSON perdent leur précision au-delà de 2^53 dans
+  `JSON.parse`, avant le noyau Money.
+- [ ] **Vulnérabilités npm `react-router` (2 high, RSC CSRF)** — préexistantes
+  (S3b), non liées à S4 ; app SPA sans mode RSC. `npm audit fix` non lancé (bump
+  hors périmètre S4). À évaluer lors d'une montée de version contrôlée.
 
 ## Écrans métier (après socle)
 

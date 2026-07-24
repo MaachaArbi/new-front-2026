@@ -18,6 +18,49 @@ const RTL_PHYSICAL = String.raw`(^|[\s:])(p[lr]-[\w[]|m[lr]-[\w[]|(left|right)-[
 const rtlMessage =
   'Classe directionnelle physique interdite (ADR-F04). Utilise la propriété logique : ps-/pe-, ms-/me-, start-/end-, border-s/border-e, rounded-s/rounded-e, text-start/text-end, gap-x-.'
 
+const rtlSelectors = [
+  { selector: `Literal[value=/${RTL_PHYSICAL}/]`, message: rtlMessage },
+  {
+    selector: `TemplateElement[value.raw=/${RTL_PHYSICAL}/]`,
+    message: rtlMessage,
+  },
+]
+
+// Règle Money (ADR-F07) : rend l'interdit inviolable. `toFixed` code en dur le
+// nombre de décimales — faux d'un facteur 10 sur les devises à 3 décimales ;
+// et diviser/multiplier un montant par 100/1000 en clair court-circuite le
+// noyau Money. Approximation assumée par nom de variable évoquant un montant :
+// « un faux positif vaut mieux qu'un montant faux ». Le noyau `src/shared/money/`
+// est l'exception (ces opérations y sont légitimes et testées) — voir plus bas.
+const NAME = 'amount|montant|total|price|prix|solde|balance'
+const factorMessage =
+  'Montant multiplié/divisé par 100 ou 1000 en clair (ADR-F07). Passe par le noyau Money (src/shared/money) : minor_unit vient de la devise, jamais codé en dur.'
+const toFixedMessage =
+  'toFixed interdit (ADR-F07) : décimales codées en dur, faux d’un facteur 10 sur les devises à 3 décimales. Utilise Money.format().'
+
+const moneySelectors = [
+  {
+    selector: "CallExpression[callee.property.name='toFixed']",
+    message: toFixedMessage,
+  },
+  {
+    selector: `BinaryExpression[operator='/'][right.value=/^(100|1000)$/][left.name=/${NAME}/i]`,
+    message: factorMessage,
+  },
+  {
+    selector: `BinaryExpression[operator='*'][right.value=/^(100|1000)$/][left.name=/${NAME}/i]`,
+    message: factorMessage,
+  },
+  {
+    selector: `BinaryExpression[operator='/'][right.value=/^(100|1000)$/][left.property.name=/${NAME}/i]`,
+    message: factorMessage,
+  },
+  {
+    selector: `BinaryExpression[operator='*'][right.value=/^(100|1000)$/][left.property.name=/${NAME}/i]`,
+    message: factorMessage,
+  },
+]
+
 export default tseslint.config(
   { ignores: ['dist', 'reference/**', 'node_modules'] },
   {
@@ -44,14 +87,16 @@ export default tseslint.config(
       ],
       '@typescript-eslint/no-explicit-any': 'error',
       'prettier/prettier': 'error',
-      'no-restricted-syntax': [
-        'error',
-        { selector: `Literal[value=/${RTL_PHYSICAL}/]`, message: rtlMessage },
-        {
-          selector: `TemplateElement[value.raw=/${RTL_PHYSICAL}/]`,
-          message: rtlMessage,
-        },
-      ],
+      'no-restricted-syntax': ['error', ...rtlSelectors, ...moneySelectors],
+    },
+  },
+  // Exception ADR-F07 : le noyau Money manipule légitimement les unités mineures.
+  // On y lève UNIQUEMENT les interdits Money ; la règle RTL reste active
+  // (money-input.tsx porte des classes et doit rester sans fuite directionnelle).
+  {
+    files: ['src/shared/money/**/*.{ts,tsx}'],
+    rules: {
+      'no-restricted-syntax': ['error', ...rtlSelectors],
     },
   }
 )
