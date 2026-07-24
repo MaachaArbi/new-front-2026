@@ -1,6 +1,6 @@
 # STATUS — OsTravel Front
 
-**Date de mise à jour** : 2026-07-25 (S-i18n consolidation react-intl clôturée)  
+**Date de mise à jour** : 2026-07-25 (S-design alignement + page raccourcis clôturée)  
 **Projet** : OS-TRAVEL Back Office (React/Vite)  
 **Éditeur** : OctaSoft
 
@@ -24,7 +24,8 @@
 | **S3c**    | ✅ COMPLET                         | Mise en page, palette sombre à trois niveaux, états pastel        | S4        |
 | **S4**     | ✅ COMPLET                         | Noyau Money (bigint/unités mineures), Vitest, règle ESLint toFixed | S5-UX   |
 | **S5-UX**  | ✅ COMPLET                         | Socle d'interactions : raccourcis (event.code), squelettes, panneaux↔URL, palette Ctrl+K | S-i18n |
-| **S-i18n** | ✅ COMPLET                         | Migration react-intl / ICU (interpolation + 6 formes de pluriel arabe) | S6 |
+| **S-i18n** | ✅ COMPLET                         | Migration react-intl / ICU (interpolation + 6 formes de pluriel arabe) | S-design |
+| **S-design** | ✅ COMPLET                       | Alignement fin template (déjà aligné ; 1 écart réel) + page `/_dev/shortcuts` | S6 |
 | **S5**     | ⏳                                 | Client API typé (OpenAPI + bouchons) — bloqué : `openapi.json`   |           |
 | ...        | ⏳                                 | —                                                                |           |
 
@@ -59,16 +60,17 @@ dans `JSON.parse`, avant le noyau Money).
 
 ## Dernière action
 
-**S-i18n — Migration react-intl / ICU** livrée (ADR-F06). Le provider maison
-(sans interpolation ni pluriel) est remplacé par `IntlProvider`. `useI18n()`
-préservé (`t`, `currentLanguage`, `setLanguage`) — `t(key, values)` délègue à
-`intl.formatMessage`. Catalogues ICU synchronisés (124 clés × 3), clés de démo
-interpolation + pluriel (**6 formes arabes**). Contournement de palette (S5-UX
-dérive n°6) corrigé. 91 tests, 191 assertions. `npm ci` sans drapeau, `tsc -b` →
-`dist` vide, lint 0 erreur, `check:reference` vert. **Aucune dépendance ajoutée.**
+**S-design — Alignement fin + page raccourcis** livrée. Constat mesuré : le
+layout est **déjà aligné** sur le template (finitions fournies par les composants
+ReUI ; écarts apparents = démo écartée en S3b). Un seul écart réel porté :
+`space-y-6` → `space-y-7.5` (espacement inter-groupes du menu). Nouvelle page
+pédagogique **`/_dev/shortcuts`** : raccourcis extraits du registre en direct
+(`useActiveShortcuts`) + zone d'essai **`event.code` vs `event.key`**. 93 tests,
+195 assertions, 0 couleur brute, dimensions `--sidebar-*` inchangées (300/60/54).
+**Aucune dépendance ajoutée.**
 
-⚠️ Vérification **perceptuelle** (bascule fr/en/ar à l'œil, RTL) non faite ici
-(port 5180 non joignable) — laissée à l'utilisateur.
+⚠️ Vérification **perceptuelle** (rail vs template, `/_dev/shortcuts`, RTL) non
+faite ici (port 5180 non joignable) — laissée à Arbi.
 
 ## Prochaine action
 

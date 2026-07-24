@@ -138,5 +138,21 @@
   "dev.ux.panels.modalTitle": "Quick create",
   "dev.ux.panels.modalDesc": "A modal for a quick creation.",
   "dev.ux.panels.urlHint": "Paste the URL in a new tab to reopen the panel.",
-  "dev.ux.palette.desc": "Ctrl+K opens the palette from anywhere."
+  "dev.ux.palette.desc": "Ctrl+K opens the palette from anywhere.",
+
+  "dev.shortcuts.title": "Keyboard shortcuts",
+  "dev.shortcuts.subtitle": "What the keyboard foundation offers, live.",
+  "dev.shortcuts.why.title": "Why key position, not character",
+  "dev.shortcuts.why.body": "Shortcuts are based on the physical key position (event.code), not the produced character (event.key). So they keep working when the keyboard switches to Arabic: the letter changes, the position does not. Try the box below while changing your layout.",
+  "dev.shortcuts.section.global": "Global shortcuts",
+  "dev.shortcuts.section.sequences": "Two-key sequences",
+  "dev.shortcuts.section.tester": "Live test area",
+  "dev.shortcuts.sequences.hint": "Two keys one after another, Gmail/Linear style: press the first, then the second.",
+  "dev.shortcuts.then": "then",
+  "dev.shortcuts.empty": "No shortcut active here.",
+  "dev.shortcuts.tester.instruction": "Click inside the box, then press a key.",
+  "dev.shortcuts.tester.code": "Position (event.code)",
+  "dev.shortcuts.tester.key": "Character (event.key)",
+  "dev.shortcuts.tester.empty": "Press a key…",
+  "dev.shortcuts.tester.escHint": "Esc to leave the box."
 }

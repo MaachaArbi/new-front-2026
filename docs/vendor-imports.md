@@ -144,3 +144,20 @@ journal S5-UX, dérive n°1).
 
 `dialog`/`kbd` n'ont besoin que de `radix-ui` (déjà installé). 0 conflit de pairs
 sur `cmdk` (sinon : arrêt et signalement, §1).
+
+---
+
+## Alignement fin S-design (valeur de finition reprise du template)
+
+Comparaison composant par composant `layout/components/` ↔ template layout-21.
+**Conclusion mesurée** : le layout est déjà aligné ; les finitions (`size-4`,
+chevrons `size-3.5!`, rayons) sont fournies par les composants ReUI, et les écarts
+apparents vivent sur des éléments de démo écartés en S3b. Un seul écart réel
+reporté :
+
+| Fichier | Valeur reprise du template |
+| --- | --- |
+| `components/sidebar-primary-menu.tsx` | Espacement inter-groupes du menu `space-y-6` → **`space-y-7.5`** (30px, valeur du template ; vertical → neutre RTL). |
+
+Non repris : icônes multicolores du rail, avatars `toAbsoluteUrl`, `ScrollArea`,
+sections de démo — écartés à dessein (ADR-F03/§3.2). Détail : journal S-design.

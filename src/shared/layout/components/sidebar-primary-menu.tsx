@@ -31,7 +31,7 @@ export function SidebarPrimaryMenu() {
       selectedValue={pathname}
       matchPath={matchPath}
       type="multiple"
-      className="space-y-6 px-2.5"
+      className="space-y-7.5 px-2.5"
       classNames={{
         label: 'text-xs font-normal text-muted-foreground mb-2',
         item: 'h-8.5 px-2.5 text-sm font-normal text-foreground hover:text-primary data-[selected=true]:bg-muted data-[selected=true]:text-foreground',

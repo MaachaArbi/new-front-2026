@@ -138,5 +138,21 @@
   "dev.ux.panels.modalTitle": "Création rapide",
   "dev.ux.panels.modalDesc": "Une modale pour une création rapide.",
   "dev.ux.panels.urlHint": "Collez l'URL dans un nouvel onglet pour rouvrir le panneau.",
-  "dev.ux.palette.desc": "Ctrl+K ouvre la palette depuis n'importe où."
+  "dev.ux.palette.desc": "Ctrl+K ouvre la palette depuis n'importe où.",
+
+  "dev.shortcuts.title": "Raccourcis clavier",
+  "dev.shortcuts.subtitle": "Ce que le socle clavier permet, en direct.",
+  "dev.shortcuts.why.title": "Pourquoi la position de la touche, pas le caractère",
+  "dev.shortcuts.why.body": "Les raccourcis se basent sur la position physique de la touche (event.code), pas sur le caractère produit (event.key). Ainsi ils continuent de fonctionner quand on passe le clavier en arabe : la lettre change, la position non. Essayez la zone plus bas en changeant de disposition.",
+  "dev.shortcuts.section.global": "Raccourcis globaux",
+  "dev.shortcuts.section.sequences": "Séquences à deux touches",
+  "dev.shortcuts.section.tester": "Zone d'essai",
+  "dev.shortcuts.sequences.hint": "Deux touches l'une après l'autre, façon Gmail ou Linear : appuyez sur la première, puis la seconde.",
+  "dev.shortcuts.then": "puis",
+  "dev.shortcuts.empty": "Aucun raccourci actif ici.",
+  "dev.shortcuts.tester.instruction": "Cliquez dans le cadre puis appuyez sur une touche.",
+  "dev.shortcuts.tester.code": "Position (event.code)",
+  "dev.shortcuts.tester.key": "Caractère (event.key)",
+  "dev.shortcuts.tester.empty": "Appuyez sur une touche…",
+  "dev.shortcuts.tester.escHint": "Échap pour sortir du cadre."
 }

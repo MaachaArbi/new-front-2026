@@ -138,5 +138,21 @@
   "dev.ux.panels.modalTitle": "إنشاء سريع",
   "dev.ux.panels.modalDesc": "نافذة لإنشاء سريع.",
   "dev.ux.panels.urlHint": "الصق عنوان URL في علامة تبويب جديدة لإعادة فتح اللوحة.",
-  "dev.ux.palette.desc": "‎Ctrl+K‎ يفتح اللوحة من أي مكان."
+  "dev.ux.palette.desc": "‎Ctrl+K‎ يفتح اللوحة من أي مكان.",
+
+  "dev.shortcuts.title": "اختصارات لوحة المفاتيح",
+  "dev.shortcuts.subtitle": "ما يتيحه أساس لوحة المفاتيح، مباشرةً.",
+  "dev.shortcuts.why.title": "لماذا موضع المفتاح وليس الحرف",
+  "dev.shortcuts.why.body": "تعتمد الاختصارات على الموضع الفيزيائي للمفتاح (event.code) لا على الحرف الناتج (event.key). لذا تستمر في العمل عند تحويل لوحة المفاتيح إلى العربية: يتغيّر الحرف دون الموضع. جرّب المربّع أدناه مع تغيير التخطيط.",
+  "dev.shortcuts.section.global": "اختصارات عامة",
+  "dev.shortcuts.section.sequences": "تسلسلات بمفتاحين",
+  "dev.shortcuts.section.tester": "منطقة تجريب",
+  "dev.shortcuts.sequences.hint": "مفتاحان الواحد تلو الآخر، بأسلوب Gmail/Linear: اضغط الأول ثم الثاني.",
+  "dev.shortcuts.then": "ثم",
+  "dev.shortcuts.empty": "لا يوجد اختصار فعّال هنا.",
+  "dev.shortcuts.tester.instruction": "انقر داخل المربّع ثم اضغط مفتاحًا.",
+  "dev.shortcuts.tester.code": "الموضع (event.code)",
+  "dev.shortcuts.tester.key": "الحرف (event.key)",
+  "dev.shortcuts.tester.empty": "اضغط مفتاحًا…",
+  "dev.shortcuts.tester.escHint": "Esc للخروج من المربّع."
 }
