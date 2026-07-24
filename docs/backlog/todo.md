@@ -13,7 +13,7 @@
   **consolidation i18n FormatJS/react-intl** (l'ancienne S4, ci-dessous) reste à
   faire. Numérotation à réconcilier avec le chat pilote (voir journal S4, dérive n°1).
 - [x] **S5-UX** — Socle d'interactions : raccourcis (event.code), squelettes, panneaux↔URL, palette Ctrl+K ; prélèvement dialog/command/kbd + cmdk (2026-07-25)
-- [ ] **i18n & RTL** — consolidation FormatJS/react-intl (ex-S4, non faite)
+- [x] **S-i18n** — consolidation FormatJS/react-intl : ICU, interpolation + pluriels arabes (6 formes) (2026-07-25)
 - [ ] **S5** — Client API
 - [ ] **S6** — Authentification
 - [ ] ~~**S7** — Noyau Money~~ → livré en S4 (voir ci-dessus)
@@ -24,9 +24,9 @@
 
 ## Dette technique / à traiter
 
-- [ ] **Découpage de bundle / chargement paresseux des routes** — bundle à ~565 ko
-  après S3b/S3c (radix-ui + motion + router). Lazy-load par module quand les
-  écrans métier arriveront (S9+).
+- [ ] **Découpage de bundle / chargement paresseux des routes** — bundle à **~663 ko**
+  après S-i18n (radix-ui + motion + router + cmdk + react-intl). react-intl a ajouté
+  ~60 ko. Lazy-load par module quand les écrans métier arriveront (S9+).
 - [ ] **Supprimer les données factices** `src/shared/dev/mock-*` quand l'API réelle
   alimente navigation, bureaux et utilisateur (S5/S6).
 - [ ] **Retirer la page de démonstration UX** `src/app/pages/dev-ux.tsx` (route
@@ -45,8 +45,15 @@
   BIGINT émis en nombre JSON perdent leur précision au-delà de 2^53 dans
   `JSON.parse`, avant le noyau Money.
 - [ ] **Vulnérabilités npm `react-router` (2 high, RSC CSRF)** — préexistantes
-  (S3b), non liées à S4 ; app SPA sans mode RSC. `npm audit fix` non lancé (bump
-  hors périmètre S4). À évaluer lors d'une montée de version contrôlée.
+  (S3b) ; app SPA sans mode RSC. Vérifié en S-i18n : `npm audit fix --dry-run`
+  **ne résout pas** dans le semver courant — le correctif exige **react-router 8**
+  (montée **majeure**). Non appliqué (hors périmètre). À traiter dans une montée
+  de version contrôlée dédiée (installé : `react-router-dom@7.18.1`).
+- [ ] **12 avertissements `react-refresh/only-export-components`** — évalués en
+  S-i18n : concentrés sur les composants **vendor `ui/`** (`cva` + composant) et le
+  **socle clavier** (provider + hooks, hors périmètre). Bénins (confort HMR, sans
+  effet sur build/correction). À traiter si un fichier concerné est de toute façon
+  retouché ; ne pas forcer un éclatement de fichiers pour ce seul motif.
 
 ## Écrans métier (après socle)
 

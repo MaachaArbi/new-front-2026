@@ -110,7 +110,10 @@
   "palette.empty": "Aucun résultat.",
   "palette.group.navigate": "Aller à",
   "palette.group.actions": "Actions",
-  "palette.action.language": "Changer de langue",
+  "palette.action.language": "Passer en {language}",
+
+  "greeting": "Bonjour {name}",
+  "invoices.count": "{count, plural, =0 {Aucune facture} one {# facture} other {# factures}}",
 
   "dev.ux.title": "Fondations UX (démo)",
   "dev.ux.subtitle": "Page temporaire — exerce les fondations d'interaction.",

@@ -110,7 +110,10 @@
   "palette.empty": "No result.",
   "palette.group.navigate": "Go to",
   "palette.group.actions": "Actions",
-  "palette.action.language": "Switch language",
+  "palette.action.language": "Switch to {language}",
+
+  "greeting": "Hello {name}",
+  "invoices.count": "{count, plural, =0 {No invoices} one {# invoice} other {# invoices}}",
 
   "dev.ux.title": "UX foundations (demo)",
   "dev.ux.subtitle": "Temporary page — exercises the interaction foundations.",

@@ -96,8 +96,6 @@ export function CommandPalette() {
             {otherThemeLabel}
           </CommandItem>
 
-          {/* Le nom de la langue est affiché dans sa propre graphie (auto-explicite,
-              aucune interpolation — le `t` du provider n'en fait pas). */}
           {Object.values(LANGUAGES)
             .filter((lang) => lang.code !== currentLanguage)
             .map((lang) => (
@@ -109,7 +107,9 @@ export function CommandPalette() {
                 }
               >
                 <Languages />
-                <span>{`${t('palette.action.language')} · ${lang.name}`}</span>
+                {/* Interpolation ICU réelle (react-intl) — remplace le
+                    contournement par concaténation de S5-UX (dérive n°6). */}
+                {t('palette.action.language', { language: lang.name })}
               </CommandItem>
             ))}
         </CommandGroup>
