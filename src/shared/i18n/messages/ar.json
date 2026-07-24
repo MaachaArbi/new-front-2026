@@ -93,5 +93,47 @@
   "layout.plan.pro": "الباقة الاحترافية",
 
   "page.placeholder": "الشاشة قادمة في مرحلة لاحقة.",
-  "page.wideMode": "تستخدم هذه الصفحة العرض الكامل (الوضع العريض)."
+  "page.wideMode": "تستخدم هذه الصفحة العرض الكامل (الوضع العريض).",
+
+  "shortcut.help.title": "اختصارات لوحة المفاتيح",
+  "shortcut.help.subtitle": "الاختصارات الفعّالة في الشاشة الحالية.",
+  "shortcut.help.empty": "لا يوجد اختصار فعّال هنا.",
+  "shortcut.help.open": "عرض الاختصارات",
+
+  "shortcut.demo.gotoParties": "الانتقال إلى الأطراف",
+  "shortcut.demo.gotoBookings": "الانتقال إلى الحجوزات",
+  "shortcut.demo.create": "إنشاء سريع",
+  "shortcut.demo.save": "إغلاق اللوحة",
+
+  "palette.shortcut.open": "فتح لوحة الأوامر",
+  "palette.placeholder": "اكتب أمرًا أو ابحث…",
+  "palette.empty": "لا توجد نتيجة.",
+  "palette.group.navigate": "الانتقال إلى",
+  "palette.group.actions": "إجراءات",
+  "palette.action.language": "تغيير اللغة",
+
+  "dev.ux.title": "أسس تجربة الاستخدام (عرض توضيحي)",
+  "dev.ux.subtitle": "صفحة مؤقتة — تجرّب أسس التفاعل.",
+  "dev.ux.section.shortcuts": "اختصارات لوحة المفاتيح",
+  "dev.ux.section.skeletons": "هياكل التحميل",
+  "dev.ux.section.panels": "اللوحات والنوافذ وعنوان URL",
+  "dev.ux.section.palette": "لوحة الأوامر",
+  "dev.ux.shortcuts.desc": "تعتمد على الموضع (event.code)، فتصمد مع لوحة مفاتيح عربية. لا تُفعَّل التسلسلات ذات المفتاحين أثناء الكتابة في حقل.",
+  "dev.ux.skeletons.desc": "هيكل، لا مؤشر دوران. عند إعادة التحميل تبقى البيانات السابقة باهتة.",
+  "dev.ux.skeletons.reload": "محاكاة تحميل",
+  "dev.ux.skeletons.refresh": "محاكاة تحديث",
+  "dev.ux.skeletons.content": "المحتوى المُحمَّل.",
+  "dev.ux.skeletons.staleOn": "جارٍ التحديث — البيانات محفوظة وباهتة.",
+  "dev.ux.skeletons.staleOff": "محدَّث.",
+  "dev.ux.panels.desc": "حالة الفتح تعيش في عنوان URL: علامة تبويب ثانية، زر الرجوع، رابط قابل للمشاركة.",
+  "dev.ux.panels.openPanel": "فتح لوحة",
+  "dev.ux.panels.openModal": "فتح نافذة",
+  "dev.ux.panels.sheetTitle": "لوحة التفاصيل",
+  "dev.ux.panels.sheetDesc": "متزامنة مع عنوان URL (‎?open=…‎).",
+  "dev.ux.panels.currentId": "المعرّف المفتوح",
+  "dev.ux.panels.scopedHint": "اختصار ذو نطاق، فعّال هنا فقط:",
+  "dev.ux.panels.modalTitle": "إنشاء سريع",
+  "dev.ux.panels.modalDesc": "نافذة لإنشاء سريع.",
+  "dev.ux.panels.urlHint": "الصق عنوان URL في علامة تبويب جديدة لإعادة فتح اللوحة.",
+  "dev.ux.palette.desc": "‎Ctrl+K‎ يفتح اللوحة من أي مكان."
 }

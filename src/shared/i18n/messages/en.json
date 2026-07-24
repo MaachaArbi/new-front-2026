@@ -93,5 +93,47 @@
   "layout.plan.pro": "Pro plan",
 
   "page.placeholder": "Screen coming in a later wave.",
-  "page.wideMode": "This page uses the full width (wide mode)."
+  "page.wideMode": "This page uses the full width (wide mode).",
+
+  "shortcut.help.title": "Keyboard shortcuts",
+  "shortcut.help.subtitle": "Shortcuts active on the current screen.",
+  "shortcut.help.empty": "No shortcut active here.",
+  "shortcut.help.open": "Show shortcuts",
+
+  "shortcut.demo.gotoParties": "Go to Parties",
+  "shortcut.demo.gotoBookings": "Go to Bookings",
+  "shortcut.demo.create": "Quick create",
+  "shortcut.demo.save": "Close the panel",
+
+  "palette.shortcut.open": "Open the command palette",
+  "palette.placeholder": "Type a command or search…",
+  "palette.empty": "No result.",
+  "palette.group.navigate": "Go to",
+  "palette.group.actions": "Actions",
+  "palette.action.language": "Switch language",
+
+  "dev.ux.title": "UX foundations (demo)",
+  "dev.ux.subtitle": "Temporary page — exercises the interaction foundations.",
+  "dev.ux.section.shortcuts": "Keyboard shortcuts",
+  "dev.ux.section.skeletons": "Loading skeletons",
+  "dev.ux.section.panels": "Panels, modals and URL",
+  "dev.ux.section.palette": "Command palette",
+  "dev.ux.shortcuts.desc": "Position-based (event.code), so they survive an Arabic keyboard. Two-key sequences don't fire while typing in a field.",
+  "dev.ux.skeletons.desc": "A skeleton, never a spinner. On reload, previous data stays, dimmed.",
+  "dev.ux.skeletons.reload": "Simulate loading",
+  "dev.ux.skeletons.refresh": "Simulate refresh",
+  "dev.ux.skeletons.content": "Loaded content.",
+  "dev.ux.skeletons.staleOn": "Refreshing — data kept, dimmed.",
+  "dev.ux.skeletons.staleOff": "Up to date.",
+  "dev.ux.panels.desc": "The open state lives in the URL: second tab, Back button, shareable link.",
+  "dev.ux.panels.openPanel": "Open a panel",
+  "dev.ux.panels.openModal": "Open a modal",
+  "dev.ux.panels.sheetTitle": "Detail panel",
+  "dev.ux.panels.sheetDesc": "Synced to the URL (?open=…).",
+  "dev.ux.panels.currentId": "Open id",
+  "dev.ux.panels.scopedHint": "Scoped shortcut, active only here:",
+  "dev.ux.panels.modalTitle": "Quick create",
+  "dev.ux.panels.modalDesc": "A modal for a quick creation.",
+  "dev.ux.panels.urlHint": "Paste the URL in a new tab to reopen the panel.",
+  "dev.ux.palette.desc": "Ctrl+K opens the palette from anywhere."
 }

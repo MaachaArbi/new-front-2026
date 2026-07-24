@@ -12,6 +12,7 @@
   ⚠️ Le prompt de vague a renuméroté « Noyau Money » (planifié S7) en S4. La
   **consolidation i18n FormatJS/react-intl** (l'ancienne S4, ci-dessous) reste à
   faire. Numérotation à réconcilier avec le chat pilote (voir journal S4, dérive n°1).
+- [x] **S5-UX** — Socle d'interactions : raccourcis (event.code), squelettes, panneaux↔URL, palette Ctrl+K ; prélèvement dialog/command/kbd + cmdk (2026-07-25)
 - [ ] **i18n & RTL** — consolidation FormatJS/react-intl (ex-S4, non faite)
 - [ ] **S5** — Client API
 - [ ] **S6** — Authentification
@@ -28,6 +29,13 @@
   écrans métier arriveront (S9+).
 - [ ] **Supprimer les données factices** `src/shared/dev/mock-*` quand l'API réelle
   alimente navigation, bureaux et utilisateur (S5/S6).
+- [ ] **Retirer la page de démonstration UX** `src/app/pages/dev-ux.tsx` (route
+  `/_dev/ux`) quand les écrans métier existent (S5-UX). Retirer aussi la route
+  correspondante dans `src/app/router.tsx`.
+- [ ] **Câbler l'estompage des listes** `StaleContent` sur TanStack Query
+  (`placeholderData`/`keepPreviousData`) quand les vraies listes arrivent (S9).
+- [ ] **Câbler l'accroche permissions** des raccourcis (`when`) sur le vrai RBAC
+  (S8) : un raccourci vers une action non autorisée doit rester inerte.
 - [ ] **Remplacer le registre local de devises par le référentiel API** (S4). Le
   registre `src/shared/money/currency-registry.ts` est **provisoire** ; brancher
   `loadCurrencyRegistry(...)` sur la réponse `ref_currency` de l'API (demande

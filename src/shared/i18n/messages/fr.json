@@ -93,5 +93,47 @@
   "layout.plan.pro": "Offre Pro",
 
   "page.placeholder": "Écran à venir dans une prochaine vague.",
-  "page.wideMode": "Cette page occupe toute la largeur (mode large)."
+  "page.wideMode": "Cette page occupe toute la largeur (mode large).",
+
+  "shortcut.help.title": "Raccourcis clavier",
+  "shortcut.help.subtitle": "Raccourcis actifs sur l'écran courant.",
+  "shortcut.help.empty": "Aucun raccourci actif ici.",
+  "shortcut.help.open": "Afficher les raccourcis",
+
+  "shortcut.demo.gotoParties": "Aller aux Tiers",
+  "shortcut.demo.gotoBookings": "Aller aux Réservations",
+  "shortcut.demo.create": "Création rapide",
+  "shortcut.demo.save": "Fermer le panneau",
+
+  "palette.shortcut.open": "Ouvrir la palette de commandes",
+  "palette.placeholder": "Tapez une commande ou recherchez…",
+  "palette.empty": "Aucun résultat.",
+  "palette.group.navigate": "Aller à",
+  "palette.group.actions": "Actions",
+  "palette.action.language": "Changer de langue",
+
+  "dev.ux.title": "Fondations UX (démo)",
+  "dev.ux.subtitle": "Page temporaire — exerce les fondations d'interaction.",
+  "dev.ux.section.shortcuts": "Raccourcis clavier",
+  "dev.ux.section.skeletons": "Squelettes de chargement",
+  "dev.ux.section.panels": "Panneaux, modales et URL",
+  "dev.ux.section.palette": "Palette de commandes",
+  "dev.ux.shortcuts.desc": "Basés sur la position (event.code), ils survivent à un clavier arabe. Les séquences à deux touches ne se déclenchent pas pendant la frappe dans un champ.",
+  "dev.ux.skeletons.desc": "Un squelette, jamais un spinner. Au rechargement, les données précédentes restent, estompées.",
+  "dev.ux.skeletons.reload": "Simuler un chargement",
+  "dev.ux.skeletons.refresh": "Simuler un rafraîchissement",
+  "dev.ux.skeletons.content": "Contenu chargé.",
+  "dev.ux.skeletons.staleOn": "Rafraîchissement — données conservées, estompées.",
+  "dev.ux.skeletons.staleOff": "À jour.",
+  "dev.ux.panels.desc": "L'état d'ouverture vit dans l'URL : second onglet, bouton Retour, lien partageable.",
+  "dev.ux.panels.openPanel": "Ouvrir un panneau",
+  "dev.ux.panels.openModal": "Ouvrir une modale",
+  "dev.ux.panels.sheetTitle": "Panneau de détail",
+  "dev.ux.panels.sheetDesc": "Synchronisé à l'URL (?open=…).",
+  "dev.ux.panels.currentId": "Identifiant ouvert",
+  "dev.ux.panels.scopedHint": "Raccourci de portée, actif seulement ici :",
+  "dev.ux.panels.modalTitle": "Création rapide",
+  "dev.ux.panels.modalDesc": "Une modale pour une création rapide.",
+  "dev.ux.panels.urlHint": "Collez l'URL dans un nouvel onglet pour rouvrir le panneau.",
+  "dev.ux.palette.desc": "Ctrl+K ouvre la palette depuis n'importe où."
 }

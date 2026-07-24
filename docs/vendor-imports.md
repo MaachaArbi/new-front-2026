@@ -118,3 +118,29 @@ Fichiers prélevés retouchés en S3c — aucune dépendance ajoutée :
 Tokens (`src/styles/tokens.css`, non-vendor) : palette sombre à trois niveaux +
 `--sidebar` + états pastel — voir `docs/decisions/2026-07-24-palette-sombre-trois-niveaux.md`.
 Contenu factice des menus déplacé dans `src/shared/dev/mock-menus.ts`.
+
+---
+
+## Prélèvement S5-UX — 3 composants ReUI supplémentaires (`src/shared/ui/`)
+
+Source : `starter-kit/src/components/ui/<nom>.tsx` — date : 2026-07-25.
+
+**Contexte** : le prompt S5-UX (§3.3, §3.4, §6) supposait `dialog`, `command` et
+`kbd` **déjà présents** dans `ui/`. Ils ne l'étaient pas (S3b n'avait prélevé que
+12 composants) — signalé, et prélèvement autorisé comme étape de la vague (voir
+journal S5-UX, dérive n°1).
+
+| Fichier         | Modifications propres au prélèvement                                                                                                                                                                                                                                                                                       |
+| --------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `kbd.tsx`       | Import `cn`. Sinon inchangé (déjà logique, aucune fuite RTL).                                                                                                                                                                                                                                                              |
+| `dialog.tsx`    | Import `cn`. **Défaut ADR-F18 corrigé** : `export default DialogContent;` égaré au milieu du fichier **retiré**. **Fuite RTL** : `sm:space-x-2.5` → `sm:gap-2.5`. Centrage `left-[50%]` + `translate-x-[-50%]` conservé (exception symétrique ADR-F04, commenté + `eslint-disable-next-line no-restricted-syntax`).        |
+| `command.tsx`   | Import `cn` + `@/shared/ui/dialog`. **Correction paquet** : `import { type DialogProps } from '@radix-ui/react-dialog'` (paquet séparé absent) → type dérivé de notre `Dialog` (`React.ComponentProps<typeof Dialog>`), cohérent avec le `radix-ui` unifié (comme S3b). `LucideIcon` en `type`-import. Déjà logique (RTL). |
+
+## Dépendance installée pour ce prélèvement
+
+| Paquet | Version  | Motif                                   | Drapeau |
+| ------ | -------- | --------------------------------------- | ------- |
+| `cmdk` | `^1.1.1` | Primitive de la palette (`command.tsx`) | aucun   |
+
+`dialog`/`kbd` n'ont besoin que de `radix-ui` (déjà installé). 0 conflit de pairs
+sur `cmdk` (sinon : arrêt et signalement, §1).

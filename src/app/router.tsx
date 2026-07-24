@@ -1,6 +1,7 @@
 import { Navigate, Route, Routes } from 'react-router-dom'
 import { Layout21 } from '@/shared/layout'
 import { ModulePage } from './pages/module-page'
+import { DevUxPage } from './pages/dev-ux'
 
 // Routage minimal (S3b §6) : une route par module + entrées. Pas de route
 // protégée, pas de lazy — vagues ultérieures (S6+). Une page « large »
@@ -10,6 +11,9 @@ export function AppRoutes() {
     <Routes>
       <Route path="/" element={<Layout21 />}>
         <Route index element={<Navigate to="/parties" replace />} />
+        {/* Page de démonstration UX temporaire (S5-UX) — route statique, placée
+            avant le catch-all :module. À retirer avec les écrans métier (backlog). */}
+        <Route path="_dev/ux" element={<DevUxPage />} />
         <Route path=":module" element={<ModulePage />} />
         <Route path=":module/*" element={<ModulePage />} />
       </Route>
