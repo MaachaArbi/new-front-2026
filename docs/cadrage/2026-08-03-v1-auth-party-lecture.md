@@ -1,7 +1,7 @@
 # Cadrage — Vague V1 — Fondation d'accès + Party en lecture
 
 **Date** : 2026-08-03
-**Statut** : 🟡 EN ATTENTE DE VALIDATION (Arbi) — **aucune ligne de code avant le feu vert**
+**Statut** : ✅ VALIDÉ puis LIVRÉ (code, 117 tests) — test bout-en-bout en attente (origine + tunnel). Journal : `docs/journal/2026-08-03-v1-auth-party-lecture.md`
 **Méthode** : cadrage écrit avant de coder ; source = le contrat d'API (back), pas la mémoire.
 
 > **Source** : `/home/ubuntu/ostravel/docs/contrat-de-l-api.md`. Ce cadrage **renvoie**

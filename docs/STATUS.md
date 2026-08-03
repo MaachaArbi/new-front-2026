@@ -1,8 +1,24 @@
 # STATUS — OsTravel Front
 
-**Date de mise à jour** : 2026-07-25 (S-design alignement + page raccourcis clôturée)  
+**Date de mise à jour** : 2026-08-03 (V1 — accès API + Party en lecture, code livré)  
 **Projet** : OS-TRAVEL Back Office (React/Vite)  
 **Éditeur** : OctaSoft
+
+> 🔓 **Dégel prononcé le 03/08.** Développement front repris. Source d'ouverture :
+> le **contrat d'API** (`/home/ubuntu/ostravel/docs/contrat-de-l-api.md`). Méthode :
+> cadrage écrit avant de coder (`docs/cadrage/`), validé par Arbi.
+
+## Dernière action — V1 (code livré, 117 tests)
+
+**Fondation d'accès API + Party en lecture.** Client API typé (enveloppe d'erreur,
+`X-Request-Id`, `Accept-Language`), **auth sans stockage** (access token mémoire +
+refresh en cookie httpOnly, single-flight + verrou inter-onglets), écran de
+connexion, app protégée, `/me` + sélecteur de bureau, **liste des tiers**
+(pagination serveur, vide≠erreur) + **panneau détail** `?open=`. `@tanstack/react-query`
++ `zustand` ajoutés (ADR-013/F10).
+
+⚠️ **Test bout-en-bout contre l'API en attente** : déclarer `http://localhost:5180`
+dans `CORS_ALLOW_ORIGIN` (back) + tunnel SSH.
 
 > ⚠️ **Numérotation à réconcilier** (voir journal S4, dérive n°1) : le prompt de
 > cette vague l'intitule **« S4 — Noyau Money »**, alors que le backlog planifiait

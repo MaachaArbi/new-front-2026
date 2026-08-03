@@ -154,5 +154,36 @@
   "dev.shortcuts.tester.code": "Position (event.code)",
   "dev.shortcuts.tester.key": "Character (event.key)",
   "dev.shortcuts.tester.empty": "Press a key…",
-  "dev.shortcuts.tester.escHint": "Esc to leave the box."
+  "dev.shortcuts.tester.escHint": "Esc to leave the box.",
+
+  "app.loading": "Loading…",
+
+  "login.title": "Sign in",
+  "login.subtitle": "Access your OS-TRAVEL workspace.",
+  "login.email": "Email address",
+  "login.password": "Password",
+  "login.submit": "Sign in",
+  "login.submitting": "Signing in…",
+  "login.error": "Invalid credentials.",
+  "login.networkError": "Server unreachable. Check the tunnel (port 8080) and that the API is running.",
+
+  "error.requestId": "Ref:",
+
+  "party.search": "Search a party…",
+  "party.nature.all": "All",
+  "party.nature.person": "Person",
+  "party.nature.organization": "Organization",
+  "party.column.nature": "Type",
+  "party.column.name": "Name",
+  "party.column.email": "Email",
+  "party.empty": "No party in your perimeter.",
+  "party.error": "Could not load parties.",
+  "party.pageInfo": "Page {page} / {totalPages} · {total} total",
+  "party.prev": "Previous",
+  "party.next": "Next",
+  "party.detail.title": "Party",
+  "party.detail.email": "Email",
+  "party.detail.addresses": "Addresses",
+  "party.detail.noAddresses": "No address.",
+  "party.address.primary": "Primary"
 }

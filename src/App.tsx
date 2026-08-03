@@ -1,30 +1,55 @@
 import { BrowserRouter } from 'react-router-dom'
 import { ThemeProvider } from './app/providers/theme-provider'
-import { I18nProvider } from './app/providers/i18n-provider'
+import { I18nProvider, useI18n } from './app/providers/i18n-provider'
+import { QueryProvider } from './app/providers/query-provider'
+import { AuthProvider, useAuth } from './app/providers/auth-provider'
 import { AppRoutes } from './app/router'
+import { LoginPage } from './app/pages/login'
 import { ShortcutProvider, ShortcutHelp } from '@/shared/keyboard'
 import { CommandPalette } from '@/shared/command-palette'
 import { NavigationShortcuts } from '@/shared/navigation/navigation-shortcuts'
 
-// Point d'entrée applicatif. Le layout provisoire de S2 (couleurs brutes,
-// chaînes en dur) est supprimé : le vrai layout-21 est monté par le routeur.
+// Point d'entrée applicatif.
 //
-// Socle d'interactions (S5-UX) monté globalement, à l'intérieur du routeur (les
-// raccourcis et la palette naviguent) : registre de raccourcis, palette Ctrl+K,
-// aide « ? ». Ce sont les fondations d'ADR-F20, pas le layout — App.tsx n'est
-// pas modifié dans src/shared/layout/.
+// Ordre des providers : thème → i18n (pilote aussi Accept-Language) → TanStack
+// Query (état serveur) → routeur → Auth. La porte `AuthGate` décide : splash
+// pendant la reprise de session, écran de connexion si non authentifié, sinon
+// l'app protégée (socle d'interactions inclus).
+
+function SplashScreen() {
+  const { t } = useI18n()
+  return (
+    <div className="bg-background flex min-h-dvh items-center justify-center">
+      <span className="text-muted-foreground text-sm">{t('app.loading')}</span>
+    </div>
+  )
+}
+
+function AuthGate() {
+  const { status } = useAuth()
+  if (status === 'loading') return <SplashScreen />
+  if (status === 'unauthenticated') return <LoginPage />
+  return (
+    <ShortcutProvider>
+      <AppRoutes />
+      <CommandPalette />
+      <ShortcutHelp />
+      <NavigationShortcuts />
+    </ShortcutProvider>
+  )
+}
+
 export function App() {
   return (
     <ThemeProvider>
       <I18nProvider>
-        <BrowserRouter>
-          <ShortcutProvider>
-            <AppRoutes />
-            <CommandPalette />
-            <ShortcutHelp />
-            <NavigationShortcuts />
-          </ShortcutProvider>
-        </BrowserRouter>
+        <QueryProvider>
+          <BrowserRouter>
+            <AuthProvider>
+              <AuthGate />
+            </AuthProvider>
+          </BrowserRouter>
+        </QueryProvider>
       </I18nProvider>
     </ThemeProvider>
   )

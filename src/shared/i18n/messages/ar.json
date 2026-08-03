@@ -154,5 +154,36 @@
   "dev.shortcuts.tester.code": "الموضع (event.code)",
   "dev.shortcuts.tester.key": "الحرف (event.key)",
   "dev.shortcuts.tester.empty": "اضغط مفتاحًا…",
-  "dev.shortcuts.tester.escHint": "Esc للخروج من المربّع."
+  "dev.shortcuts.tester.escHint": "Esc للخروج من المربّع.",
+
+  "app.loading": "جارٍ التحميل…",
+
+  "login.title": "تسجيل الدخول",
+  "login.subtitle": "ادخل إلى مساحة OS-TRAVEL الخاصة بك.",
+  "login.email": "البريد الإلكتروني",
+  "login.password": "كلمة المرور",
+  "login.submit": "تسجيل الدخول",
+  "login.submitting": "جارٍ الاتصال…",
+  "login.error": "بيانات الاعتماد غير صحيحة.",
+  "login.networkError": "تعذّر الوصول إلى الخادم. تحقّق من النفق (المنفذ 8080) وأن الـ API يعمل.",
+
+  "error.requestId": "المرجع:",
+
+  "party.search": "ابحث عن طرف…",
+  "party.nature.all": "الكل",
+  "party.nature.person": "شخص",
+  "party.nature.organization": "منظمة",
+  "party.column.nature": "النوع",
+  "party.column.name": "الاسم",
+  "party.column.email": "البريد الإلكتروني",
+  "party.empty": "لا يوجد طرف ضمن نطاقك.",
+  "party.error": "تعذّر تحميل الأطراف.",
+  "party.pageInfo": "صفحة {page} / {totalPages} · {total} إجمالاً",
+  "party.prev": "السابق",
+  "party.next": "التالي",
+  "party.detail.title": "طرف",
+  "party.detail.email": "البريد الإلكتروني",
+  "party.detail.addresses": "العناوين",
+  "party.detail.noAddresses": "لا يوجد عنوان.",
+  "party.address.primary": "رئيسي"
 }

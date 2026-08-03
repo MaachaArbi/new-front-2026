@@ -3,11 +3,10 @@ import { motion } from 'motion/react'
 import { useTheme } from 'next-themes'
 import { Plus, Sun, Moon, User, Settings, Shield, LogOut } from 'lucide-react'
 import { useI18n } from '@/app/providers/i18n-provider'
+import { useAuth } from '@/app/providers/auth-provider'
 import { MODULES, moduleFromPath } from '../menu.config'
-import { CURRENT_USER } from '@/shared/dev/mock-modules'
 import { cn } from '@/shared/lib/cn'
 import { Button } from '@/shared/ui/button'
-import { Badge } from '@/shared/ui/badge'
 import {
   Avatar,
   AvatarFallback,
@@ -45,8 +44,12 @@ const RAIL_ITEM_SPACING = 44 // 34px bouton + 10px gap
 
 export function SidebarPrimary() {
   const { t } = useI18n()
+  const { me, logout } = useAuth()
   const { resolvedTheme, setTheme } = useTheme()
   const { pathname } = useLocation()
+
+  const userName = me?.displayName ?? ''
+  const userEmail = me?.email ?? ''
 
   const isDark = resolvedTheme === 'dark'
   const toggleTheme = () => setTheme(isDark ? 'light' : 'dark')
@@ -121,7 +124,7 @@ export function SidebarPrimary() {
         <DropdownMenu>
           <DropdownMenuTrigger className="mb-2.5 cursor-pointer">
             <Avatar className="size-7">
-              <AvatarFallback>{initials(CURRENT_USER.name)}</AvatarFallback>
+              <AvatarFallback>{initials(userName)}</AvatarFallback>
               <AvatarIndicator className="-end-2 -top-2">
                 <AvatarStatus variant="online" className="size-2.5" />
               </AvatarIndicator>
@@ -135,26 +138,18 @@ export function SidebarPrimary() {
           >
             <div className="flex items-center gap-3 px-3 py-2">
               <Avatar>
-                <AvatarFallback>{initials(CURRENT_USER.name)}</AvatarFallback>
+                <AvatarFallback>{initials(userName)}</AvatarFallback>
                 <AvatarIndicator className="-end-1.5 -top-1.5">
                   <AvatarStatus variant="online" className="size-2.5" />
                 </AvatarIndicator>
               </Avatar>
               <div className="flex flex-col items-start">
                 <span className="text-foreground text-sm font-semibold">
-                  {CURRENT_USER.name}
+                  {userName}
                 </span>
                 <span className="text-muted-foreground text-xs">
-                  {CURRENT_USER.email}
+                  {userEmail}
                 </span>
-                <Badge
-                  variant="success"
-                  appearance="outline"
-                  size="sm"
-                  className="mt-1"
-                >
-                  {t('layout.plan.pro')}
-                </Badge>
               </div>
             </div>
 
@@ -184,7 +179,7 @@ export function SidebarPrimary() {
 
             <DropdownMenuSeparator />
 
-            <DropdownMenuItem>
+            <DropdownMenuItem onClick={() => void logout()}>
               <LogOut />
               <span>{t('layout.logout')}</span>
             </DropdownMenuItem>

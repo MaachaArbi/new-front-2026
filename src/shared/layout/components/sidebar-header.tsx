@@ -1,7 +1,9 @@
-import { useState } from 'react'
+import { useEffect } from 'react'
 import { Building2, Check, ChevronsUpDown, PanelRight } from 'lucide-react'
 import { useI18n } from '@/app/providers/i18n-provider'
-import { OFFICES } from '@/shared/dev/mock-modules'
+import { useAuth } from '@/app/providers/auth-provider'
+import { officesOf } from '@/shared/auth/me'
+import { useOfficeStore } from '@/shared/auth/office-store'
 import { useLayout } from './context'
 import { cn } from '@/shared/lib/cn'
 import { Button } from '@/shared/ui/button'
@@ -12,14 +14,26 @@ import {
   DropdownMenuTrigger,
 } from '@/shared/ui/dropdown-menu'
 
-// Réécrit de layout-21/components/sidebar-header.tsx : le déroulant « équipes »
-// de démonstration (Thunder AI…, couleurs brutes) devient le sélecteur de
-// BUREAU (ADR-F02 : `party_account_office`). Indicateur de bureau permanent,
-// impossible à ignorer (ADR-F20 §F20.9). Tokens sémantiques uniquement.
+// Sélecteur de BUREAU (ADR-F02), alimenté par `/me` (organizations où isOffice).
+// Indicateur permanent, impossible à ignorer (ADR-F20 §F20.9). `officeAccountId`
+// (numérique, exception §1.1) est le choix renvoyé aux endpoints qui l'exigent.
 export function SidebarHeader() {
   const { t } = useI18n()
+  const { me } = useAuth()
   const { sidebarToggle } = useLayout()
-  const [selectedOffice, setSelectedOffice] = useState(OFFICES[0])
+  const { selectedOfficeId, setSelectedOffice } = useOfficeStore()
+
+  const offices = me ? officesOf(me) : []
+  const selected = offices.find(
+    (office) => office.accountId === selectedOfficeId
+  )
+
+  // Bureau par défaut : le premier, tant qu'aucun n'est choisi.
+  useEffect(() => {
+    if (selectedOfficeId === null && offices.length > 0) {
+      setSelectedOffice(offices[0]?.accountId ?? null)
+    }
+  }, [selectedOfficeId, offices, setSelectedOffice])
 
   return (
     <div className="border-border flex h-[calc(var(--header-height)-1px)] items-center gap-2 border-b">
@@ -29,33 +43,34 @@ export function SidebarHeader() {
             <Button
               variant="ghost"
               className="text-muted-foreground hover:text-foreground -ms-1.5 inline-flex px-1.5"
+              disabled={offices.length === 0}
             >
               <div className="bg-primary text-primary-foreground flex size-6 items-center justify-center rounded-md">
                 <Building2 className="size-4" />
               </div>
               <span className="text-foreground text-sm font-medium">
-                {selectedOffice?.name ?? t('layout.office')}
+                {selected?.displayName ?? t('layout.office')}
               </span>
               <ChevronsUpDown className="opacity-100" />
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent className="w-56" side="bottom" align="start">
-            {OFFICES.map((office) => (
+            {offices.map((office) => (
               <DropdownMenuItem
-                key={office.id}
-                onClick={() => setSelectedOffice(office)}
-                data-active={selectedOffice?.id === office.id}
+                key={office.accountId}
+                onClick={() => setSelectedOffice(office.accountId)}
+                data-active={selectedOfficeId === office.accountId}
               >
                 <div className="bg-muted text-muted-foreground flex size-6 items-center justify-center rounded-md">
                   <Building2 className="size-4" />
                 </div>
                 <span className="text-foreground text-sm font-medium">
-                  {office.name}
+                  {office.displayName}
                 </span>
                 <Check
                   className={cn(
                     'text-primary ms-auto size-4',
-                    selectedOffice?.id === office.id
+                    selectedOfficeId === office.accountId
                       ? 'opacity-100'
                       : 'opacity-0'
                   )}

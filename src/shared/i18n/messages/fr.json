@@ -154,5 +154,36 @@
   "dev.shortcuts.tester.code": "Position (event.code)",
   "dev.shortcuts.tester.key": "Caractère (event.key)",
   "dev.shortcuts.tester.empty": "Appuyez sur une touche…",
-  "dev.shortcuts.tester.escHint": "Échap pour sortir du cadre."
+  "dev.shortcuts.tester.escHint": "Échap pour sortir du cadre.",
+
+  "app.loading": "Chargement…",
+
+  "login.title": "Connexion",
+  "login.subtitle": "Accédez à votre espace OS-TRAVEL.",
+  "login.email": "Adresse e-mail",
+  "login.password": "Mot de passe",
+  "login.submit": "Se connecter",
+  "login.submitting": "Connexion…",
+  "login.error": "Identifiants incorrects.",
+  "login.networkError": "Serveur injoignable. Vérifie le tunnel (port 8080) et que l'API tourne.",
+
+  "error.requestId": "Réf. :",
+
+  "party.search": "Rechercher un tiers…",
+  "party.nature.all": "Tous",
+  "party.nature.person": "Personne",
+  "party.nature.organization": "Organisation",
+  "party.column.nature": "Nature",
+  "party.column.name": "Nom",
+  "party.column.email": "E-mail",
+  "party.empty": "Aucun tiers dans votre périmètre.",
+  "party.error": "Impossible de charger les tiers.",
+  "party.pageInfo": "Page {page} / {totalPages} · {total} au total",
+  "party.prev": "Précédent",
+  "party.next": "Suivant",
+  "party.detail.title": "Tiers",
+  "party.detail.email": "E-mail",
+  "party.detail.addresses": "Adresses",
+  "party.detail.noAddresses": "Aucune adresse.",
+  "party.address.primary": "Principale"
 }

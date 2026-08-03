@@ -15,19 +15,30 @@
 - [x] **S5-UX** — Socle d'interactions : raccourcis (event.code), squelettes, panneaux↔URL, palette Ctrl+K ; prélèvement dialog/command/kbd + cmdk (2026-07-25)
 - [x] **S-i18n** — consolidation FormatJS/react-intl : ICU, interpolation + pluriels arabes (6 formes) (2026-07-25)
 - [x] **S-design** — alignement fin template (déjà aligné ; 1 écart réel `space-y`) + page pédagogique `/_dev/shortcuts` (2026-07-25)
-- [ ] **S5** — Client API
-- [ ] **S6** — Authentification
+- [x] **V1** — Dégel : accès API typé + auth (cookie httpOnly) + `/me` + **Party en lecture** (liste/détail/adresses) (2026-08-03)
+- [ ] ~~**S5** — Client API~~ → livré en V1
+- [ ] ~~**S6** — Authentification~~ → livré en V1
 - [ ] ~~**S7** — Noyau Money~~ → livré en S4 (voir ci-dessus)
 - [ ] **S8** — Permissions & entitlements
 - [ ] **S9** — Patterns liste & formulaire
 - [ ] **S10** — Erreur & observabilité
 - [ ] **S11** — Tests & CI
 
+## Écrans/API à faire quand le back livre
+
+- [ ] **Création / édition de tiers** (+ sous-ressources) — attend les **endpoints
+  référentiels** (rôles, fonctions, formes juridiques, types d'adresse — contrat §4/§5).
+  On ne code aucune liste en dur ; on scope autour jusque-là.
+- [ ] **Lecture rôles/fonctions/office-relations** d'un tiers — pas de GET encore (§5).
+- [ ] **ReUI Data Grid** (prélèvement copy-and-own) — dès qu'un écran a besoin de ses
+  fonctions avancées (colonnes configurables, tri multi, sélection). La liste V1 est
+  une table serveur suffisante (voir décision 2026-08-03).
+
 ## Dette technique / à traiter
 
-- [ ] **Découpage de bundle / chargement paresseux des routes** — bundle à **~663 ko**
-  après S-i18n (radix-ui + motion + router + cmdk + react-intl). react-intl a ajouté
-  ~60 ko. Lazy-load par module quand les écrans métier arriveront (S9+).
+- [ ] **Découpage de bundle / chargement paresseux des routes** — bundle à **~750 ko**
+  après V1 (radix-ui + motion + router + cmdk + react-intl + tanstack-query + zustand).
+  Lazy-load par module maintenant que les écrans métier arrivent — **prioritaire**.
 - [ ] **Supprimer les données factices** `src/shared/dev/mock-*` quand l'API réelle
   alimente navigation, bureaux et utilisateur (S5/S6).
 - [ ] **Retirer les pages `_dev`** quand les écrans métier existent :

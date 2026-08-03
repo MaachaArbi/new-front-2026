@@ -10,6 +10,7 @@ import React, {
 import { IntlProvider, useIntl } from 'react-intl'
 import { DirectionProvider as RadixDirectionProvider } from '@radix-ui/react-direction'
 import { DEFAULT_LANGUAGE, LANGUAGES } from '@/shared/i18n/config'
+import { setApiLocale } from '@/shared/api/locale'
 import type { LanguageCode, I18nContextType } from '@/shared/i18n/types'
 import en from '@/shared/i18n/messages/en.json'
 import fr from '@/shared/i18n/messages/fr.json'
@@ -60,6 +61,8 @@ export function I18nProvider({ children }: { children: React.ReactNode }) {
       document.documentElement.setAttribute('dir', langConfig.direction)
       document.documentElement.setAttribute('lang', lang)
     }
+    // La langue active pilote l'en-tête Accept-Language du client API (§2.1).
+    setApiLocale(lang)
   }, [])
 
   // Initialisation au montage, une seule fois : lit le choix stocké, sinon
