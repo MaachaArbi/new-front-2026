@@ -65,8 +65,21 @@ C'est la première vague qui parle au **vrai backend** (Docker `:8080`, `/api/v1
    - Envoie `Accept-Language` (langue active i18n) et le `Bearer`.
    - Mappe l'enveloppe d'erreur → objet typé ; **remonte `X-Request-Id`** dans l'affichage d'erreur.
    - `401` → renvoi à la connexion ; `403/404/409/422` typés pour l'appelant.
-2. **Connexion** : écran de login → `POST /auth/login` → `{token, refreshToken}`.
-   - **Access token en mémoire** ; `POST /auth/logout`.
+2. **Connexion + session** (contrat mis à jour 03/08, back `216685f`) :
+   - `POST /auth/login` `{email,password}` **avec `credentials:'include'`** → `{token}`.
+     L'**access token vit en mémoire** (Bearer, 1 h). Le **refresh token est un cookie
+     `httpOnly` `ostravel_refresh`** que le JS ne voit pas — **on ne stocke RIEN**.
+   - `POST /auth/refresh` **corps vide**, `credentials:'include'` → `{token}`. Le cookie
+     désigne la session.
+   - `POST /auth/logout` **corps vide**, `credentials:'include'` → 204.
+   - **Reprise de session au chargement** : au démarrage de l'app, un `refresh` silencieux
+     (le cookie persiste) rend un access token si la session vaut encore, sinon 401 → login.
+     **Aucune persistance côté JS.**
+   - **Verrou anti-refresh-parallèle inter-onglets OBLIGATOIRE** (§1.6) : deux refresh
+     simultanés = jeton rejoué = **toutes les sessions fermées**. Single-flight + coordination
+     entre onglets (Web Locks / BroadcastChannel).
+   - `credentials:'include'` **uniquement** sur les 3 routes auth (cookie `Path=/api/v1/auth`) ;
+     les routes métier restent en **Bearer** simple.
    - Erreur de connexion → message générique (401 indistinct, §1.2).
 3. **`/me` + sélecteur de bureau** : identité, `permissions`, `organizations`.
    - Sélecteur alimenté par les `organizations` (`isOffice`) ; `officeAccountId` prêt à être
@@ -90,9 +103,6 @@ C'est la première vague qui parle au **vrai backend** (Docker `:8080`, `/api/v1
   (rôles, fonctions, formes juridiques, types d'adresse — §4) qu'on **ne code pas en dur**, et
   `POST /party-accounts` exige `officeScope`/`relationType`. **Différé** jusqu'aux endpoints
   référentiels (§5 : ajout à venir).
-- **Boucle de refresh + persistance du jeton** → **différée** jusqu'au **cookie httpOnly**
-  (choix « zéro risque » d'Arbi, demande envoyée au back). En dev : session en mémoire, perdue
-  au reload — **aucune persistance non sûre livrée**.
 - **Lecture des rôles / fonctions / office-relations** d'un tiers → **pas de GET** (§5, à venir).
 - **Bookings, Settlements, solde** → vagues ultérieures (endpoints existent, non traités ici).
 - **Caisse, Facturation, Tarification, Catalogue, Documents** → **n'existent pas** (§4).
@@ -110,10 +120,22 @@ C'est la première vague qui parle au **vrai backend** (Docker `:8080`, `/api/v1
 2. **Montants** : le contrat confirme unité mineure + TND 3 décimales → le noyau `Money` (S4)
    s'applique sans changement.
 
-## Questions ouvertes (en attente, non bloquantes pour cette vague)
+## Questions ouvertes → RÉSOLUES
 
-- **Transport du refresh token** (cookie httpOnly) — **demande envoyée au back**. Débloque la
-  persistance + la boucle de refresh (single-flight, coordination inter-onglets §1.6).
+- **Transport du refresh token** — ✅ **livré par le back (03/08, `216685f`)** : cookie
+  `httpOnly` `ostravel_refresh` (`Secure`, `Path=/api/v1/auth`, `SameSite=None`) + **garde
+  d'origine** sur `/api/v1/auth/*` (403 `origin_not_allowed`). L'auth n'est plus différée.
+
+## Prérequis d'ACCÈS DEV (à régler AVANT tout test bout-en-bout)
+
+1. **Origine déclarée** : le back n'autorise que `http://localhost:5173` ; notre dev est sur
+   **`5180`** (5173 étant pris par un autre projet du VPS). → **relayer au back** de déclarer
+   `http://localhost:5180` dans `CORS_ALLOW_ORIGIN`. Sans ça : `login` paraît OK, `refresh` → 401.
+2. **Contexte sécurisé** : le cookie est `Secure` → il n'est posé que sur un **contexte
+   sécurisé**. `http://localhost` en est un ; **une IP publique en http, non**. → charger le
+   front via un **tunnel SSH** vers `localhost:5180` (+ `:8080` pour l'API), pas via l'IP publique
+   en clair. Sinon le cookie n'est jamais gardé.
+3. **URL de base de l'API** : `http://localhost:8080/api/v1` (accessible via le tunnel).
 
 ---
 

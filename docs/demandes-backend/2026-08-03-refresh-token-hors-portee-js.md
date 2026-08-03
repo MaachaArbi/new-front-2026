@@ -1,8 +1,21 @@
 # Demande Backend — Le refresh token hors de portée du JavaScript
 
 **Date** : 2026-08-03
-**Statut** : 🟡 ENVOYÉE (par Arbi, 03/08) — en attente
-**Bloque** : la **persistance de session** et la **boucle de refresh** du front (pas le reste de V1)
+**Statut** : ✅ **LIVRÉE** (back `216685f`, 03/08)
+**Bloque** : plus rien — l'auth est débloquée
+
+---
+
+## Livré
+
+Cookie `httpOnly` `ostravel_refresh` (`Secure`, `Path=/api/v1/auth`, `SameSite=None`) : le JS
+ne voit plus le refresh token. Côté front : `credentials:'include'` sur les 3 routes auth,
+corps vides pour refresh/logout, **aucun stockage**. Garde d'**origine** sur `/api/v1/auth/*`
+(403 `origin_not_allowed`) qui reprend la protection CSRF — rien à porter côté front.
+Décision back : `docs/decisions/2026-08-03-le-jeton-de-rafraichissement-quitte-le-javascript.md`.
+
+**Suite de coordination** : déclarer notre origine de dev `http://localhost:5180` côté back
+(actuellement `5173`). Voir prérequis du cadrage V1.
 
 ---
 
