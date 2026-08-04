@@ -56,11 +56,57 @@ export interface PartyAccountListItem {
   readonly isDisputed: boolean
 }
 
+export interface PartyPersonIdentity {
+  readonly firstName: string | null
+  readonly lastName: string | null
+  readonly employeeReference: string | null
+}
+
+export interface PartyOrganizationIdentity {
+  readonly taxId: string | null
+  readonly tradeRegister: string | null
+  readonly legalFormCode: string | null
+  readonly website: string | null
+  // Gardés par le back (« export Excel only ») — on ne les AFFICHE pas.
+  readonly accountingAccountCode?: string | null
+  readonly thirdPartyAccountCode?: string | null
+}
+
+/** Groupe de tiers rattaché (contracting/pricing/collection/reporting). */
+export interface PartyGroupRef {
+  readonly publicId: string
+  readonly name: string
+  readonly groupTypeCode: string
+}
+
+/**
+ * Fiche détaillée d'un tiers — **livrée par le back (04/08)**, 18 champs en 1 appel :
+ * tout ce qu'une ligne de liste porte + `identity` (selon la nature, **null** si
+ * jamais saisie) + `parentAccount` (null = pas de mère **ou** hors périmètre) +
+ * `addresses` (principale d'abord) + `groups`. Les champs restent tolérants au vide
+ * (rendu conditionnel). ⚠️ L'ÉCRITURE de logoUrl/phones/country n'existe pas encore
+ * (lecture seule ; chantier back non arbitré) — ne pas construire de formulaire dessus.
+ */
 export interface PartyAccountDetail {
   readonly publicId: string
   readonly nature: PartyNature
   readonly displayName: string
   readonly email: string | null
+  readonly officeScope: string
+  readonly isDisabled: boolean
+  readonly phonePrimary?: string | null
+  readonly phoneSecondary?: string | null
+  readonly logoUrl?: string | null
+  readonly country?: string | null
+  readonly roles?: readonly string[]
+  readonly offices?: readonly PartyOfficeRef[]
+  readonly isProspect?: boolean
+  readonly isDisputed?: boolean
+  /** `null` si jamais saisie ; forme selon `nature`. */
+  readonly identity?: PartyPersonIdentity | PartyOrganizationIdentity | null
+  readonly parentAccount?: PartyOfficeRef | null
+  readonly addresses?: readonly PartyAddress[]
+  readonly groups?: readonly PartyGroupRef[]
 }
 
 export interface PartyAddress {

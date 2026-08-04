@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react'
-import { ChevronDown } from 'lucide-react'
+import { ChevronDown, X } from 'lucide-react'
 import { Input } from '@/shared/ui/input'
 import { Button } from '@/shared/ui/button'
 import {
@@ -208,6 +208,47 @@ export function PartyFilterBar({
       {actions ? (
         <div className="ms-auto flex items-center gap-2">{actions}</div>
       ) : null}
+    </div>
+  )
+}
+
+export interface ActiveFilterChip {
+  key: string
+  label: string
+  onRemove: () => void
+}
+
+/**
+ * Puces des filtres actifs (modèle A) : chaque filtre appliqué s'affiche avec une
+ * croix pour le retirer individuellement. Rendu nul si aucun filtre.
+ */
+export function ActiveFilterChips({
+  chips,
+  removeLabel,
+}: {
+  chips: readonly ActiveFilterChip[]
+  removeLabel: string
+}) {
+  if (chips.length === 0) return null
+
+  return (
+    <div className="flex flex-wrap items-center gap-1.5">
+      {chips.map((chip) => (
+        <span
+          key={chip.key}
+          className="bg-secondary text-secondary-foreground inline-flex items-center gap-1 rounded-md py-0.5 ps-2 pe-1 text-xs"
+        >
+          <span className="max-w-64 truncate">{chip.label}</span>
+          <button
+            type="button"
+            onClick={chip.onRemove}
+            aria-label={removeLabel}
+            className="text-muted-foreground hover:text-foreground rounded-sm"
+          >
+            <X className="size-3.5" />
+          </button>
+        </span>
+      ))}
     </div>
   )
 }

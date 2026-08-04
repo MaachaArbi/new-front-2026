@@ -77,7 +77,7 @@ export function DevUxPage() {
   }
 
   return (
-    <div className="flex flex-col gap-6 py-4">
+    <div className="flex flex-col gap-6 px-4 py-4 lg:px-7.5">
       <header className="flex flex-col gap-1">
         <h1 className="text-foreground text-xl font-semibold">
           {t('dev.ux.title')}

@@ -4,6 +4,7 @@ import { ModulePage } from './pages/module-page'
 import { DevUxPage } from './pages/dev-ux'
 import { DevShortcutsPage } from './pages/dev-shortcuts'
 import { PartyListPage } from '@/modules/party/party-list-page'
+import { PartyDetailPage } from '@/modules/party/party-detail-page'
 
 // Routage minimal (S3b §6) : une route par module + entrées. Pas de route
 // protégée, pas de lazy — vagues ultérieures (S6+). Une page « large »
@@ -20,6 +21,8 @@ export function AppRoutes() {
         <Route path="_dev/shortcuts" element={<DevShortcutsPage />} />
         {/* Premier écran métier réel (V1) — les tiers en lecture. */}
         <Route path="parties" element={<PartyListPage />} />
+        {/* Page dossier d'un tiers (hub 360°, scaffoldé). */}
+        <Route path="parties/:publicId" element={<PartyDetailPage />} />
         <Route path=":module" element={<ModulePage />} />
         <Route path=":module/*" element={<ModulePage />} />
       </Route>

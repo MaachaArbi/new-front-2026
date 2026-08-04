@@ -34,7 +34,7 @@ export function ModulePage() {
   const isWide = activeModule ? WIDE_MODULES.has(activeModule.id) : false
 
   return (
-    <div>
+    <div className="px-4 lg:px-7.5">
       <Toolbar>
         <ToolbarHeading>
           <ToolbarPageTitle>

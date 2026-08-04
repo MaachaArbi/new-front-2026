@@ -18,11 +18,30 @@ const STATE_BADGE: Record<
   disputed: 'destructive',
 }
 
+/** Avatar : le logo s'il existe, sinon l'icône de nature (personne/organisation). */
+function PartyAvatar({ item }: { item: PartyAccountListItem }) {
+  if (item.logoUrl)
+    return (
+      <img
+        src={item.logoUrl}
+        alt=""
+        className="size-8 shrink-0 rounded-full object-cover"
+      />
+    )
+  const Icon = item.nature === 'organization' ? Building2 : User
+  return (
+    <span className="bg-muted text-muted-foreground flex size-8 shrink-0 items-center justify-center rounded-full">
+      <Icon className="size-4" />
+    </span>
+  )
+}
+
 /**
  * Colonnes de la liste Tiers. `name` est collée et non masquable ; le reste est
- * masquable via le bouton « Colonnes ». Rôles/pays sont résolus en libellés par
- * des fonctions code→libellé (référentiels). Les cellules **tiennent le vide**
- * (tél/pays/rôles souvent vides aujourd'hui).
+ * masquable via le bouton « Colonnes » et **redimensionnable**. Rôles/pays sont
+ * résolus en libellés (référentiels). Les cellules **tiennent le vide** (tél/pays/
+ * rôles souvent vides aujourd'hui). Une seule ligne par cellule (table à largeur
+ * fixe pour le resize) → le contenu qui déborde est tronqué.
  */
 export function buildPartyColumns(
   t: Translate,
@@ -35,15 +54,15 @@ export function buildPartyColumns(
       accessorKey: 'displayName',
       header: t('party.column.name'),
       enableHiding: false,
+      enableResizing: true,
+      size: 280,
+      minSize: 180,
       meta: { sticky: true, headerTitle: t('party.column.name') },
       cell: ({ row }) => {
         const item = row.original
-        const Icon = item.nature === 'organization' ? Building2 : User
         return (
           <div className="flex items-center gap-3">
-            <span className="bg-muted text-muted-foreground flex size-8 shrink-0 items-center justify-center rounded-full">
-              <Icon className="size-4" />
-            </span>
+            <PartyAvatar item={item} />
             <div className="min-w-0">
               <div className="text-foreground truncate font-medium">
                 {item.displayName}
@@ -59,13 +78,15 @@ export function buildPartyColumns(
     {
       id: 'roles',
       header: t('party.column.roles'),
+      enableResizing: true,
+      size: 200,
       meta: { headerTitle: t('party.column.roles') },
       cell: ({ row }) => {
         const roles = row.original.roles
         if (roles.length === 0)
           return <span className="text-muted-foreground">—</span>
         return (
-          <div className="flex flex-wrap gap-1">
+          <div className="flex items-center gap-1">
             {roles.map((code) => (
               <Badge key={code} variant="secondary" size="sm">
                 {roleLabel(code)}
@@ -78,6 +99,8 @@ export function buildPartyColumns(
     {
       id: 'state',
       header: t('party.column.state'),
+      enableResizing: true,
+      size: 150,
       meta: { headerTitle: t('party.column.state') },
       cell: ({ row }) => {
         const item = row.original
@@ -92,7 +115,7 @@ export function buildPartyColumns(
             </Badge>
           )
         return (
-          <div className="flex flex-wrap gap-1">
+          <div className="flex items-center gap-1">
             {states.map((state) => (
               <Badge key={state} variant={STATE_BADGE[state]} size="sm">
                 {t(`party.state.${state}`)}
@@ -105,6 +128,8 @@ export function buildPartyColumns(
     {
       id: 'offices',
       header: t('party.column.offices'),
+      enableResizing: true,
+      size: 220,
       meta: { headerTitle: t('party.column.offices') },
       cell: ({ row }) => {
         const { officeScope, offices } = row.original
@@ -113,14 +138,14 @@ export function buildPartyColumns(
         // `undeclared` = rien (cas anormal, invisible de tous).
         if (officeScope === 'all_offices')
           return (
-            <span className="text-muted-foreground italic">
+            <span className="text-muted-foreground truncate italic">
               {t('party.offices.all')}
             </span>
           )
         if (offices.length === 0)
           return <span className="text-muted-foreground">—</span>
         return (
-          <span className="text-foreground">
+          <span className="text-foreground truncate">
             {offices.map((office) => office.displayName).join(', ')}
           </span>
         )
@@ -130,6 +155,8 @@ export function buildPartyColumns(
       id: 'phone',
       accessorKey: 'phonePrimary',
       header: t('party.column.phone'),
+      enableResizing: true,
+      size: 160,
       meta: { headerTitle: t('party.column.phone') },
       cell: ({ row }) => (
         <span className="text-muted-foreground">
@@ -141,6 +168,8 @@ export function buildPartyColumns(
       id: 'country',
       accessorKey: 'country',
       header: t('party.column.country'),
+      enableResizing: true,
+      size: 140,
       meta: { headerTitle: t('party.column.country') },
       cell: ({ row }) => {
         const code = row.original.country
