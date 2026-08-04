@@ -11,32 +11,11 @@ import type { MenuConfig } from '@/shared/layout/menu.config'
  * À retirer quand l'API réelle alimentera la navigation (backlog).
  */
 export const MODULE_MENUS: Record<string, MenuConfig> = {
-  parties: [
-    {
-      titleKey: 'menu.parties.group.directory',
-      children: [
-        {
-          titleKey: 'menu.parties.clients',
-          path: '/parties/clients',
-          permission: 'party.client.view',
-        },
-        {
-          titleKey: 'menu.parties.suppliers',
-          path: '/parties/suppliers',
-          permission: 'party.supplier.view',
-        },
-        { titleKey: 'menu.parties.contacts', path: '/parties/contacts' },
-        { titleKey: 'menu.parties.addresses', path: '/parties/addresses' },
-      ],
-    },
-    {
-      titleKey: 'menu.parties.group.finance',
-      children: [
-        { titleKey: 'menu.parties.balances', path: '/parties/balances' },
-        { titleKey: 'menu.parties.statements', path: '/parties/statements' },
-      ],
-    },
-  ],
+  // Une seule entrée « Tiers » : la liste consolidée. Pas de Clients/Fournisseurs/
+  // Contacts séparés — décision Arbi : une seule table, donc une seule entrée
+  // (aucun sens d'avoir plusieurs tableaux pour la même chose). Les écrans finance
+  // (soldes, relevés) vivront dans le module Règlements, pas ici.
+  parties: [{ titleKey: 'menu.parties.tiers', path: '/parties' }],
   bookings: [
     {
       titleKey: 'menu.bookings.group.ops',
