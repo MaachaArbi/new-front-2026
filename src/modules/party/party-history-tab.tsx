@@ -1,6 +1,6 @@
 import * as React from 'react'
 import { useIntl } from 'react-intl'
-import { ChevronDown, ChevronLeft, ChevronRight } from 'lucide-react'
+import { ChevronDown, ChevronLeft, ChevronRight, Search } from 'lucide-react'
 import { Button } from '@/shared/ui/button'
 import { SkeletonRow } from '@/shared/feedback'
 import { formatMinor } from '@/shared/lib/money'
@@ -113,6 +113,31 @@ const KNOWN_FIELDS = new Set([
   'serviceTypeCode',
   'validFrom',
   'validTo',
+  // Adresse.
+  'addressType',
+  'line1',
+  'line2',
+  'city',
+  'postalCode',
+  'countryAlpha2',
+  'isPrimary',
+  // Exonération / politique.
+  'exemptionType',
+  'hasCertificate',
+  'assignmentType',
+  'forceOnRequest',
+  'blockWhenInsufficientBalance',
+])
+
+/** Champs booléens → « Oui / Non » (au lieu de `true`/`false` bruts). */
+const BOOL_FIELDS = new Set([
+  'isPrimary',
+  'hasCertificate',
+  'forceOnRequest',
+  'blockWhenInsufficientBalance',
+  'isProspect',
+  'isDisputed',
+  'isDisabled',
 ])
 
 /** Réf. de stockage, pas une adresse : on ne montre pas la valeur, juste « fichier modifié ». */
@@ -143,6 +168,12 @@ export function PartyHistoryTab({
   const intl = useIntl()
   const [page, setPage] = React.useState(1)
   const query = usePartyHistory(publicId, page, HISTORY_LIMIT)
+  // Filtres — appliqués EN CLIENT sur la page chargée (l'API pagine sans filtre serveur ;
+  // vrai filtre = demande back). '' = pas de filtre.
+  const [search, setSearch] = React.useState('')
+  const [typeFilter, setTypeFilter] = React.useState('')
+  const [actionFilter, setActionFilter] = React.useState('')
+  const [authorFilter, setAuthorFilter] = React.useState('')
 
   const fmtDay = (iso: string) =>
     intl.formatDate(iso, { day: 'numeric', month: 'long', year: 'numeric' })
@@ -164,6 +195,15 @@ export function PartyHistoryTab({
     currencyInEntry: string | null
   ): string => {
     if (value == null) return '—'
+    if (BOOL_FIELDS.has(field)) {
+      // La valeur d'audit peut arriver en booléen brut → coercition avant comparaison.
+      const bool = String(value)
+      return bool === 'true'
+        ? t('party.history.yes')
+        : bool === 'false'
+          ? t('party.history.no')
+          : bool
+    }
     if (DATE_FIELDS.has(field)) return fmtDay(value)
     if (field === 'office') return officeNameByPublicId(value)
     if (field === 'serviceTypeCode') return serviceTypeLabel(value)
@@ -195,6 +235,47 @@ export function PartyHistoryTab({
   const hasPrev = page > 1
   const hasNext = entries.length === HISTORY_LIMIT
 
+  // Options distinctes (sur la page chargée) + application des filtres client.
+  const distinctTypes = Array.from(new Set(entries.map((e) => e.subject)))
+  const distinctAuthors = Array.from(
+    new Set(
+      entries
+        .map((e) => e.actor?.displayName)
+        .filter((n): n is string => !!n)
+    )
+  )
+  const searchLower = search.trim().toLowerCase()
+  const filtered = entries.filter((entry) => {
+    if (typeFilter && entry.subject !== typeFilter) return false
+    if (actionFilter && entry.operation !== actionFilter) return false
+    if (authorFilter && (entry.actor?.displayName ?? '') !== authorFilter)
+      return false
+    if (searchLower) {
+      const hay = [
+        entry.actor?.displayName ?? '',
+        subjectLabel(entry.subject),
+        t(`party.history.op.${entry.operation}`),
+        ...entry.changes.flatMap((c) => [
+          fieldLabel(c.field),
+          c.before ?? '',
+          c.after ?? '',
+        ]),
+      ]
+        .join(' ')
+        .toLowerCase()
+      if (!hay.includes(searchLower)) return false
+    }
+    return true
+  })
+  const filtersActive = !!(
+    search ||
+    typeFilter ||
+    actionFilter ||
+    authorFilter
+  )
+  const selectCls =
+    'border-border bg-background text-foreground rounded-md border px-2 py-1.5 text-sm'
+
   if (entries.length === 0 && page === 1) {
     return (
       <p className="text-muted-foreground py-6 text-sm">
@@ -211,9 +292,76 @@ export function PartyHistoryTab({
         </p>
       ) : null}
 
+      {/* Barre de filtres — Recherche · Type · Action · Auteur. Filtrage CLIENT sur la
+          page chargée (voir note). */}
+      <div className="flex flex-wrap items-center gap-2">
+        <div className="relative min-w-[200px] flex-1">
+          <Search className="text-muted-foreground pointer-events-none absolute start-2.5 top-1/2 size-4 -translate-y-1/2" />
+          <input
+            type="search"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            placeholder={t('party.history.searchPlaceholder')}
+            className="border-border bg-background text-foreground w-full rounded-md border py-1.5 pe-2 ps-8 text-sm"
+          />
+        </div>
+        <select
+          value={typeFilter}
+          onChange={(e) => setTypeFilter(e.target.value)}
+          className={selectCls}
+          aria-label={t('party.history.filterTypeLabel')}
+        >
+          <option value="">{t('party.history.allTypes')}</option>
+          {distinctTypes.map((s) => (
+            <option key={s} value={s}>
+              {subjectLabel(s)}
+            </option>
+          ))}
+        </select>
+        <select
+          value={actionFilter}
+          onChange={(e) => setActionFilter(e.target.value)}
+          className={selectCls}
+          aria-label={t('party.history.filterActionLabel')}
+        >
+          <option value="">{t('party.history.allActions')}</option>
+          {['INSERT', 'UPDATE', 'DELETE'].map((op) => (
+            <option key={op} value={op}>
+              {t(`party.history.op.${op}`)}
+            </option>
+          ))}
+        </select>
+        {distinctAuthors.length > 0 ? (
+          <select
+            value={authorFilter}
+            onChange={(e) => setAuthorFilter(e.target.value)}
+            className={selectCls}
+            aria-label={t('party.history.filterAuthorLabel')}
+          >
+            <option value="">{t('party.history.allAuthors')}</option>
+            {distinctAuthors.map((name) => (
+              <option key={name} value={name}>
+                {name}
+              </option>
+            ))}
+          </select>
+        ) : null}
+      </div>
+      {filtersActive ? (
+        <p className="text-muted-foreground text-xs">
+          {t('party.history.filterPageNote')}
+        </p>
+      ) : null}
+
+      {filtered.length === 0 ? (
+        <p className="text-muted-foreground py-6 text-sm">
+          {t('party.history.noMatch')}
+        </p>
+      ) : null}
+
       {/* Timeline SANS cards : un trait vertical, l'avatar = nœud, groupé par jour.
           Ligne « qui · quoi · quand » ; le détail (avant → après) se déplie. */}
-      {groupByDay(entries, fmtDay).map((group) => (
+      {groupByDay(filtered, fmtDay).map((group) => (
         <div key={group.day}>
           <div className="text-muted-foreground mt-2 mb-1 text-[11px] font-semibold tracking-wider uppercase">
             {group.day}

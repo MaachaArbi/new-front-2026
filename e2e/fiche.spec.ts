@@ -6,13 +6,14 @@ import fs from 'node:fs'
  * Clair + sombre — pour valider que les tokens tiennent dans les deux thèmes.
  */
 const SHOTS = 'e2e/screenshots'
-const EMAIL = 'karim.belhadj@demo.ostravel.tn'
+const EMAIL = 'mehdi.trabelsi@demo.ostravel.tn'
 const PASSWORD = 'Demo-2026-OsTravel'
 
 test.use({ viewport: { width: 1600, height: 1180 } })
 test.beforeAll(() => fs.mkdirSync(SHOTS, { recursive: true }))
 
 test('fiche Tiers — clair + sombre', async ({ page }) => {
+  test.setTimeout(90_000)
   await page.goto('/')
   await page.fill('#login-email', EMAIL)
   await page.fill('#login-password', PASSWORD)
@@ -48,6 +49,26 @@ test('fiche Tiers — clair + sombre', async ({ page }) => {
   await page.getByRole('button', { name: /voir tout/i }).click()
   await page.waitForTimeout(1200)
   await page.screenshot({ path: `${SHOTS}/fiche-voirtout.png` })
+
+  // Filtre Action = « modifié » → ne reste que les UPDATE (vérifie le filtrage client).
+  await page
+    .getByLabel(/filtrer par action/i)
+    .selectOption({ label: 'modifié' })
+  await page.waitForTimeout(600)
+  await page.screenshot({ path: `${SHOTS}/fiche-hist-filtre.png` })
+  await page.getByLabel(/filtrer par action/i).selectOption('')
+  await page.waitForTimeout(300)
+
+  // Déplie une entrée « Adresse » → vérifie l'humanisation du détail (libellés + Oui/Non).
+  const addressEntry = page
+    .locator('details')
+    .filter({ hasText: 'Adresse · ajouté' })
+    .first()
+  await addressEntry.locator('summary').click()
+  await page.waitForTimeout(400)
+  await addressEntry.scrollIntoViewIfNeeded()
+  await page.waitForTimeout(300)
+  await page.screenshot({ path: `${SHOTS}/fiche-hist-detail.png` })
 
   // Onglet Finance — plafond effectif groupé par portée (socle + rallonges).
   await page.getByRole('tab', { name: /^finance$/i }).click()
