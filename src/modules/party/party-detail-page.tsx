@@ -9,7 +9,6 @@ import {
   Building2,
   Check,
   ChevronDown,
-  ChevronRight,
   Copy,
   DollarSign,
   FileText,
@@ -108,26 +107,6 @@ type FieldItem = { label: string; value: React.ReactNode }
 /** Conserve les champs réellement renseignés (le vide n'est jamais affiché). */
 function filled(items: FieldItem[]): FieldItem[] {
   return items.filter((i) => i.value != null && i.value !== '')
-}
-
-function Section({
-  title,
-  action,
-  children,
-}: {
-  title: string
-  action?: React.ReactNode
-  children: React.ReactNode
-}) {
-  return (
-    <section className="border-border border-b py-4 last:border-0">
-      <div className="mb-1 flex items-center justify-between gap-2">
-        <h3 className="text-foreground text-sm font-semibold">{title}</h3>
-        {action}
-      </div>
-      {children}
-    </section>
-  )
 }
 
 // Rail façon /_ref : titre de groupe + ligne « icône · libellé · valeur (à droite) ».
@@ -235,7 +214,6 @@ export function PartyDetailPage() {
   const [contactSheetOpen, setContactSheetOpen] = React.useState(false)
   // Rail « Détails société » : repli du bloc entier + divulgation des sections secondaires.
   const [railCollapsed, setRailCollapsed] = React.useState(false)
-  const [showAllDetails, setShowAllDetails] = React.useState(false)
   // Onglet actif contrôlé : « Voir tout » (Activité récente) bascule vers Historique.
   const [tab, setTab] = React.useState('overview')
   const [parentOpen, setParentOpen] = React.useState(false)
@@ -950,10 +928,22 @@ export function PartyDetailPage() {
                   )}
                 </div>
                 <div className="border-border rounded-xl border p-4">
-                  <div className="mb-3">
+                  <div className="mb-3 flex items-center justify-between gap-2">
                     <span className="text-foreground text-sm font-semibold">
                       {t('party.detail.overview.attachments')}
                     </span>
+                    {editable && view.nature === 'organization' ? (
+                      <Button
+                        size="sm"
+                        mode="icon"
+                        variant="ghost"
+                        className="text-muted-foreground shrink-0"
+                        onClick={() => setParentOpen(true)}
+                        aria-label={t('party.detail.editParent')}
+                      >
+                        <Pencil />
+                      </Button>
+                    ) : null}
                   </div>
                   <div className="flex flex-col gap-3 text-sm">
                     {view.offices.map((o) => (
@@ -1016,101 +1006,6 @@ export function PartyDetailPage() {
                   </div>
                 </div>
               </div>
-            </div>
-
-            {/* Adresses (style /_ref) — en-tête à icône + « Ajouter », conteneur bordé.
-                (Pas dans le /_ref, mais donnée réelle utile : édition conservée.) */}
-            <div>
-              <div className="mb-2 flex items-center justify-between gap-2">
-                <div className="text-foreground flex items-center gap-2 text-sm font-semibold">
-                  <MapPin className="text-muted-foreground size-4" />
-                  {t('party.detail.addresses')}
-                </div>
-                {editable ? (
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setEditingAddress(null)
-                      setAddressSheetOpen(true)
-                    }}
-                    className="text-primary text-xs font-medium hover:underline"
-                  >
-                    {t('party.detail.addAddress')}
-                  </button>
-                ) : null}
-              </div>
-              {addressesLoading ? (
-                <SkeletonRow columns={2} />
-              ) : addresses.length > 0 ? (
-                <div className="border-border rounded-xl border">
-                  {addresses.map((address) => (
-                    <div
-                      key={address.publicId}
-                      className="border-border/60 flex items-start justify-between gap-2 border-b px-4 py-3 last:border-0"
-                    >
-                      <div className="flex min-w-0 flex-col gap-0.5">
-                        <div className="flex items-center gap-2">
-                          <span className="text-foreground text-sm font-medium">
-                            {addressTypeLabel(address.addressType)}
-                          </span>
-                          {address.isPrimary ? (
-                            <Badge variant="secondary" size="xs">
-                              {t('party.address.primary')}
-                            </Badge>
-                          ) : null}
-                        </div>
-                        <span className="text-muted-foreground inline-flex flex-wrap items-center gap-x-1.5 text-sm">
-                          <span>
-                            {[
-                              address.line1,
-                              address.line2,
-                              [address.postalCode, address.city]
-                                .filter(Boolean)
-                                .join(' '),
-                            ]
-                              .filter(Boolean)
-                              .join(', ')}
-                          </span>
-                          {address.countryAlpha2 ? (
-                            <CountryDisplay code={address.countryAlpha2} />
-                          ) : null}
-                        </span>
-                      </div>
-                      {editable ? (
-                        <div className="flex shrink-0 items-center gap-1">
-                          <Button
-                            size="sm"
-                            mode="icon"
-                            variant="ghost"
-                            className="text-muted-foreground"
-                            onClick={() => {
-                              setEditingAddress(address)
-                              setAddressSheetOpen(true)
-                            }}
-                            aria-label={t('party.detail.editAddress')}
-                          >
-                            <Pencil />
-                          </Button>
-                          <Button
-                            size="sm"
-                            mode="icon"
-                            variant="ghost"
-                            className="text-muted-foreground"
-                            onClick={() => setAddressToDelete(address)}
-                            aria-label={t('party.detail.action.delete')}
-                          >
-                            <Trash2 />
-                          </Button>
-                        </div>
-                      ) : null}
-                    </div>
-                  ))}
-                </div>
-              ) : (
-                <p className="text-muted-foreground text-sm">
-                  {t('party.detail.noAddresses')}
-                </p>
-              )}
             </div>
 
             {/* Activité récente (style /_ref) — en-tête à icône + « Voir tout », puis
@@ -1642,141 +1537,101 @@ export function PartyDetailPage() {
                       ) : null}
                     </span>
                   </RailRow>
-                </div>
 
-                <button
-                  type="button"
-                  onClick={() => setShowAllDetails((v) => !v)}
-                  className="text-primary flex items-center gap-1 py-3 text-sm font-medium"
-                >
-                  {showAllDetails
-                    ? t('party.detail.showLess')
-                    : t('party.detail.showAllDetails')}
-                  <ChevronRight
-                    className={cn(
-                      'size-4 transition-transform',
-                      showAllDetails && 'rotate-90'
-                    )}
+                  {/* Adresses — déplacées ici (hors /_ref Overview). Édition conservée. */}
+                  <RailGroupTitle
+                    title={t('party.detail.addresses')}
+                    action={
+                      editable ? (
+                        <Button
+                          size="sm"
+                          mode="icon"
+                          variant="ghost"
+                          className="text-muted-foreground shrink-0"
+                          onClick={() => {
+                            setEditingAddress(null)
+                            setAddressSheetOpen(true)
+                          }}
+                          aria-label={t('party.detail.addAddress')}
+                        >
+                          <Plus />
+                        </Button>
+                      ) : undefined
+                    }
                   />
-                </button>
-
-                {showAllDetails ? (
-                  <>
-                    {/* Bureaux (rattachements MULTIPLES) — avec leur TITRE (client/fournisseur).
-                Un même bureau peut apparaître 2× (client ET fournisseur). Lecture seule
-                pour l'instant (gestion rattacher/détacher dans un second temps). */}
-                    {view.offices.length > 0 ? (
-                      <Section title={t('party.column.offices')}>
-                        <div className="flex flex-col gap-1.5 py-1.5">
-                          {view.offices.map((office) => (
-                            <div
-                              key={`${office.publicId}-${office.relationType}`}
-                              className="flex items-center justify-between gap-2"
-                            >
-                              <span className="text-foreground text-sm">
-                                {office.displayName}
+                  {addressesLoading ? (
+                    <SkeletonRow columns={1} />
+                  ) : addresses.length > 0 ? (
+                    <div className="flex flex-col gap-3 py-1">
+                      {addresses.map((address) => (
+                        <div
+                          key={address.publicId}
+                          className="flex items-start justify-between gap-2"
+                        >
+                          <div className="flex min-w-0 flex-col gap-0.5">
+                            <span className="flex items-center gap-2">
+                              <span className="text-foreground text-sm font-medium">
+                                {addressTypeLabel(address.addressType)}
                               </span>
-                              <Badge variant="secondary" size="sm">
-                                {roleLabel(office.relationType)}
-                              </Badge>
+                              {address.isPrimary ? (
+                                <Badge variant="secondary" size="xs">
+                                  {t('party.address.primary')}
+                                </Badge>
+                              ) : null}
+                            </span>
+                            <span className="text-muted-foreground inline-flex flex-wrap items-center gap-x-1.5 text-sm">
+                              <span>
+                                {[
+                                  address.line1,
+                                  address.line2,
+                                  [address.postalCode, address.city]
+                                    .filter(Boolean)
+                                    .join(' '),
+                                ]
+                                  .filter(Boolean)
+                                  .join(', ')}
+                              </span>
+                              {address.countryAlpha2 ? (
+                                <CountryDisplay code={address.countryAlpha2} />
+                              ) : null}
+                            </span>
+                          </div>
+                          {editable ? (
+                            <div className="flex shrink-0 items-center">
+                              <Button
+                                size="sm"
+                                mode="icon"
+                                variant="ghost"
+                                className="text-muted-foreground"
+                                onClick={() => {
+                                  setEditingAddress(address)
+                                  setAddressSheetOpen(true)
+                                }}
+                                aria-label={t('party.detail.editAddress')}
+                              >
+                                <Pencil />
+                              </Button>
+                              <Button
+                                size="sm"
+                                mode="icon"
+                                variant="ghost"
+                                className="text-muted-foreground"
+                                onClick={() => setAddressToDelete(address)}
+                                aria-label={t('party.detail.action.delete')}
+                              >
+                                <Trash2 />
+                              </Button>
                             </div>
-                          ))}
+                          ) : null}
                         </div>
-                      </Section>
-                    ) : view.officeScope === 'all_offices' ? (
-                      <Section title={t('party.column.offices')}>
-                        <div className="text-muted-foreground py-1.5 text-sm">
-                          {t('party.offices.all')}
-                        </div>
-                      </Section>
-                    ) : null}
-
-                    {/* Interlocuteurs : déplacés dans l'onglet « Contacts & équipe »
-                        (édition) + aperçu sur la Vue d'ensemble. Plus dans le rail. */}
-
-                    {/* Agence mère (UNIQUE) — organisations seulement, éditable. */}
-                    {view.nature === 'organization' ? (
-                      <Section
-                        title={t('party.detail.editParent')}
-                        action={
-                          editable ? (
-                            <Button
-                              size="sm"
-                              mode="icon"
-                              variant="ghost"
-                              className="text-muted-foreground shrink-0"
-                              onClick={() => setParentOpen(true)}
-                              aria-label={t('party.detail.editParent')}
-                            >
-                              <Pencil />
-                            </Button>
-                          ) : undefined
-                        }
-                      >
-                        {parent ? (
-                          <button
-                            type="button"
-                            onClick={() =>
-                              navigate(`/parties/${parent.publicId}`)
-                            }
-                            className="text-primary py-1.5 text-sm hover:underline"
-                          >
-                            {parent.displayName}
-                          </button>
-                        ) : (
-                          <p className="text-muted-foreground py-1.5 text-sm">
-                            —
-                          </p>
-                        )}
-                      </Section>
-                    ) : null}
-
-                    {/* Sous-agences (enfants) — lecture seule, cliquable. RLS : une fille hors
-                périmètre n'apparaît pas → on masque la section quand la liste est vide
-                (pas de « aucune sous-agence » trompeur). Le lien se pose sur l'ENFANT. */}
-                    {view.nature === 'organization' &&
-                    view.children.length > 0 ? (
-                      <Section title={t('party.detail.section.children')}>
-                        <div className="flex flex-col gap-0.5 py-1.5">
-                          {view.children.map((child) => (
-                            <button
-                              key={child.publicId}
-                              type="button"
-                              onClick={() =>
-                                navigate(`/parties/${child.publicId}`)
-                              }
-                              className="text-primary py-1 text-start text-sm hover:underline"
-                            >
-                              {child.displayName}
-                            </button>
-                          ))}
-                        </div>
-                      </Section>
-                    ) : null}
-
-                    {view.groups.length > 0 ? (
-                      <Section title={t('party.detail.section.groups')}>
-                        <div className="flex flex-wrap gap-1 py-1.5">
-                          {view.groups.map((group) => (
-                            <Badge
-                              key={group.publicId}
-                              variant="secondary"
-                              size="sm"
-                            >
-                              {group.name}
-                            </Badge>
-                          ))}
-                        </div>
-                      </Section>
-                    ) : null}
-
-                    <Section title={t('party.column.state')}>
-                      <div className="flex flex-wrap gap-1 py-1.5">
-                        {stateBadges}
-                      </div>
-                    </Section>
-                  </>
-                ) : null}
+                      ))}
+                    </div>
+                  ) : (
+                    <p className="text-muted-foreground py-1.5 text-sm">
+                      {t('party.detail.noAddresses')}
+                    </p>
+                  )}
+                </div>
               </>
             ) : null}
           </div>

@@ -287,7 +287,6 @@
   "party.document.tooBig": "الملف كبير جدًا (بحد أقصى 10 ميبي)",
   "party.document.openError": "تعذّر فتح الملف.",
   "party.finance.allOffices": "كل الشركات",
-  "party.finance.allServices": "عام",
   "party.finance.addCreditLimit": "إضافة سقف",
   "party.finance.addManager": "إضافة مدير حساب",
   "party.finance.addManagerSubmit": "إضافة",

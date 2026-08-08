@@ -287,7 +287,6 @@
   "party.document.tooBig": "File too large (max 10 MiB)",
   "party.document.openError": "Could not open the file.",
   "party.finance.allOffices": "All companies",
-  "party.finance.allServices": "General",
   "party.finance.addCreditLimit": "Add a credit limit",
   "party.finance.addManager": "Add an account manager",
   "party.finance.addManagerSubmit": "Add",

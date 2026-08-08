@@ -287,7 +287,6 @@
   "party.document.tooBig": "Fichier trop volumineux (max 10 Mio)",
   "party.document.openError": "Impossible d'ouvrir le fichier.",
   "party.finance.allOffices": "Toutes les sociétés",
-  "party.finance.allServices": "Général",
   "party.finance.addCreditLimit": "Ajouter un plafond",
   "party.finance.addManager": "Ajouter un chargé de compte",
   "party.finance.addManagerSubmit": "Ajouter",
