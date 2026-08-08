@@ -21,16 +21,18 @@ const STATE_BADGE: Record<
 /** Avatar : le logo s'il existe, sinon l'icône de nature (personne/organisation). */
 function PartyAvatar({ item }: { item: PartyAccountListItem }) {
   if (item.logoUrl)
+    // Cadre fixe + `object-contain` : colonnes alignées, logo jamais amputé ni déformé
+    // (un logo rond a ses coins transparents → reste rond).
     return (
       <img
         src={item.logoUrl}
         alt=""
-        className="size-8 shrink-0 rounded-full object-cover"
+        className="size-8 shrink-0 rounded-md object-contain"
       />
     )
   const Icon = item.nature === 'organization' ? Building2 : User
   return (
-    <span className="bg-muted text-muted-foreground flex size-8 shrink-0 items-center justify-center rounded-full">
+    <span className="bg-muted text-muted-foreground flex size-8 shrink-0 items-center justify-center rounded-md">
       <Icon className="size-4" />
     </span>
   )

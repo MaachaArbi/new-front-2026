@@ -19,6 +19,10 @@ export interface Referentials {
   readonly roles: readonly ReferentialItem[]
   readonly functions: readonly ReferentialItem[]
   readonly countries: readonly ReferentialItem[]
+  /** Devises (§ référentiels) — libellés EN temporaires ; afficher « CODE — Label ». */
+  readonly currencies: readonly ReferentialItem[]
+  /** Types de service (plafonds…) ; `hotel` = « Hébergement » (couvre résidences/locations), pas « Hôtel ». */
+  readonly serviceTypes: readonly ReferentialItem[]
 }
 
 export function fetchReferentials(): Promise<Referentials> {

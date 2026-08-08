@@ -1,0 +1,23 @@
+/*
+ * Scrollbar de la page jetable /_ref — fine, sans flèches (comme le template).
+ * IMPORTANT : PAS de `scrollbar-width` ici. Depuis Chrome 121, définir
+ * `scrollbar-width` fait IGNORER tout `::-webkit-scrollbar` (largeur + flèches).
+ * On pilote donc uniquement via les pseudo-éléments webkit. À SUPPRIMER avec /_ref.
+ */
+.ref-scroll::-webkit-scrollbar {
+  width: 4px;
+  height: 4px;
+}
+.ref-scroll::-webkit-scrollbar-track {
+  background: transparent;
+}
+.ref-scroll::-webkit-scrollbar-thumb {
+  background: rgb(209 213 219);
+  border-radius: 9999px;
+}
+.ref-scroll::-webkit-scrollbar-button {
+  display: none;
+}
+.ref-scroll::-webkit-scrollbar-corner {
+  background: transparent;
+}

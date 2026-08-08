@@ -62,7 +62,15 @@ const moneySelectors = [
 ]
 
 export default tseslint.config(
-  { ignores: ['dist', 'reference/**', 'node_modules'] },
+  {
+    ignores: [
+      'dist',
+      'reference/**',
+      'node_modules',
+      'e2e/**',
+      'playwright.config.ts',
+    ],
+  },
   {
     extends: [
       js.configs.recommended,

@@ -1,5 +1,5 @@
 import * as React from 'react'
-import { Columns3, Rows3 } from 'lucide-react'
+import { Columns3, Plus, Rows3 } from 'lucide-react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import {
   getCoreRowModel,
@@ -18,6 +18,7 @@ import {
   type ActiveFilterChip,
   type PartyFilterValues,
 } from './party-filter-bar'
+import { PartyCreateSheet } from './party-create-sheet'
 import { ApiError } from '@/shared/api/errors'
 import { Button } from '@/shared/ui/button'
 import { Card, CardToolbar, CardFooter } from '@/shared/ui/card'
@@ -126,6 +127,7 @@ export function PartyListPage() {
   const [density, setDensity] = React.useState<DataTableDensity>('compact')
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>(PARTY_HIDDEN_BY_DEFAULT)
+  const [createOpen, setCreateOpen] = React.useState(false)
 
   const referentials = useReferentials().data
   const roleLabel = React.useMemo(
@@ -268,12 +270,21 @@ export function PartyListPage() {
 
   return (
     <div className="flex flex-col gap-4">
-      <div className="px-4 lg:px-7.5">
+      <div className="flex items-center justify-between gap-2 px-4 lg:px-7.5">
         <Toolbar>
           <ToolbarHeading>
             <ToolbarPageTitle>{t('nav.module.parties')}</ToolbarPageTitle>
           </ToolbarHeading>
         </Toolbar>
+        <Button
+          variant="primary"
+          size="sm"
+          className="shrink-0"
+          onClick={() => setCreateOpen(true)}
+        >
+          <Plus />
+          {t('party.create.button')}
+        </Button>
       </div>
 
       <Card>
@@ -385,6 +396,8 @@ export function PartyListPage() {
           </StaleContent>
         )}
       </Card>
+
+      <PartyCreateSheet open={createOpen} onOpenChange={setCreateOpen} t={t} />
     </div>
   )
 }

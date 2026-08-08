@@ -71,23 +71,26 @@ const badgeVariants = cva(
         className:
           'bg-secondary dark:bg-secondary/50 text-secondary-foreground',
       },
+      /* success/warning/info « light » : le projet définit `--color-*-accent`
+         comme le FOND doux et `--color-*-foreground` comme le TEXTE (cf. tokens.css).
+         Ces tokens se retournent seuls entre thèmes → pas besoin de `dark:`. */
       {
         variant: 'success',
         appearance: 'light',
         className:
-          'text-[var(--color-success-accent,var(--color-green-800))] bg-[var(--color-success-soft,var(--color-green-100))] dark:bg-[var(--color-success-soft,var(--color-green-950))] dark:text-[var(--color-success-soft,var(--color-green-600))]',
+          'text-[var(--color-success-foreground,var(--color-green-800))] bg-[var(--color-success-accent,var(--color-green-100))]',
       },
       {
         variant: 'warning',
         appearance: 'light',
         className:
-          'text-[var(--color-warning-accent,var(--color-yellow-700))] bg-[var(--color-warning-soft,var(--color-yellow-100))] dark:bg-[var(--color-warning-soft,var(--color-yellow-950))] dark:text-[var(--color-warning-soft,var(--color-yellow-600))]',
+          'text-[var(--color-warning-foreground,var(--color-yellow-800))] bg-[var(--color-warning-accent,var(--color-yellow-100))]',
       },
       {
         variant: 'info',
         appearance: 'light',
         className:
-          'text-[var(--color-info-accent,var(--color-violet-700))] bg-[var(--color-info-soft,var(--color-violet-100))] dark:bg-[var(--color-info-soft,var(--color-violet-950))] dark:text-[var(--color-info-soft,var(--color-violet-400))]',
+          'text-[var(--color-info-foreground,var(--color-blue-800))] bg-[var(--color-info-accent,var(--color-blue-100))]',
       },
       {
         variant: 'destructive',

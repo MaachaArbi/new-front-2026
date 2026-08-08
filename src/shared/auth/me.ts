@@ -15,6 +15,8 @@ export interface MeOrganization {
   readonly publicId: string
   readonly displayName: string
   readonly isOffice: boolean
+  /** Pays de l'entité LÉGALE (alpha2), pas l'adresse ; `null` pour une org non-bureau. */
+  readonly country?: string | null
 }
 
 export interface Me {
@@ -32,4 +34,17 @@ export function fetchMe(): Promise<Me> {
 /** Les organisations qui sont des bureaux — alimentent le sélecteur de bureau. */
 export function officesOf(me: Me): readonly MeOrganization[] {
   return me.organizations.filter((organization) => organization.isOffice)
+}
+
+/**
+ * Pays (alpha2) du bureau de l'utilisateur — présélectionne l'indicatif du `PhoneInput`.
+ * `null` si aucun bureau, aucun pays, ou plusieurs bureaux de pays différents (pas de repli
+ * inventé : on ne devine pas). C'est le pays de l'entité légale, pas d'une adresse.
+ */
+export function officeCountryOf(me: Me): string | null {
+  const list = officesOf(me)
+    .map((office) => office.country)
+    .filter((country): country is string => !!country)
+  const unique = new Set(list)
+  return unique.size === 1 ? (list[0] ?? null) : null
 }

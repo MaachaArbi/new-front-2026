@@ -1,7 +1,9 @@
 import type { ReactNode } from 'react'
 import { ChevronDown, X } from 'lucide-react'
+import { cn } from '@/shared/lib/cn'
 import { Input } from '@/shared/ui/input'
 import { Button } from '@/shared/ui/button'
+import { CountrySelect } from '@/shared/ui/country-select'
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -167,15 +169,14 @@ export function PartyFilterBar({
         }))}
       />
 
-      <FilterSelect
-        label={t('party.filter.country')}
-        value={values.country}
-        allLabel={allLabel}
-        onChange={(value) => onChange({ country: value })}
-        options={countryOptions.map((item) => ({
-          value: item.code,
-          label: item.label,
-        }))}
+      <CountrySelect
+        countries={countryOptions}
+        value={values.country ?? null}
+        onChange={(value) => onChange({ country: value ?? undefined })}
+        placeholder={t('party.filter.country')}
+        size="sm"
+        className={cn('w-52', values.country ? 'border-primary/50' : undefined)}
+        t={t}
       />
 
       {officeOptions.length > 0 ? (
