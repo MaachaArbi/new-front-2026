@@ -34,6 +34,7 @@ import { useAuth } from '@/app/providers/auth-provider'
 import { officesOf, officeCountryOf } from '@/shared/auth/me'
 import { useReferentials, codeLabel } from '@/shared/referentials'
 import { formatMinor } from '@/shared/lib/money'
+import './party-detail-page.css'
 import {
   usePartyAccount,
   usePatchPartyAccount,
@@ -154,16 +155,14 @@ function RailRow({
   children: React.ReactNode
 }) {
   return (
-    <div className="grid grid-cols-[minmax(0,9.5rem)_1fr] items-start gap-3 py-2.5">
+    <div className="grid grid-cols-[168px_1fr] items-start gap-3 py-2.5">
       <span className="text-muted-foreground flex items-center gap-2">
         <span className="[&_svg]:text-muted-foreground [&_svg]:size-4">
           {icon}
         </span>
         {label}
       </span>
-      <span className="flex min-w-0 flex-col items-end gap-0.5 text-end">
-        {children}
-      </span>
+      <span className="text-foreground min-w-0">{children}</span>
     </div>
   )
 }
@@ -618,7 +617,7 @@ export function PartyDetailPage() {
   }
 
   return (
-    <div className="flex flex-col gap-6">
+    <div className="text-foreground text-[15px] lg:-mt-4 lg:flex lg:h-[calc(100dvh-128px)] lg:flex-col lg:overflow-hidden">
       {/* Bandeau RGPD — tiers anonymisé : formulaire fermé, aucune édition. */}
       {!editable ? (
         <div className="border-destructive/30 bg-destructive/10 text-destructive mx-4 flex items-center gap-2 rounded-md border px-3 py-2 text-sm lg:mx-7.5">
@@ -631,10 +630,11 @@ export function PartyDetailPage() {
         </div>
       ) : null}
 
-      {/* En-tête */}
-      <div className="flex flex-col gap-4 px-4 lg:px-7.5">
+      {/* Bandeau NOM (porté du /_ref) — compact, bordure sous la ligne des onglets.
+          Retour en petit au-dessus ; nom + statut + actions sur une seule ligne. */}
+      <div className="border-border border-b px-4 pb-4 lg:px-6">
         {backButton}
-        <div className="flex flex-wrap items-center gap-4">
+        <div className="mt-2 flex items-center gap-3">
           <PartyLogoEditor
             publicId={id}
             logoUrl={view.logoUrl}
@@ -642,66 +642,60 @@ export function PartyDetailPage() {
             readOnly={!editable}
             t={t}
           />
-          <div className="min-w-0 grow">
-            {editingName ? (
-              <div className="flex items-center gap-2">
-                <Input
-                  className="h-8 max-w-xs"
-                  value={nameDraft}
-                  autoFocus
-                  onChange={(e) => setNameDraft(e.target.value)}
-                  onKeyDown={(e) => {
-                    if (e.key === 'Enter') saveName()
-                    if (e.key === 'Escape') setEditingName(false)
+          {editingName ? (
+            <div className="flex items-center gap-2">
+              <Input
+                className="h-8 max-w-xs"
+                value={nameDraft}
+                autoFocus
+                onChange={(e) => setNameDraft(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') saveName()
+                  if (e.key === 'Escape') setEditingName(false)
+                }}
+                aria-label={t('party.detail.rename')}
+              />
+              <Button
+                size="sm"
+                mode="icon"
+                variant="ghost"
+                onClick={saveName}
+                disabled={patch.isPending}
+              >
+                <Check />
+              </Button>
+              <Button
+                size="sm"
+                mode="icon"
+                variant="ghost"
+                onClick={() => setEditingName(false)}
+              >
+                <X />
+              </Button>
+            </div>
+          ) : (
+            <div className="flex min-w-0 items-center gap-2">
+              <h1 className="text-foreground truncate text-xl font-semibold">
+                {view.displayName}
+              </h1>
+              {editable ? (
+                <Button
+                  size="sm"
+                  mode="icon"
+                  variant="ghost"
+                  className="text-muted-foreground shrink-0"
+                  onClick={() => {
+                    setNameDraft(view.displayName)
+                    setEditingName(true)
                   }}
                   aria-label={t('party.detail.rename')}
-                />
-                <Button
-                  size="sm"
-                  mode="icon"
-                  variant="ghost"
-                  onClick={saveName}
-                  disabled={patch.isPending}
                 >
-                  <Check />
+                  <Pencil />
                 </Button>
-                <Button
-                  size="sm"
-                  mode="icon"
-                  variant="ghost"
-                  onClick={() => setEditingName(false)}
-                >
-                  <X />
-                </Button>
-              </div>
-            ) : (
-              <div className="flex items-center gap-2">
-                <h1 className="text-foreground truncate text-xl font-medium">
-                  {view.displayName}
-                </h1>
-                {editable ? (
-                  <Button
-                    size="sm"
-                    mode="icon"
-                    variant="ghost"
-                    className="text-muted-foreground shrink-0"
-                    onClick={() => {
-                      setNameDraft(view.displayName)
-                      setEditingName(true)
-                    }}
-                    aria-label={t('party.detail.rename')}
-                  >
-                    <Pencil />
-                  </Button>
-                ) : null}
-              </div>
-            )}
-            {/* En-tête épuré : seule la pastille de statut reste ici. Nature + rôles
-                sont désormais au rail (« Détails société »), plus rien en double. */}
-            <div className="mt-1 flex flex-wrap items-center gap-1.5">
+              ) : null}
               {stateBadges}
             </div>
-          </div>
+          )}
           <div className="ms-auto flex items-center gap-2">
             {/* Action phare (reproduction /_ref) — placeholder : le module Réservations
                 n'existe pas encore (voir docs/backlog/en-attente-donnees). */}
@@ -780,10 +774,10 @@ export function PartyDetailPage() {
       <Tabs
         value={tab}
         onValueChange={setTab}
-        className="px-4 lg:grid lg:grid-cols-[minmax(0,1fr)_38%] lg:px-7.5"
+        className="lg:grid lg:min-h-0 lg:grow lg:grid-cols-[minmax(0,1fr)_38%] lg:grid-rows-[auto_minmax(0,1fr)]"
       >
         {/* Haut-gauche : onglets. Ligne du bas + trait vertical portés par la cellule. */}
-        <div className="border-border flex items-end overflow-x-auto border-b lg:border-e lg:min-w-0 lg:pe-6 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+        <div className="border-border flex items-end overflow-x-auto border-b ps-4 lg:border-e lg:min-w-0 lg:ps-6 lg:pe-6 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
           <TabsList variant="line" size="md" className="gap-5 border-b-0!">
             <TabsTrigger value="overview">
               <LayoutGrid />
@@ -820,7 +814,7 @@ export function PartyDetailPage() {
         </div>
 
         {/* Haut-droite : titre « Détails société » repliable, sur la même ligne. */}
-        <div className="border-border flex items-center border-b lg:ps-6">
+        <div className="border-border flex items-center border-b pe-4 lg:ps-6 lg:pe-6">
           <button
             type="button"
             onClick={() => setRailCollapsed((v) => !v)}
@@ -842,8 +836,8 @@ export function PartyDetailPage() {
           </button>
         </div>
 
-        {/* Bas-gauche : contenu de l'onglet. Trait vertical porté par la cellule. */}
-        <div className="border-border lg:border-e lg:pe-6">
+        {/* Bas-gauche : contenu de l'onglet — SEULE zone gauche qui défile (scroll central). */}
+        <div className="fiche-scroll border-border ps-4 lg:min-h-0 lg:overflow-y-auto lg:border-e lg:ps-6 lg:pe-6">
           <TabsContent value="overview" className="flex flex-col gap-4 pt-4">
             {/* « À traiter » (reproduction /_ref) — en-tête + compteur, puis lignes
                 point de sévérité + texte + ACTION. Alertes réelles ; masqué si rien. */}
@@ -1393,8 +1387,8 @@ export function PartyDetailPage() {
         {/* Bas-droite : champs « Détails société » — pas de card. Le titre est déjà
             sur la bande du haut ; le trait vertical de la grille sépare du contenu.
             Rôles/État restent dans l'en-tête → « Voir tous les détails » ne perd rien. */}
-        <aside className="pt-4 lg:ps-6">
-          <div className="lg:sticky lg:top-6">
+        <aside className="fiche-scroll pe-4 pt-5 lg:min-h-0 lg:overflow-y-auto lg:ps-6 lg:pe-6">
+          <div>
             {!railCollapsed ? (
               <>
                 {/* Rail reproduit du /_ref : FINANCE → COORDONNÉES → IDENTITÉ.
@@ -1422,19 +1416,21 @@ export function PartyDetailPage() {
                     label={t('party.finance.effective')}
                   >
                     {creditGroups.length > 0 ? (
-                      creditGroups.map((g) => (
-                        <span key={g.key}>
-                          {g.serviceTypeCode ? (
-                            <span className="text-muted-foreground">
-                              {railServiceLabel(g.serviceTypeCode)}{' '}
+                      <span className="flex flex-col gap-0.5">
+                        {creditGroups.map((g) => (
+                          <span key={g.key}>
+                            {g.serviceTypeCode ? (
+                              <span className="text-muted-foreground">
+                                {railServiceLabel(g.serviceTypeCode)}{' '}
+                              </span>
+                            ) : null}
+                            <span className="text-foreground font-semibold">
+                              {formatMinor(g.effectiveMinor, g.currencyCode)}{' '}
+                              {g.currencyCode}
                             </span>
-                          ) : null}
-                          <span className="text-foreground font-semibold">
-                            {formatMinor(g.effectiveMinor, g.currencyCode)}{' '}
-                            {g.currencyCode}
                           </span>
-                        </span>
-                      ))
+                        ))}
+                      </span>
                     ) : (
                       <span className="text-muted-foreground">—</span>
                     )}
@@ -1502,18 +1498,22 @@ export function PartyDetailPage() {
                     }
                   />
                   <RailRow icon={<Phone />} label={t('party.column.phone')}>
-                    {view.phonePrimary ? (
-                      <PhoneDisplay value={view.phonePrimary} />
+                    {view.phonePrimary || view.phoneSecondary ? (
+                      <span className="inline-flex flex-wrap items-center gap-x-4 gap-y-1">
+                        {view.phonePrimary ? (
+                          <PhoneDisplay value={view.phonePrimary} />
+                        ) : null}
+                        {view.phoneSecondary ? (
+                          <PhoneDisplay value={view.phoneSecondary} />
+                        ) : null}
+                      </span>
                     ) : (
                       <span className="text-muted-foreground">—</span>
                     )}
-                    {view.phoneSecondary ? (
-                      <PhoneDisplay value={view.phoneSecondary} />
-                    ) : null}
                   </RailRow>
                   <RailRow icon={<Mail />} label={t('party.detail.email')}>
                     {view.email ? (
-                      <>
+                      <span className="inline-flex flex-col items-start gap-1">
                         <Ext href={`mailto:${view.email}`}>{view.email}</Ext>
                         <Badge
                           variant={view.emailVerifiedAt ? 'success' : 'warning'}
@@ -1524,7 +1524,7 @@ export function PartyDetailPage() {
                             ? t('party.detail.emailVerified')
                             : t('party.detail.emailNotVerified')}
                         </Badge>
-                      </>
+                      </span>
                     ) : (
                       <span className="text-muted-foreground">—</span>
                     )}

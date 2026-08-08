@@ -6,7 +6,7 @@ import fs from 'node:fs'
  * Clair + sombre — pour valider que les tokens tiennent dans les deux thèmes.
  */
 const SHOTS = 'e2e/screenshots'
-const EMAIL = 'yasmine.gharbi@demo.ostravel.tn'
+const EMAIL = 'karim.belhadj@demo.ostravel.tn'
 const PASSWORD = 'Demo-2026-OsTravel'
 
 test.use({ viewport: { width: 1600, height: 1180 } })
