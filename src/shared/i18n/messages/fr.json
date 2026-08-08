@@ -321,6 +321,7 @@
   "party.finance.validator": "Validateur",
   "party.finance.commonPolicy": "Commune",
   "party.finance.creditLimits": "Plafonds de crédit",
+  "party.finance.creditLimits.hint": "Plafond effectif = socle + rallonges actives, par portée.",
   "party.finance.creditLimits.empty": "Aucun plafond",
   "party.finance.managers": "Chargés de compte",
   "party.finance.managers.empty": "Aucun chargé de compte",

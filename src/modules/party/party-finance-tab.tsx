@@ -1,6 +1,5 @@
 import * as React from 'react'
-import { AlertTriangle, FileCheck, Pencil, Plus, X } from 'lucide-react'
-import { Badge, BadgeDot } from '@/shared/ui/badge'
+import { AlertTriangle, FileCheck, Pencil, X } from 'lucide-react'
 import { Button } from '@/shared/ui/button'
 import { formatMinor } from '@/shared/lib/money'
 import { cn } from '@/shared/lib/cn'
@@ -27,54 +26,81 @@ type Translate = (
   values?: Record<string, string | number>
 ) => string
 
-function FinanceSection({
+// En-tête de section façon /_ref : titre (+ sous-titre) à gauche, action-lien à droite.
+function FinanceHead({
   title,
-  hint,
-  empty,
+  subtitle,
   action,
-  count,
-  children,
+  onAction,
 }: {
   title: string
-  hint?: string
-  empty: string
-  action?: React.ReactNode
-  count: number
-  children: React.ReactNode
+  subtitle?: string
+  action?: string
+  onAction?: () => void
 }) {
   return (
-    <section className="border-border rounded-xl border p-4">
-      <div className="mb-2 flex items-start justify-between gap-2">
-        <div>
-          <h3 className="text-foreground text-sm font-semibold">{title}</h3>
-          {hint ? (
-            <p className="text-muted-foreground mt-0.5 text-xs">{hint}</p>
-          ) : null}
-        </div>
-        {action}
+    <div className="mb-3 flex items-start justify-between gap-2">
+      <div>
+        <h3 className="text-foreground text-sm font-semibold">{title}</h3>
+        {subtitle ? (
+          <p className="text-muted-foreground mt-0.5 text-xs">{subtitle}</p>
+        ) : null}
       </div>
-      {count > 0 ? (
-        children
-      ) : (
-        <p className="text-muted-foreground py-1 text-sm">{empty}</p>
-      )}
-    </section>
-  )
-}
-
-function Row({ children }: { children: React.ReactNode }) {
-  return (
-    <div className="border-border/60 flex flex-wrap items-center gap-x-3 gap-y-1 border-b py-2 text-sm last:border-0">
-      {children}
+      {action && onAction ? (
+        <button
+          type="button"
+          onClick={onAction}
+          className="text-primary shrink-0 text-xs font-medium hover:underline"
+        >
+          {action}
+        </button>
+      ) : null}
     </div>
   )
 }
 
-const scopeTag = (label: string) => (
-  <Badge variant="outline" size="sm">
-    {label}
-  </Badge>
-)
+// Interrupteur d'ÉTAT (lecture) — reflète un réglage ; l'édition passe par le crayon.
+function SwitchPill({ on }: { on: boolean }) {
+  return (
+    <span
+      className={cn(
+        'inline-flex h-5 w-9 shrink-0 items-center rounded-full p-0.5 transition-colors',
+        on ? 'bg-primary justify-end' : 'bg-muted justify-start'
+      )}
+    >
+      <span className="size-4 rounded-full bg-white shadow-sm" />
+    </span>
+  )
+}
+
+// Avatar (approbations) — initiales + couleur stable du nom.
+const AVATAR_COLORS = [
+  'bg-blue-500',
+  'bg-emerald-500',
+  'bg-violet-500',
+  'bg-amber-500',
+  'bg-rose-500',
+  'bg-teal-500',
+]
+function Avatar({ name }: { name: string }) {
+  const parts = name.trim().split(/\s+/)
+  const initials =
+    ((parts[0]?.[0] ?? '') + (parts[1]?.[0] ?? '')).toUpperCase() || '?'
+  let hash = 0
+  for (let i = 0; i < name.length; i += 1)
+    hash = (hash * 31 + name.charCodeAt(i)) >>> 0
+  const color = AVATAR_COLORS[hash % AVATAR_COLORS.length] ?? 'bg-blue-500'
+  return (
+    <span
+      className={cn(
+        'inline-flex size-8 shrink-0 items-center justify-center rounded-full text-xs font-semibold text-white',
+        color
+      )}
+    >
+      {initials}
+    </span>
+  )
+}
 
 /**
  * Onglet **Finance** — plafonds, chargés de compte, exonérations, politique, approbations.
@@ -166,18 +192,12 @@ export function PartyFinanceTab({
     })
   }, [creditLimits, todayIso])
 
-  const addButton = (label: string, onClick: () => void) => (
-    <Button size="sm" variant="outline" onClick={onClick}>
-      <Plus />
-      {label}
-    </Button>
-  )
-  const removeButton = (label: string, onClick: () => void, busy: boolean) => (
+  const removeBtn = (label: string, onClick: () => void, busy: boolean) => (
     <Button
       size="sm"
       mode="icon"
       variant="ghost"
-      className="text-muted-foreground ms-auto shrink-0"
+      className="text-muted-foreground shrink-0"
       aria-label={label}
       disabled={busy}
       onClick={onClick}
@@ -187,310 +207,341 @@ export function PartyFinanceTab({
   )
 
   return (
-    <div className="flex flex-col gap-4">
-      <FinanceSection
-        title={t('party.finance.creditLimits')}
-        count={creditGroups.length}
-        empty={t('party.finance.creditLimits.empty')}
-        action={
-          editable
-            ? addButton(t('party.finance.addCreditLimit'), () =>
-                setCreditOpen(true)
+    <div>
+      {/* 1) PLAFONDS — cartes de portée (style /_ref) : total EFFECTIF en gros +
+          décomposition socle/rallonges (point coloré ; rallonge expirée grisée). */}
+      <section className="mb-9">
+        <FinanceHead
+          title={t('party.finance.creditLimits')}
+          subtitle={t('party.finance.creditLimits.hint')}
+          action={editable ? t('party.finance.addCreditLimit') : undefined}
+          onAction={() => setCreditOpen(true)}
+        />
+        {creditGroups.length > 0 ? (
+          <div className="grid gap-4 sm:grid-cols-2">
+            {creditGroups.map((g) => {
+              const cur = g.currencyCode ?? ''
+              const socle = g.socle
+              return (
+                <div
+                  key={`${g.officeAccountId}|${cur}|${g.serviceTypeCode ?? ''}`}
+                  className="border-border rounded-xl border p-4"
+                >
+                  <div className="text-muted-foreground text-xs">
+                    {officeName(g.officeAccountId)}
+                    {g.serviceTypeCode
+                      ? ` · ${serviceTypeLabel(g.serviceTypeCode)}`
+                      : ''}
+                  </div>
+                  <div className="text-foreground mt-0.5 text-2xl font-semibold tabular-nums">
+                    {formatMinor(g.effectiveMinor, cur)}{' '}
+                    <span className="text-muted-foreground text-base font-normal">
+                      {cur}
+                    </span>
+                  </div>
+                  <div className="border-border/60 mt-3 flex flex-col gap-2 border-t pt-3 text-sm">
+                    {socle ? (
+                      <div className="flex items-center justify-between gap-2">
+                        <span className="text-foreground/80 inline-flex items-center gap-2">
+                          <span className="size-2 rounded-full bg-blue-500" />
+                          {t('party.finance.base')}
+                        </span>
+                        <span className="flex items-center gap-1">
+                          <span className="text-muted-foreground tabular-nums">
+                            {formatMinor(socle.amountMinor, cur)} {cur}
+                          </span>
+                          {editable
+                            ? removeBtn(
+                                t('party.finance.remove'),
+                                () => creditLimit.remove.mutate(socle.publicId),
+                                creditLimit.remove.isPending
+                              )
+                            : null}
+                        </span>
+                      </div>
+                    ) : null}
+                    {g.extensions.map((e) => {
+                      const expired = !!e.validTo && e.validTo < todayIso
+                      return (
+                        <div
+                          key={e.publicId}
+                          className={cn(
+                            'flex items-center justify-between gap-2',
+                            expired && 'opacity-50'
+                          )}
+                        >
+                          <span className="text-foreground/80 inline-flex items-center gap-2">
+                            <span className="size-2 rounded-full bg-amber-500" />
+                            {t('party.finance.extension')}
+                            {e.validTo ? (
+                              <span className="text-muted-foreground">
+                                ·{' '}
+                                {expired
+                                  ? t('party.finance.expired')
+                                  : t('party.finance.until', {
+                                      date: e.validTo,
+                                    })}
+                              </span>
+                            ) : null}
+                          </span>
+                          <span className="flex items-center gap-1">
+                            <span className="tabular-nums text-emerald-600">
+                              +{formatMinor(e.amountMinor, cur)} {cur}
+                            </span>
+                            {editable
+                              ? removeBtn(
+                                  t('party.finance.remove'),
+                                  () => creditLimit.remove.mutate(e.publicId),
+                                  creditLimit.remove.isPending
+                                )
+                              : null}
+                          </span>
+                        </div>
+                      )
+                    })}
+                  </div>
+                </div>
               )
-            : undefined
-        }
-      >
-        {creditGroups.map((g) => {
-          const cur = g.currencyCode ?? ''
-          const socle = g.socle
-          return (
-            <div
-              key={`${g.officeAccountId}|${cur}|${g.serviceTypeCode ?? ''}`}
-              className="border-border/60 flex flex-col gap-2 border-b py-3 last:border-0"
-            >
-              {/* Ligne de tête : portée à gauche, PLAFOND EFFECTIF (la réponse) à droite. */}
-              <div className="flex items-start justify-between gap-2">
-                <div className="flex flex-wrap items-center gap-2">
-                  {scopeTag(officeName(g.officeAccountId))}
-                  {g.serviceTypeCode ? (
-                    <span className="text-muted-foreground text-sm">
-                      {serviceTypeLabel(g.serviceTypeCode)}
+            })}
+          </div>
+        ) : (
+          <p className="text-muted-foreground text-sm">
+            {t('party.finance.creditLimits.empty')}
+          </p>
+        )}
+      </section>
+
+      {/* CHARGÉS DE COMPTE — style /_ref (avatar). (À déplacer vers Contacts & équipe ?) */}
+      <section className="mb-9">
+        <FinanceHead
+          title={t('party.finance.managers')}
+          action={editable ? t('party.finance.addManager') : undefined}
+          onAction={() => setManagerOpen(true)}
+        />
+        {managers.length > 0 ? (
+          <div className="border-border rounded-xl border">
+            {managers.map((entry) => (
+              <div
+                key={entry.publicId}
+                className="border-border/60 flex items-center justify-between gap-3 border-b px-4 py-3 last:border-0"
+              >
+                <span className="flex min-w-0 flex-wrap items-center gap-3">
+                  <Avatar name={entry.managerDisplayName} />
+                  <span className="text-foreground font-medium">
+                    {entry.managerDisplayName}
+                  </span>
+                  <span className="bg-muted text-muted-foreground rounded px-2 py-0.5 text-xs">
+                    {t(`party.finance.assignment.${entry.assignmentType}`)}
+                  </span>
+                  <span className="text-muted-foreground text-sm">
+                    {officeName(entry.officeAccountId)}
+                  </span>
+                </span>
+                {editable
+                  ? removeBtn(
+                      t('party.finance.remove'),
+                      () => manager.remove.mutate(entry.publicId),
+                      manager.remove.isPending
+                    )
+                  : null}
+              </div>
+            ))}
+          </div>
+        ) : (
+          <p className="text-muted-foreground text-sm">
+            {t('party.finance.managers.empty')}
+          </p>
+        )}
+      </section>
+
+      {/* EXONÉRATIONS — style /_ref : « Justificatif manquant » = alerte ambre + Ajouter. */}
+      <section className="mb-9">
+        <FinanceHead
+          title={t('party.finance.taxExemptions')}
+          action={editable ? t('party.finance.addExemption') : undefined}
+          onAction={() => {
+            setEditingExemption(null)
+            setExemptionOpen(true)
+          }}
+        />
+        {taxExemptions.length > 0 ? (
+          <div className="border-border rounded-xl border">
+            {taxExemptions.map((exemption) => (
+              <div
+                key={exemption.publicId}
+                className="border-border/60 flex items-center justify-between gap-3 border-b px-4 py-3 last:border-0"
+              >
+                <span className="flex min-w-0 flex-wrap items-center gap-3">
+                  {exemption.exemptionType ? (
+                    <span className="bg-muted text-muted-foreground rounded px-2 py-0.5 text-xs font-medium">
+                      {t(`party.finance.exemption.${exemption.exemptionType}`)}
                     </span>
                   ) : null}
-                </div>
-                <div className="text-end">
-                  <div className="text-muted-foreground text-[11px] tracking-wide uppercase">
-                    {t('party.finance.effective')}
-                  </div>
-                  <div className="text-foreground text-base font-semibold tabular-nums">
-                    {formatMinor(g.effectiveMinor, cur)} {cur}
-                  </div>
-                </div>
-              </div>
-              {/* Décomposition : socle + rallonges (grisées si expirées). */}
-              <div className="flex flex-col gap-1">
-                {socle ? (
-                  <div className="flex items-center justify-between gap-2 text-sm">
-                    <span className="text-muted-foreground">
-                      {t('party.finance.base')}
+                  <span className="text-foreground font-medium">
+                    {officeName(exemption.officeAccountId)}
+                  </span>
+                  {exemption.validFrom || exemption.validTo ? (
+                    <span className="text-muted-foreground text-sm tabular-nums">
+                      {exemption.validFrom ?? '…'} → {exemption.validTo ?? '…'}
                     </span>
-                    <span className="flex items-center gap-1">
-                      <span className="tabular-nums">
-                        {formatMinor(socle.amountMinor, cur)} {cur}
-                      </span>
-                      {editable
-                        ? removeButton(
-                            t('party.finance.remove'),
-                            () => creditLimit.remove.mutate(socle.publicId),
-                            creditLimit.remove.isPending
-                          )
-                        : null}
-                    </span>
-                  </div>
-                ) : null}
-                {g.extensions.map((e) => {
-                  const expired = !!e.validTo && e.validTo < todayIso
-                  return (
-                    <div
-                      key={e.publicId}
-                      className={cn(
-                        'flex items-center justify-between gap-2 text-sm',
-                        expired && 'opacity-50'
-                      )}
-                    >
-                      <span className="text-muted-foreground">
-                        {t('party.finance.extension')}
-                        {e.validTo
-                          ? ' · ' +
-                            (expired
-                              ? t('party.finance.expired')
-                              : t('party.finance.until', { date: e.validTo }))
-                          : ''}
-                      </span>
-                      <span className="flex items-center gap-1">
-                        <span className="tabular-nums">
-                          +{formatMinor(e.amountMinor, cur)} {cur}
-                        </span>
-                        {editable
-                          ? removeButton(
-                              t('party.finance.remove'),
-                              () => creditLimit.remove.mutate(e.publicId),
-                              creditLimit.remove.isPending
-                            )
-                          : null}
-                      </span>
-                    </div>
-                  )
-                })}
-              </div>
-            </div>
-          )
-        })}
-      </FinanceSection>
-
-      <FinanceSection
-        title={t('party.finance.managers')}
-        count={managers.length}
-        empty={t('party.finance.managers.empty')}
-        action={
-          editable
-            ? addButton(t('party.finance.addManager'), () =>
-                setManagerOpen(true)
-              )
-            : undefined
-        }
-      >
-        {managers.map((entry) => (
-          <Row key={entry.publicId}>
-            <span className="text-foreground font-medium">
-              {entry.managerDisplayName}
-            </span>
-            <span className="text-muted-foreground">
-              {t(`party.finance.assignment.${entry.assignmentType}`, {})}
-            </span>
-            {scopeTag(officeName(entry.officeAccountId))}
-            {editable
-              ? removeButton(
-                  t('party.finance.remove'),
-                  () => manager.remove.mutate(entry.publicId),
-                  manager.remove.isPending
-                )
-              : null}
-          </Row>
-        ))}
-      </FinanceSection>
-
-      <FinanceSection
-        title={t('party.finance.taxExemptions')}
-        count={taxExemptions.length}
-        empty={t('party.finance.taxExemptions.empty')}
-        action={
-          editable
-            ? addButton(t('party.finance.addExemption'), () => {
-                setEditingExemption(null)
-                setExemptionOpen(true)
-              })
-            : undefined
-        }
-      >
-        {taxExemptions.map((exemption) => (
-          <Row key={exemption.publicId}>
-            {scopeTag(officeName(exemption.officeAccountId))}
-            {exemption.exemptionType ? (
-              <span className="text-foreground">
-                {t(`party.finance.exemption.${exemption.exemptionType}`, {})}
-              </span>
-            ) : null}
-            {exemption.validFrom || exemption.validTo ? (
-              <span className="text-muted-foreground tabular-nums">
-                {exemption.validFrom ?? '…'} → {exemption.validTo ?? '…'}
-              </span>
-            ) : null}
-            {exemption.hasCertificate ? (
-              exemption.certificateNumber ? (
-                <span className="text-muted-foreground">
-                  {t('party.finance.certificateN', {
-                    n: exemption.certificateNumber,
-                  })}
+                  ) : null}
                 </span>
-              ) : null
-            ) : (
-              <Badge variant="warning" appearance="light" size="sm">
-                {t('party.finance.noCertificate')}
-              </Badge>
-            )}
-            {editable ? (
-              <span className="ms-auto flex items-center gap-1">
-                {!exemption.hasCertificate ? (
-                  <Button
-                    size="sm"
-                    variant="outline"
-                    onClick={() => {
-                      setEditingExemption(exemption)
-                      setExemptionOpen(true)
-                    }}
-                  >
-                    <FileCheck />
-                    {t('party.finance.certificate')}
-                  </Button>
-                ) : null}
-                <Button
-                  size="sm"
-                  mode="icon"
-                  variant="ghost"
-                  className="text-muted-foreground shrink-0"
-                  aria-label={t('party.finance.remove')}
-                  disabled={taxExemption.remove.isPending}
-                  onClick={() => taxExemption.remove.mutate(exemption.publicId)}
-                >
-                  <X />
-                </Button>
-              </span>
-            ) : null}
-          </Row>
-        ))}
-      </FinanceSection>
+                <span className="flex shrink-0 items-center gap-3">
+                  {!exemption.hasCertificate ? (
+                    <span className="inline-flex items-center gap-1.5 rounded-full bg-[var(--color-warning-accent,var(--color-yellow-100))] px-2.5 py-1 text-xs font-medium text-[var(--color-warning-foreground,var(--color-yellow-800))]">
+                      <AlertTriangle className="size-3.5" />
+                      {t('party.finance.noCertificate')}
+                    </span>
+                  ) : exemption.certificateNumber ? (
+                    <span className="text-muted-foreground text-sm">
+                      {t('party.finance.certificateN', {
+                        n: exemption.certificateNumber,
+                      })}
+                    </span>
+                  ) : null}
+                  {editable && !exemption.hasCertificate ? (
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() => {
+                        setEditingExemption(exemption)
+                        setExemptionOpen(true)
+                      }}
+                    >
+                      <FileCheck />
+                      {t('party.finance.certificate')}
+                    </Button>
+                  ) : null}
+                  {editable
+                    ? removeBtn(
+                        t('party.finance.remove'),
+                        () => taxExemption.remove.mutate(exemption.publicId),
+                        taxExemption.remove.isPending
+                      )
+                    : null}
+                </span>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <p className="text-muted-foreground text-sm">
+            {t('party.finance.taxExemptions.empty')}
+          </p>
+        )}
+      </section>
 
-      <FinanceSection
-        title={t('party.finance.commercialPolicy')}
-        hint={t('party.finance.commercialPolicy.hint')}
-        count={commercialPolicies.length}
-        empty={t('party.finance.commercialPolicy.empty')}
-        action={
-          editable
-            ? addButton(t('party.finance.setPolicy'), () => {
-                setEditingPolicy(null)
-                setPolicyOpen(true)
-              })
-            : undefined
-        }
-      >
-        {commercialPolicies.map((policyItem) => (
-          <Row key={policyItem.officeAccountId ?? 'common'}>
-            {scopeTag(
-              policyItem.officeAccountId == null
-                ? t('party.finance.commonPolicy')
-                : officeName(policyItem.officeAccountId)
-            )}
-            <Badge
-              variant={policyItem.forceOnRequest ? 'success' : 'secondary'}
-              appearance="light"
-              size="sm"
-            >
-              <BadgeDot />
-              {t('party.finance.forceOnRequest')} ·{' '}
-              {t(policyItem.forceOnRequest ? 'common.on' : 'common.off')}
-            </Badge>
-            <Badge
-              variant={
-                policyItem.blockWhenInsufficientBalance ? 'success' : 'secondary'
-              }
-              appearance="light"
-              size="sm"
-            >
-              <BadgeDot />
-              {t('party.finance.blockInsufficient')} ·{' '}
-              {t(
-                policyItem.blockWhenInsufficientBalance
-                  ? 'common.on'
-                  : 'common.off'
-              )}
-            </Badge>
-            {editable ? (
-              <Button
-                size="sm"
-                mode="icon"
-                variant="ghost"
-                className="text-muted-foreground ms-auto shrink-0"
-                aria-label={t('party.finance.setPolicy')}
-                onClick={() => {
-                  setEditingPolicy(policyItem)
-                  setPolicyOpen(true)
-                }}
+      {/* POLITIQUE COMMERCIALE — style /_ref : une carte par société, réglages en
+          INTERRUPTEURS d'état (édition via le crayon → sheet). */}
+      <section className="mb-9">
+        <FinanceHead
+          title={t('party.finance.commercialPolicy')}
+          subtitle={t('party.finance.commercialPolicy.hint')}
+          action={editable ? t('party.finance.setPolicy') : undefined}
+          onAction={() => {
+            setEditingPolicy(null)
+            setPolicyOpen(true)
+          }}
+        />
+        {commercialPolicies.length > 0 ? (
+          <div className="flex flex-col gap-4">
+            {commercialPolicies.map((policyItem) => (
+              <div
+                key={policyItem.officeAccountId ?? 'common'}
+                className="border-border rounded-xl border p-4"
               >
-                <Pencil />
-              </Button>
-            ) : null}
-          </Row>
-        ))}
-      </FinanceSection>
+                <div className="mb-2 flex items-center justify-between gap-2">
+                  <span className="text-muted-foreground text-xs font-medium">
+                    {policyItem.officeAccountId == null
+                      ? t('party.finance.commonPolicy')
+                      : officeName(policyItem.officeAccountId)}
+                  </span>
+                  {editable ? (
+                    <Button
+                      size="sm"
+                      mode="icon"
+                      variant="ghost"
+                      className="text-muted-foreground shrink-0"
+                      aria-label={t('party.finance.setPolicy')}
+                      onClick={() => {
+                        setEditingPolicy(policyItem)
+                        setPolicyOpen(true)
+                      }}
+                    >
+                      <Pencil />
+                    </Button>
+                  ) : null}
+                </div>
+                <div className="divide-border/60 flex flex-col divide-y">
+                  <div className="flex items-center justify-between gap-3 py-2.5">
+                    <span className="text-foreground text-sm">
+                      {t('party.finance.forceOnRequest')}
+                    </span>
+                    <SwitchPill on={policyItem.forceOnRequest} />
+                  </div>
+                  <div className="flex items-center justify-between gap-3 py-2.5">
+                    <span className="text-foreground text-sm">
+                      {t('party.finance.blockInsufficient')}
+                    </span>
+                    <SwitchPill on={policyItem.blockWhenInsufficientBalance} />
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <p className="text-muted-foreground text-sm">
+            {t('party.finance.commercialPolicy.empty')}
+          </p>
+        )}
+      </section>
 
-      <FinanceSection
-        title={t('party.finance.approvalRules')}
-        hint={t('party.finance.approvalRules.hint')}
-        count={approvalRules.length}
-        empty={t('party.finance.approvalRules.empty')}
-        action={
-          editable
-            ? addButton(t('party.finance.addApprovalRule'), () =>
-                setApprovalOpen(true)
-              )
-            : undefined
-        }
-      >
-        {approvalRules.map((rule) => (
-          <Row key={rule.publicId}>
-            {scopeTag(functionLabel(rule.functionCode))}
-            <span className="text-foreground font-medium">
-              {rule.validatorDisplayName}
-            </span>
-            {scopeTag(officeName(rule.officeAccountId))}
-            {rule.validatorStillQualified ? null : (
-              <Badge variant="destructive" size="sm" className="gap-1">
-                <AlertTriangle className="size-3" />
-                {t('party.finance.validatorLeft')}
-              </Badge>
-            )}
-            {editable
-              ? removeButton(
-                  t('party.finance.remove'),
-                  () => approvalRule.remove.mutate(rule.publicId),
-                  approvalRule.remove.isPending
-                )
-              : null}
-          </Row>
-        ))}
-      </FinanceSection>
+      {/* APPROBATIONS — style /_ref : avatar + validateur + fonction ; alerte ambre
+          si le validateur n'est plus habilité (pas de seuil de montant). */}
+      <section>
+        <FinanceHead
+          title={t('party.finance.approvalRules')}
+          subtitle={t('party.finance.approvalRules.hint')}
+          action={editable ? t('party.finance.addApprovalRule') : undefined}
+          onAction={() => setApprovalOpen(true)}
+        />
+        {approvalRules.length > 0 ? (
+          <div className="border-border rounded-xl border">
+            {approvalRules.map((rule) => (
+              <div
+                key={rule.publicId}
+                className="border-border/60 flex items-center justify-between gap-3 border-b px-4 py-3 last:border-0"
+              >
+                <span className="flex min-w-0 flex-wrap items-center gap-3">
+                  <Avatar name={rule.validatorDisplayName} />
+                  <span className="text-foreground font-medium">
+                    {rule.validatorDisplayName}
+                  </span>
+                  <span className="bg-muted text-muted-foreground rounded px-2 py-0.5 text-xs">
+                    {functionLabel(rule.functionCode)}
+                  </span>
+                  {!rule.validatorStillQualified ? (
+                    <span className="inline-flex items-center gap-1.5 rounded-full bg-[var(--color-warning-accent,var(--color-yellow-100))] px-2.5 py-1 text-xs font-medium text-[var(--color-warning-foreground,var(--color-yellow-800))]">
+                      <AlertTriangle className="size-3.5" />
+                      {t('party.finance.validatorLeft')}
+                    </span>
+                  ) : null}
+                </span>
+                {editable
+                  ? removeBtn(
+                      t('party.finance.remove'),
+                      () => approvalRule.remove.mutate(rule.publicId),
+                      approvalRule.remove.isPending
+                    )
+                  : null}
+              </div>
+            ))}
+          </div>
+        ) : (
+          <p className="text-muted-foreground text-sm">
+            {t('party.finance.approvalRules.empty')}
+          </p>
+        )}
+      </section>
 
       <PartyCreditLimitSheet
         open={creditOpen}

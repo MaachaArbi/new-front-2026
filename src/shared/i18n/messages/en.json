@@ -321,6 +321,7 @@
   "party.finance.validator": "Validator",
   "party.finance.commonPolicy": "Common",
   "party.finance.creditLimits": "Credit limits",
+  "party.finance.creditLimits.hint": "Effective limit = base + active extensions, per scope.",
   "party.finance.creditLimits.empty": "No credit limit",
   "party.finance.managers": "Account managers",
   "party.finance.managers.empty": "No account manager",

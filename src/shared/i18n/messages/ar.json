@@ -321,6 +321,7 @@
   "party.finance.validator": "المُوافِق",
   "party.finance.commonPolicy": "عامة",
   "party.finance.creditLimits": "سقوف الائتمان",
+  "party.finance.creditLimits.hint": "السقف الفعلي = الأساس + التمديدات النشطة، حسب النطاق.",
   "party.finance.creditLimits.empty": "لا يوجد سقف",
   "party.finance.managers": "مدراء الحساب",
   "party.finance.managers.empty": "لا يوجد مدير حساب",
