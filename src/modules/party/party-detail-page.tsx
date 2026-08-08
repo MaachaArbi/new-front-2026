@@ -4,29 +4,36 @@ import { useLocation, useNavigate, useParams } from 'react-router-dom'
 import {
   AlertTriangle,
   ArrowLeft,
+  Building2,
   Check,
   ChevronDown,
   ChevronRight,
+  DollarSign,
   FileText,
+  Globe,
+  Handshake,
   History,
   LayoutGrid,
+  ListChecks,
   Mail,
+  MapPin,
   MoreVertical,
   Pencil,
+  Phone,
   Plus,
-  ShieldAlert,
+  StickyNote,
   Trash2,
   Users,
   UserX,
   Wallet,
   X,
-  type LucideIcon,
 } from 'lucide-react'
 import { cn } from '@/shared/lib/cn'
 import { useI18n } from '@/app/providers/i18n-provider'
 import { useAuth } from '@/app/providers/auth-provider'
 import { officesOf, officeCountryOf } from '@/shared/auth/me'
 import { useReferentials, codeLabel } from '@/shared/referentials'
+import { formatMinor } from '@/shared/lib/money'
 import {
   usePartyAccount,
   usePatchPartyAccount,
@@ -99,35 +106,6 @@ function filled(items: FieldItem[]): FieldItem[] {
   return items.filter((i) => i.value != null && i.value !== '')
 }
 
-function Field({
-  label,
-  children,
-}: {
-  label: string
-  children: React.ReactNode
-}) {
-  return (
-    <div className="flex items-start justify-between gap-4 py-1.5">
-      <span className="text-muted-foreground shrink-0 text-sm">{label}</span>
-      <span className="text-foreground min-w-0 text-end text-sm break-words">
-        {children}
-      </span>
-    </div>
-  )
-}
-
-function FieldList({ items }: { items: FieldItem[] }) {
-  return (
-    <div className="flex flex-col">
-      {items.map((item) => (
-        <Field key={item.label} label={item.label}>
-          {item.value}
-        </Field>
-      ))}
-    </div>
-  )
-}
-
 function Section({
   title,
   action,
@@ -145,6 +123,48 @@ function Section({
       </div>
       {children}
     </section>
+  )
+}
+
+// Rail façon /_ref : titre de groupe + ligne « icône · libellé · valeur (à droite) ».
+function RailGroupTitle({
+  title,
+  action,
+}: {
+  title: string
+  action?: React.ReactNode
+}) {
+  return (
+    <div className="mt-5 mb-1 flex items-center justify-between gap-2 first:mt-0">
+      <span className="text-muted-foreground text-[11px] font-semibold tracking-wider uppercase">
+        {title}
+      </span>
+      {action}
+    </div>
+  )
+}
+
+function RailRow({
+  icon,
+  label,
+  children,
+}: {
+  icon: React.ReactNode
+  label: string
+  children: React.ReactNode
+}) {
+  return (
+    <div className="grid grid-cols-[minmax(0,9.5rem)_1fr] items-start gap-3 py-2.5">
+      <span className="text-muted-foreground flex items-center gap-2">
+        <span className="[&_svg]:text-muted-foreground [&_svg]:size-4">
+          {icon}
+        </span>
+        {label}
+      </span>
+      <span className="flex min-w-0 flex-col items-end gap-0.5 text-end">
+        {children}
+      </span>
+    </div>
   )
 }
 
@@ -432,68 +452,18 @@ export function PartyDetailPage() {
         ]),
   ])
 
-  const contactItems = filled([
-    {
-      label: t('party.detail.email'),
-      // Badge vert/rouge (lecture seule, module Core) : la présence d'`emailVerifiedAt`
-      // = vérifié. Pas de bouton — la vérification n'appartient pas à cette fiche.
-      value: view.email ? (
-        <span className="inline-flex flex-wrap items-center gap-2">
-          <Ext href={`mailto:${view.email}`}>{view.email}</Ext>
-          <Badge
-            variant={view.emailVerifiedAt ? 'success' : 'destructive'}
-            size="sm"
-          >
-            {view.emailVerifiedAt
-              ? t('party.detail.emailVerified')
-              : t('party.detail.emailNotVerified')}
-          </Badge>
-        </span>
-      ) : null,
-    },
-    {
-      label: t('party.column.phone'),
-      value: view.phonePrimary ? (
-        <PhoneDisplay value={view.phonePrimary} />
-      ) : null,
-    },
-    {
-      label: t('party.detail.field.phoneSecondary'),
-      value: view.phoneSecondary ? (
-        <PhoneDisplay value={view.phoneSecondary} />
-      ) : null,
-    },
-    {
-      label: t('party.column.country'),
-      value: view.country ? <CountryDisplay code={view.country} /> : null,
-    },
-  ])
-
-  // Devises toujours affichées : `null` n'est pas « vide » mais « suit le défaut du bureau ».
+  // Devises : `null` n'est pas « vide » mais « suit le défaut du bureau » — libellé dédié.
   const currencyDefault = (
     <span className="text-muted-foreground text-sm">
       {t('party.detail.currencyDefault')}
     </span>
   )
-  const currencyItems = [
-    {
-      label: t('party.detail.currencyDisplay'),
-      value: currencyText(view.displayCurrencyCode) ?? currencyDefault,
-    },
-    {
-      label: t('party.detail.currencyBilling'),
-      value: currencyText(view.billingCurrencyCode) ?? currencyDefault,
-    },
-  ]
 
   const parent = view.parentAccount
 
   const availableRoles = (referentials?.roles ?? []).filter(
     (r) => !view.roles.includes(r.code)
   )
-  const roleErr = roleMutations.assign.error ?? roleMutations.revoke.error
-  const roleError = roleErr instanceof ApiError ? roleErr.message : null
-
   const interlocutorErr = functionMutations.revoke.error
   const interlocutorError =
     interlocutorErr instanceof ApiError ? interlocutorErr.message : null
@@ -502,96 +472,24 @@ export function PartyDetailPage() {
   const editable = view.anonymizedAt == null
   const officeCountry = me ? officeCountryOf(me) : null
 
-  // Rôles — remontés au rail principal (visibles + colorés). Source unique : rendu
-  // directement dans l'Identité, gestion add/remove conservée. Plus sous « Voir tous les détails ».
-  const rolesSection = (
-    <Section
-      title={t('party.column.roles')}
-      action={
-        editable ? (
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button
-                size="sm"
-                mode="icon"
-                variant="ghost"
-                className="text-muted-foreground shrink-0"
-                aria-label={t('party.detail.addRole')}
-              >
-                <Plus />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="min-w-44">
-              {availableRoles.length > 0 ? (
-                availableRoles.map((role) => (
-                  <DropdownMenuItem
-                    key={role.code}
-                    onSelect={() => roleMutations.assign.mutate(role.code)}
-                  >
-                    {role.label}
-                  </DropdownMenuItem>
-                ))
-              ) : (
-                <DropdownMenuItem disabled>
-                  {t('party.detail.noMoreRoles')}
-                </DropdownMenuItem>
-              )}
-            </DropdownMenuContent>
-          </DropdownMenu>
-        ) : undefined
-      }
-    >
-      <div className="flex flex-col gap-1.5 py-1.5">
-        <div className="flex flex-wrap gap-1">
-          {view.roles.length > 0 ? (
-            view.roles.map((code) => (
-              <Badge
-                key={code}
-                variant={ROLE_VARIANT[code] ?? 'secondary'}
-                appearance="light"
-                size="sm"
-                className="gap-1 pe-1"
-              >
-                {roleLabel(code)}
-                {editable ? (
-                  <button
-                    type="button"
-                    onClick={() => roleMutations.revoke.mutate(code)}
-                    aria-label={t('party.detail.removeRole')}
-                    className="text-muted-foreground hover:text-foreground rounded-sm"
-                  >
-                    <X className="size-3" />
-                  </button>
-                ) : null}
-              </Badge>
-            ))
-          ) : (
-            <span className="text-muted-foreground text-sm">—</span>
-          )}
-        </div>
-        {roleError ? (
-          <p className="text-destructive text-xs">{roleError}</p>
-        ) : null}
-      </div>
-    </Section>
-  )
-
   // « À traiter » (conformité + finance) — agrégé depuis les données DÉJÀ chargées,
   // aucune requête en plus. Portée restreinte (décision produit) ; panneau masqué si vide.
   const now = new Date()
   const daysUntil = (iso: string) =>
     Math.ceil((new Date(iso).getTime() - now.getTime()) / 86_400_000)
+  // Format `/_ref` : point de sévérité (rose/amber) + texte + action (CTA) qui mène là
+  // où on résout l'alerte. `onCta` absent = pas d'action (ex. e-mail : vérif = module Core).
   const todoAlerts: {
     key: string
-    Icon: LucideIcon
-    iconClass: string
+    sev: 'rose' | 'amber'
     text: React.ReactNode
+    cta?: string
+    onCta?: () => void
   }[] = []
   if (view.email && !view.emailVerifiedAt) {
     todoAlerts.push({
       key: 'email',
-      Icon: Mail,
-      iconClass: 'text-blue-500',
+      sev: 'rose',
       text: t('party.todo.emailUnverified'),
     })
   }
@@ -599,9 +497,10 @@ export function PartyDetailPage() {
   if (exoNoCert > 0) {
     todoAlerts.push({
       key: 'exo',
-      Icon: ShieldAlert,
-      iconClass: 'text-amber-500',
+      sev: 'rose',
       text: t('party.todo.exemptionNoCertificate', { count: exoNoCert }),
+      cta: t('party.todo.cta.addCertificate'),
+      onCta: () => setTab('finance'),
     })
   }
   view.approvalRules
@@ -609,11 +508,12 @@ export function PartyDetailPage() {
     .forEach((r) =>
       todoAlerts.push({
         key: `val-${r.publicId}`,
-        Icon: ShieldAlert,
-        iconClass: 'text-destructive',
+        sev: 'rose',
         text: t('party.todo.validatorUnqualified', {
           name: r.validatorDisplayName,
         }),
+        cta: t('party.todo.cta.replace'),
+        onCta: () => setTab('finance'),
       })
     )
   view.creditLimits
@@ -624,16 +524,66 @@ export function PartyDetailPage() {
     .forEach(({ c, d }) =>
       todoAlerts.push({
         key: `ext-${c.publicId}`,
-        Icon: AlertTriangle,
-        iconClass: d < 0 ? 'text-destructive' : 'text-amber-500',
+        sev: d < 0 ? 'rose' : 'amber',
         text: t(
           d < 0
             ? 'party.todo.extensionExpired'
             : 'party.todo.extensionExpiring',
           { date: fmtDate(c.validTo) ?? '' }
         ),
+        cta: t('party.todo.cta.view'),
+        onCta: () => setTab('finance'),
       })
     )
+
+  // Plafond effectif par portée (pour le rail Finance) — même calcul que l'onglet Finance :
+  // socle + Σ rallonges actives, BigInt sur `amountMinor` (chaîne). Groupé société·devise·service.
+  const railServiceLabel = codeLabel(referentials?.serviceTypes)
+  const todayIso = now.toISOString().slice(0, 10)
+  const creditGroups = (() => {
+    const map = new Map<
+      string,
+      {
+        officeAccountId: number
+        currencyCode: string | null
+        serviceTypeCode: string | null
+        socleMinor: bigint
+        activeMinor: bigint
+      }
+    >()
+    for (const limit of view.creditLimits) {
+      const key = `${limit.officeAccountId}|${limit.currencyCode ?? ''}|${limit.serviceTypeCode ?? ''}`
+      let g = map.get(key)
+      if (!g) {
+        g = {
+          officeAccountId: limit.officeAccountId,
+          currencyCode: limit.currencyCode,
+          serviceTypeCode: limit.serviceTypeCode,
+          socleMinor: 0n,
+          activeMinor: 0n,
+        }
+        map.set(key, g)
+      }
+      if (limit.isExtension) {
+        if (!limit.validTo || limit.validTo >= todayIso)
+          g.activeMinor += BigInt(limit.amountMinor)
+      } else {
+        g.socleMinor += BigInt(limit.amountMinor)
+      }
+    }
+    return Array.from(map.values()).map((g) => ({
+      key: `${g.officeAccountId}|${g.currencyCode ?? ''}|${g.serviceTypeCode ?? ''}`,
+      currencyCode: g.currencyCode ?? '',
+      serviceTypeCode: g.serviceTypeCode,
+      effectiveMinor: (g.socleMinor + g.activeMinor).toString(),
+    }))
+  })()
+
+  // Localisation du rail (reproduction /_ref) — l'adresse principale, sinon la 1re.
+  const primaryAddress = addresses.find((a) => a.isPrimary) ?? addresses[0]
+  const railLocation = primaryAddress
+    ? [primaryAddress.line1, primaryAddress.city].filter(Boolean).join(', ')
+    : null
 
   // Activité récente — libellé du sujet réutilisé de l'onglet Historique (garde-fou
   // KNOWN_SUBJECTS : sujet inconnu → code brut). Verbe = participe (`op.*`).
@@ -752,7 +702,15 @@ export function PartyDetailPage() {
               {stateBadges}
             </div>
           </div>
-          <div className="ms-auto">
+          <div className="ms-auto flex items-center gap-2">
+            {/* Action phare (reproduction /_ref) — placeholder : le module Réservations
+                n'existe pas encore (voir docs/backlog/en-attente-donnees). */}
+            {editable ? (
+              <Button size="sm">
+                <Plus />
+                {t('party.detail.newBooking')}
+              </Button>
+            ) : null}
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button
@@ -825,7 +783,7 @@ export function PartyDetailPage() {
         className="px-4 lg:grid lg:grid-cols-[minmax(0,1fr)_38%] lg:px-7.5"
       >
         {/* Haut-gauche : onglets. Ligne du bas + trait vertical portés par la cellule. */}
-        <div className="border-border flex items-end border-b lg:border-e lg:pe-6">
+        <div className="border-border flex items-end overflow-x-auto border-b lg:border-e lg:min-w-0 lg:pe-6 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
           <TabsList variant="line" size="md" className="gap-5 border-b-0!">
             <TabsTrigger value="overview">
               <LayoutGrid />
@@ -842,6 +800,14 @@ export function PartyDetailPage() {
             <TabsTrigger value="team">
               <Users />
               {t('party.detail.tab.team')}
+            </TabsTrigger>
+            <TabsTrigger value="notes">
+              <StickyNote />
+              {t('party.detail.tab.notes')}
+            </TabsTrigger>
+            <TabsTrigger value="tasks">
+              <ListChecks />
+              {t('party.detail.tab.tasks')}
             </TabsTrigger>
             <TabsTrigger value="documents">
               <FileText />
@@ -879,33 +845,170 @@ export function PartyDetailPage() {
         {/* Bas-gauche : contenu de l'onglet. Trait vertical porté par la cellule. */}
         <div className="border-border lg:border-e lg:pe-6">
           <TabsContent value="overview" className="flex flex-col gap-4 pt-4">
-            {/* « À traiter » — alertes conformité + finance, masqué si rien à traiter.
-                100 % données réelles ; l'agrégation vit dans le composant (pas de requête). */}
+            {/* « À traiter » (reproduction /_ref) — en-tête + compteur, puis lignes
+                point de sévérité + texte + ACTION. Alertes réelles ; masqué si rien. */}
             {todoAlerts.length > 0 ? (
-              <div className="border-border rounded-xl border p-4">
-                <div className="mb-3 flex items-center gap-2">
-                  <h3 className="text-foreground text-sm font-semibold">
-                    {t('party.todo.title')}
-                  </h3>
-                  <Badge variant="warning" appearance="light" size="sm">
+              <div>
+                <div className="text-foreground mb-2 flex items-center gap-2 text-sm font-semibold">
+                  <AlertTriangle className="size-4 text-amber-500" />
+                  {t('party.todo.title')}
+                  <Badge
+                    variant="warning"
+                    appearance="light"
+                    size="sm"
+                    className="rounded-full"
+                  >
                     {todoAlerts.length}
                   </Badge>
                 </div>
-                <ul className="flex flex-col gap-2">
+                <div className="border-border rounded-xl border">
                   {todoAlerts.map((a) => (
-                    <li
+                    <div
                       key={a.key}
-                      className="flex items-start gap-2.5 text-sm"
+                      className="border-border/60 flex items-center justify-between gap-3 border-b px-4 py-3 text-sm last:border-0"
                     >
-                      <a.Icon
-                        className={cn('mt-0.5 size-4 shrink-0', a.iconClass)}
-                      />
-                      <span className="text-foreground">{a.text}</span>
-                    </li>
+                      <span className="flex min-w-0 items-center gap-3">
+                        <span
+                          className={cn(
+                            'size-2 shrink-0 rounded-full',
+                            a.sev === 'rose' ? 'bg-rose-500' : 'bg-amber-500'
+                          )}
+                        />
+                        <span className="text-foreground truncate">
+                          {a.text}
+                        </span>
+                      </span>
+                      {a.cta ? (
+                        <button
+                          type="button"
+                          onClick={a.onCta}
+                          className="text-primary shrink-0 text-sm font-medium hover:underline"
+                        >
+                          {a.cta}
+                        </button>
+                      ) : null}
+                    </div>
                   ))}
-                </ul>
+                </div>
               </div>
             ) : null}
+
+            {/* Aperçu (reproduction /_ref) : Identité (identifiants légaux) +
+                Rattachements (bureau · agence mère · agences filles) — données réelles. */}
+            <div>
+              <div className="text-foreground mb-2 flex items-center gap-2 text-sm font-semibold">
+                <LayoutGrid className="text-muted-foreground size-4" />
+                {t('party.detail.overview.summary')}
+              </div>
+              <div className="grid gap-4 sm:grid-cols-2">
+                <div className="border-border rounded-xl border p-4">
+                  <div className="mb-3 flex items-center justify-between gap-2">
+                    <span className="text-foreground text-sm font-semibold">
+                      {t('party.detail.section.identity')}
+                    </span>
+                    {editable ? (
+                      <Button
+                        size="sm"
+                        mode="icon"
+                        variant="ghost"
+                        className="text-muted-foreground shrink-0"
+                        onClick={() => setIdentityOpen(true)}
+                        aria-label={t('party.detail.editIdentity')}
+                      >
+                        <Pencil />
+                      </Button>
+                    ) : null}
+                  </div>
+                  {identityItems.length > 0 ? (
+                    <div className="flex flex-col gap-3 text-sm">
+                      {identityItems.map((it, i) => (
+                        <div
+                          key={i}
+                          className="flex items-center justify-between gap-2"
+                        >
+                          <span className="text-muted-foreground">
+                            {it.label}
+                          </span>
+                          <span className="text-foreground text-end font-medium">
+                            {it.value}
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <p className="text-muted-foreground text-sm">
+                      {t('party.detail.identityPending')}
+                    </p>
+                  )}
+                </div>
+                <div className="border-border rounded-xl border p-4">
+                  <div className="mb-3">
+                    <span className="text-foreground text-sm font-semibold">
+                      {t('party.detail.overview.attachments')}
+                    </span>
+                  </div>
+                  <div className="flex flex-col gap-3 text-sm">
+                    {view.offices.map((o) => (
+                      <div
+                        key={`${o.publicId}-${o.relationType}`}
+                        className="flex items-center justify-between gap-2"
+                      >
+                        <span className="text-muted-foreground">
+                          {t('party.detail.overview.office')}
+                        </span>
+                        <span className="text-foreground inline-flex items-center gap-2 font-medium">
+                          {o.displayName}
+                          <Badge
+                            variant="secondary"
+                            appearance="light"
+                            size="sm"
+                          >
+                            {roleLabel(o.relationType)}
+                          </Badge>
+                        </span>
+                      </div>
+                    ))}
+                    {parent ? (
+                      <div className="flex items-center justify-between gap-2">
+                        <span className="text-muted-foreground">
+                          {t('party.detail.overview.parent')}
+                        </span>
+                        <button
+                          type="button"
+                          onClick={() => navigate(`/parties/${parent.publicId}`)}
+                          className="text-primary font-medium hover:underline"
+                        >
+                          {parent.displayName}
+                        </button>
+                      </div>
+                    ) : null}
+                    {view.children.length > 0 ? (
+                      <div className="flex items-center justify-between gap-2">
+                        <span className="text-muted-foreground">
+                          {t('party.detail.overview.children')}
+                        </span>
+                        <Badge
+                          variant="secondary"
+                          appearance="light"
+                          size="sm"
+                          className="gap-1"
+                        >
+                          <Users className="size-3.5" />
+                          {t('party.detail.overview.childrenCount', {
+                            count: view.children.length,
+                          })}
+                        </Badge>
+                      </div>
+                    ) : null}
+                    {view.offices.length === 0 &&
+                    !parent &&
+                    view.children.length === 0 ? (
+                      <p className="text-muted-foreground">—</p>
+                    ) : null}
+                  </div>
+                </div>
+              </div>
+            </div>
 
             {/* Adresses */}
             <div className="border-border rounded-xl border p-4">
@@ -1260,6 +1363,22 @@ export function PartyDetailPage() {
             </div>
           </TabsContent>
 
+          {/* Notes / Tâches — placeholders (features sans back), reproduits du /_ref. */}
+          <TabsContent value="notes" className="pt-4">
+            <div className="border-border bg-muted/20 rounded-xl border border-dashed p-6">
+              <p className="text-muted-foreground text-sm">
+                {t('party.detail.soon.tabBody')}
+              </p>
+            </div>
+          </TabsContent>
+          <TabsContent value="tasks" className="pt-4">
+            <div className="border-border bg-muted/20 rounded-xl border border-dashed p-6">
+              <p className="text-muted-foreground text-sm">
+                {t('party.detail.soon.tabBody')}
+              </p>
+            </div>
+          </TabsContent>
+
           <TabsContent value="documents" className="pt-4">
             <PartyDocumentsCard
               publicId={id}
@@ -1278,77 +1397,213 @@ export function PartyDetailPage() {
           <div className="lg:sticky lg:top-6">
             {!railCollapsed ? (
               <>
-                <Section
-                  title={t('party.detail.section.identity')}
-                  action={
-                    editable ? (
-                      <Button
+                {/* Rail reproduit du /_ref : FINANCE → COORDONNÉES → IDENTITÉ.
+                    Valeurs à droite ; crayons d'édition portés par les titres de groupe. */}
+                <div className="text-sm">
+                  <RailGroupTitle
+                    title={t('party.detail.tab.finance')}
+                    action={
+                      editable ? (
+                        <Button
+                          size="sm"
+                          mode="icon"
+                          variant="ghost"
+                          className="text-muted-foreground shrink-0"
+                          onClick={() => setCurrencyOpen(true)}
+                          aria-label={t('party.detail.editCurrencies')}
+                        >
+                          <Pencil />
+                        </Button>
+                      ) : undefined
+                    }
+                  />
+                  <RailRow
+                    icon={<DollarSign />}
+                    label={t('party.finance.effective')}
+                  >
+                    {creditGroups.length > 0 ? (
+                      creditGroups.map((g) => (
+                        <span key={g.key}>
+                          {g.serviceTypeCode ? (
+                            <span className="text-muted-foreground">
+                              {railServiceLabel(g.serviceTypeCode)}{' '}
+                            </span>
+                          ) : null}
+                          <span className="text-foreground font-semibold">
+                            {formatMinor(g.effectiveMinor, g.currencyCode)}{' '}
+                            {g.currencyCode}
+                          </span>
+                        </span>
+                      ))
+                    ) : (
+                      <span className="text-muted-foreground">—</span>
+                    )}
+                  </RailRow>
+                  <RailRow
+                    icon={<DollarSign />}
+                    label={t('party.finance.encours')}
+                  >
+                    <span className="text-muted-foreground inline-flex items-center gap-1.5">
+                      —
+                      <Badge
+                        variant="secondary"
+                        appearance="light"
                         size="sm"
-                        mode="icon"
-                        variant="ghost"
-                        className="text-muted-foreground shrink-0"
-                        onClick={() => setIdentityOpen(true)}
-                        aria-label={t('party.detail.editIdentity')}
+                        className="uppercase"
                       >
-                        <Pencil />
-                      </Button>
-                    ) : undefined
-                  }
-                >
-                  {identityItems.length > 0 ? (
-                    <FieldList items={identityItems} />
-                  ) : (
-                    <p className="text-muted-foreground py-1.5 text-sm">
-                      {t('party.detail.identityPending')}
-                    </p>
-                  )}
-                </Section>
-
-                {rolesSection}
-
-                <Section
-                  title={t('party.detail.section.coordinates')}
-                  action={
-                    editable ? (
-                      <Button
+                        {t('party.detail.pending')}
+                      </Badge>
+                    </span>
+                  </RailRow>
+                  <RailRow
+                    icon={<DollarSign />}
+                    label={t('party.finance.availableCredit')}
+                  >
+                    <span className="text-muted-foreground inline-flex items-center gap-1.5">
+                      —
+                      <Badge
+                        variant="secondary"
+                        appearance="light"
                         size="sm"
-                        mode="icon"
-                        variant="ghost"
-                        className="text-muted-foreground shrink-0"
-                        onClick={() => setContactSheetOpen(true)}
-                        aria-label={t('party.detail.editCoordinates')}
+                        className="uppercase"
                       >
-                        <Pencil />
-                      </Button>
-                    ) : undefined
-                  }
-                >
-                  {contactItems.length > 0 ? (
-                    <FieldList items={contactItems} />
-                  ) : (
-                    <p className="text-muted-foreground py-1.5 text-sm">—</p>
-                  )}
-                </Section>
+                        {t('party.detail.pending')}
+                      </Badge>
+                    </span>
+                  </RailRow>
+                  <RailRow
+                    icon={<DollarSign />}
+                    label={t('party.detail.currencyDisplay')}
+                  >
+                    {currencyText(view.displayCurrencyCode) ?? currencyDefault}
+                  </RailRow>
+                  <RailRow
+                    icon={<DollarSign />}
+                    label={t('party.detail.currencyBilling')}
+                  >
+                    {currencyText(view.billingCurrencyCode) ?? currencyDefault}
+                  </RailRow>
 
-                <Section
-                  title={t('party.detail.section.currencies')}
-                  action={
-                    editable ? (
-                      <Button
-                        size="sm"
-                        mode="icon"
-                        variant="ghost"
-                        className="text-muted-foreground shrink-0"
-                        onClick={() => setCurrencyOpen(true)}
-                        aria-label={t('party.detail.editCurrencies')}
-                      >
-                        <Pencil />
-                      </Button>
-                    ) : undefined
-                  }
-                >
-                  <FieldList items={currencyItems} />
-                </Section>
+                  <RailGroupTitle
+                    title={t('party.detail.section.coordinates')}
+                    action={
+                      editable ? (
+                        <Button
+                          size="sm"
+                          mode="icon"
+                          variant="ghost"
+                          className="text-muted-foreground shrink-0"
+                          onClick={() => setContactSheetOpen(true)}
+                          aria-label={t('party.detail.editCoordinates')}
+                        >
+                          <Pencil />
+                        </Button>
+                      ) : undefined
+                    }
+                  />
+                  <RailRow icon={<Phone />} label={t('party.column.phone')}>
+                    {view.phonePrimary ? (
+                      <PhoneDisplay value={view.phonePrimary} />
+                    ) : (
+                      <span className="text-muted-foreground">—</span>
+                    )}
+                    {view.phoneSecondary ? (
+                      <PhoneDisplay value={view.phoneSecondary} />
+                    ) : null}
+                  </RailRow>
+                  <RailRow icon={<Mail />} label={t('party.detail.email')}>
+                    {view.email ? (
+                      <>
+                        <Ext href={`mailto:${view.email}`}>{view.email}</Ext>
+                        <Badge
+                          variant={view.emailVerifiedAt ? 'success' : 'warning'}
+                          appearance="light"
+                          size="sm"
+                        >
+                          {view.emailVerifiedAt
+                            ? t('party.detail.emailVerified')
+                            : t('party.detail.emailNotVerified')}
+                        </Badge>
+                      </>
+                    ) : (
+                      <span className="text-muted-foreground">—</span>
+                    )}
+                  </RailRow>
+                  {organization?.website ? (
+                    <RailRow
+                      icon={<Globe />}
+                      label={t('party.detail.field.website')}
+                    >
+                      <Ext href={organization.website}>
+                        {organization.website.replace(/^https?:\/\//, '')}
+                      </Ext>
+                    </RailRow>
+                  ) : null}
+                  <RailRow icon={<MapPin />} label={t('party.detail.location')}>
+                    {railLocation ? (
+                      <span className="text-foreground">{railLocation}</span>
+                    ) : view.country ? (
+                      <CountryDisplay code={view.country} />
+                    ) : (
+                      <span className="text-muted-foreground">—</span>
+                    )}
+                  </RailRow>
+
+                  <RailGroupTitle title={t('party.detail.section.identity')} />
+                  <RailRow icon={<Building2 />} label={t('party.column.nature')}>
+                    {t(`party.nature.${view.nature}`)}
+                  </RailRow>
+                  <RailRow icon={<Handshake />} label={t('party.column.roles')}>
+                    <span className="flex flex-wrap justify-end gap-1">
+                      {view.roles.map((code) => (
+                        <Badge
+                          key={code}
+                          variant={ROLE_VARIANT[code] ?? 'secondary'}
+                          appearance="light"
+                          size="sm"
+                          className="gap-1 pe-1"
+                        >
+                          {roleLabel(code)}
+                          {editable ? (
+                            <button
+                              type="button"
+                              onClick={() => roleMutations.revoke.mutate(code)}
+                              aria-label={t('party.detail.removeRole')}
+                              className="text-muted-foreground hover:text-foreground rounded-sm"
+                            >
+                              <X className="size-3" />
+                            </button>
+                          ) : null}
+                        </Badge>
+                      ))}
+                      {editable && availableRoles.length > 0 ? (
+                        <DropdownMenu>
+                          <DropdownMenuTrigger asChild>
+                            <button
+                              type="button"
+                              aria-label={t('party.detail.addRole')}
+                              className="text-muted-foreground hover:text-foreground border-border rounded-sm border border-dashed px-1"
+                            >
+                              <Plus className="size-3" />
+                            </button>
+                          </DropdownMenuTrigger>
+                          <DropdownMenuContent align="end" className="min-w-44">
+                            {availableRoles.map((role) => (
+                              <DropdownMenuItem
+                                key={role.code}
+                                onSelect={() =>
+                                  roleMutations.assign.mutate(role.code)
+                                }
+                              >
+                                {role.label}
+                              </DropdownMenuItem>
+                            ))}
+                          </DropdownMenuContent>
+                        </DropdownMenu>
+                      ) : null}
+                    </span>
+                  </RailRow>
+                </div>
 
                 <button
                   type="button"
