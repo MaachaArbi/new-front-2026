@@ -10,6 +10,7 @@ import {
   Check,
   ChevronDown,
   ChevronRight,
+  Copy,
   DollarSign,
   FileText,
   Globe,
@@ -313,18 +314,6 @@ export function PartyDetailPage() {
       })),
     [me]
   )
-  // « TND — Tunisian Dinar » (code + libellé) : le code se comprend dans les 3 langues,
-  // les libellés devise sont en anglais temporairement. `null` → pas de devise propre.
-  const currencyText = React.useCallback(
-    (code: string | null): string | null => {
-      if (!code) return null
-      const label = codeLabel(referentials?.currencies)(code)
-      const upper = code.toUpperCase()
-      return label === code ? upper : `${upper} — ${label}`
-    },
-    [referentials]
-  )
-
   const view = {
     nature: detail?.nature ?? summary?.nature,
     displayName: detail?.displayName ?? summary?.displayName ?? '',
@@ -443,12 +432,10 @@ export function PartyDetailPage() {
     )
 
   // Sections Détails — construites en données, vides masqués.
-  const identityItems = filled([
-    {
-      label: t('party.column.nature'),
-      value: t(`party.nature.${view.nature}`),
-    },
-    ...(view.nature === 'person'
+  // Carte « Identité » de l'Aperçu = identifiants légaux SEULEMENT. Nature + Site web
+  // vivent au rail → pas de doublon (points 7 & 8).
+  const identityItems = filled(
+    view.nature === 'person'
       ? [
           {
             label: t('party.detail.field.firstName'),
@@ -472,16 +459,8 @@ export function PartyDetailPage() {
               ? legalFormLabel(organization.legalFormCode)
               : null,
           },
-          {
-            label: t('party.detail.field.website'),
-            value: organization?.website ? (
-              <Ext href={organization.website}>
-                {organization.website.replace(/^https?:\/\//, '')}
-              </Ext>
-            ) : null,
-          },
-        ]),
-  ])
+        ]
+  )
 
   // Devises : `null` n'est pas « vide » mais « suit le défaut du bureau » — libellé dédié.
   const currencyDefault = (
@@ -615,6 +594,9 @@ export function PartyDetailPage() {
   const railLocation = primaryAddress
     ? [primaryAddress.line1, primaryAddress.city].filter(Boolean).join(', ')
     : null
+  const copyText = (text: string) => {
+    void navigator.clipboard?.writeText(text)
+  }
 
   // Activité récente — libellé du sujet réutilisé de l'onglet Historique (garde-fou
   // KNOWN_SUBJECTS : sujet inconnu → code brut). Verbe = participe (`op.*`).
@@ -1452,13 +1434,16 @@ export function PartyDetailPage() {
                     {creditGroups.length > 0 ? (
                       <span className="flex flex-col gap-0.5">
                         {creditGroups.map((g) => (
-                          <span key={g.key}>
-                            {g.serviceTypeCode ? (
-                              <span className="text-muted-foreground">
-                                {railServiceLabel(g.serviceTypeCode)}{' '}
-                              </span>
-                            ) : null}
-                            <span className="text-foreground font-semibold">
+                          <span
+                            key={g.key}
+                            className="flex items-baseline justify-between gap-2"
+                          >
+                            <span className="text-muted-foreground">
+                              {g.serviceTypeCode
+                                ? railServiceLabel(g.serviceTypeCode)
+                                : t('party.finance.allServices')}
+                            </span>
+                            <span className="text-foreground font-semibold tabular-nums">
                               {formatMinor(g.effectiveMinor, g.currencyCode)}{' '}
                               {g.currencyCode}
                             </span>
@@ -1505,13 +1490,13 @@ export function PartyDetailPage() {
                     icon={<DollarSign />}
                     label={t('party.detail.currencyDisplay')}
                   >
-                    {currencyText(view.displayCurrencyCode) ?? currencyDefault}
+                    {view.displayCurrencyCode ?? currencyDefault}
                   </RailRow>
                   <RailRow
                     icon={<DollarSign />}
                     label={t('party.detail.currencyBilling')}
                   >
-                    {currencyText(view.billingCurrencyCode) ?? currencyDefault}
+                    {view.billingCurrencyCode ?? currencyDefault}
                   </RailRow>
 
                   <RailGroupTitle
@@ -1535,10 +1520,30 @@ export function PartyDetailPage() {
                     {view.phonePrimary || view.phoneSecondary ? (
                       <span className="inline-flex flex-wrap items-center gap-x-4 gap-y-1">
                         {view.phonePrimary ? (
-                          <PhoneDisplay value={view.phonePrimary} />
+                          <span className="inline-flex items-center gap-1">
+                            <PhoneDisplay value={view.phonePrimary} />
+                            <button
+                              type="button"
+                              onClick={() => copyText(view.phonePrimary ?? '')}
+                              aria-label={t('common.copy')}
+                              className="text-muted-foreground hover:text-foreground"
+                            >
+                              <Copy className="size-3.5" />
+                            </button>
+                          </span>
                         ) : null}
                         {view.phoneSecondary ? (
-                          <PhoneDisplay value={view.phoneSecondary} />
+                          <span className="inline-flex items-center gap-1">
+                            <PhoneDisplay value={view.phoneSecondary} />
+                            <button
+                              type="button"
+                              onClick={() => copyText(view.phoneSecondary ?? '')}
+                              aria-label={t('common.copy')}
+                              className="text-muted-foreground hover:text-foreground"
+                            >
+                              <Copy className="size-3.5" />
+                            </button>
+                          </span>
                         ) : null}
                       </span>
                     ) : (
@@ -1547,7 +1552,7 @@ export function PartyDetailPage() {
                   </RailRow>
                   <RailRow icon={<Mail />} label={t('party.detail.email')}>
                     {view.email ? (
-                      <span className="inline-flex flex-col items-start gap-1">
+                      <span className="inline-flex flex-wrap items-center gap-2">
                         <Ext href={`mailto:${view.email}`}>{view.email}</Ext>
                         <Badge
                           variant={view.emailVerifiedAt ? 'success' : 'warning'}
@@ -1588,7 +1593,7 @@ export function PartyDetailPage() {
                     {t(`party.nature.${view.nature}`)}
                   </RailRow>
                   <RailRow icon={<Handshake />} label={t('party.column.roles')}>
-                    <span className="flex flex-wrap justify-end gap-1">
+                    <span className="flex flex-wrap gap-1">
                       {view.roles.map((code) => (
                         <Badge
                           key={code}
