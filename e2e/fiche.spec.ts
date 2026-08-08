@@ -6,7 +6,7 @@ import fs from 'node:fs'
  * Clair + sombre — pour valider que les tokens tiennent dans les deux thèmes.
  */
 const SHOTS = 'e2e/screenshots'
-const EMAIL = 'salma.ben.amor@demo.ostravel.tn'
+const EMAIL = 'yasmine.gharbi@demo.ostravel.tn'
 const PASSWORD = 'Demo-2026-OsTravel'
 
 test.use({ viewport: { width: 1600, height: 1180 } })
@@ -91,4 +91,20 @@ test('fiche Tiers — clair + sombre', async ({ page }) => {
   await page.reload()
   await page.waitForTimeout(2000)
   await page.screenshot({ path: `${SHOTS}/fiche-sombre.png` })
+
+  // RTL — arabe (dir=rtl) : vérifie que les propriétés logiques (ps/pe/ms/me/start) flippent.
+  await page.evaluate(() => {
+    localStorage.setItem('i18n-language', 'ar')
+    localStorage.setItem('ostravel-theme', 'light')
+  })
+  await page.reload()
+  await page.waitForTimeout(2500)
+  await page.screenshot({ path: `${SHOTS}/fiche-rtl.png` })
+
+  // Mobile — largeur étroite : la grille passe en une colonne.
+  await page.evaluate(() => localStorage.setItem('i18n-language', 'fr'))
+  await page.setViewportSize({ width: 390, height: 900 })
+  await page.reload()
+  await page.waitForTimeout(2500)
+  await page.screenshot({ path: `${SHOTS}/fiche-mobile.png`, fullPage: true })
 })
