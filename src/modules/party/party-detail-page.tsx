@@ -2,8 +2,10 @@ import * as React from 'react'
 import { useIntl } from 'react-intl'
 import { useLocation, useNavigate, useParams } from 'react-router-dom'
 import {
+  Activity,
   AlertTriangle,
   ArrowLeft,
+  Briefcase,
   Building2,
   Check,
   ChevronDown,
@@ -164,6 +166,36 @@ function RailRow({
       </span>
       <span className="text-foreground min-w-0">{children}</span>
     </div>
+  )
+}
+
+// Avatar (nœud des listes gens, façon /_ref) — initiales + couleur stable du nom.
+const AVATAR_COLORS = [
+  'bg-blue-500',
+  'bg-emerald-500',
+  'bg-violet-500',
+  'bg-amber-500',
+  'bg-rose-500',
+  'bg-cyan-500',
+  'bg-sky-500',
+]
+function Avatar({ name }: { name: string }) {
+  const parts = name.trim().split(/\s+/)
+  const initials =
+    ((parts[0]?.[0] ?? '') + (parts[1]?.[0] ?? '')).toUpperCase() || '?'
+  let hash = 0
+  for (let i = 0; i < name.length; i += 1)
+    hash = (hash * 31 + name.charCodeAt(i)) >>> 0
+  const color = AVATAR_COLORS[hash % AVATAR_COLORS.length] ?? 'bg-blue-500'
+  return (
+    <span
+      className={cn(
+        'inline-flex size-8 shrink-0 items-center justify-center rounded-full text-xs font-semibold text-white',
+        color
+      )}
+    >
+      {initials}
+    </span>
   )
 }
 
@@ -1004,34 +1036,35 @@ export function PartyDetailPage() {
               </div>
             </div>
 
-            {/* Adresses */}
-            <div className="border-border rounded-xl border p-4">
-              <div className="mb-3 flex items-center justify-between gap-2">
-                <h3 className="text-foreground text-sm font-semibold">
+            {/* Adresses (style /_ref) — en-tête à icône + « Ajouter », conteneur bordé.
+                (Pas dans le /_ref, mais donnée réelle utile : édition conservée.) */}
+            <div>
+              <div className="mb-2 flex items-center justify-between gap-2">
+                <div className="text-foreground flex items-center gap-2 text-sm font-semibold">
+                  <MapPin className="text-muted-foreground size-4" />
                   {t('party.detail.addresses')}
-                </h3>
+                </div>
                 {editable ? (
-                  <Button
-                    size="sm"
-                    variant="outline"
+                  <button
+                    type="button"
                     onClick={() => {
                       setEditingAddress(null)
                       setAddressSheetOpen(true)
                     }}
+                    className="text-primary text-xs font-medium hover:underline"
                   >
-                    <Plus />
                     {t('party.detail.addAddress')}
-                  </Button>
+                  </button>
                 ) : null}
               </div>
               {addressesLoading ? (
                 <SkeletonRow columns={2} />
               ) : addresses.length > 0 ? (
-                <ul className="flex flex-col gap-3">
+                <div className="border-border rounded-xl border">
                   {addresses.map((address) => (
-                    <li
+                    <div
                       key={address.publicId}
-                      className="border-border/60 flex items-start justify-between gap-2 border-b pb-3 last:border-0 last:pb-0"
+                      className="border-border/60 flex items-start justify-between gap-2 border-b px-4 py-3 last:border-0"
                     >
                       <div className="flex min-w-0 flex-col gap-0.5">
                         <div className="flex items-center gap-2">
@@ -1088,9 +1121,9 @@ export function PartyDetailPage() {
                           </Button>
                         </div>
                       ) : null}
-                    </li>
+                    </div>
                   ))}
-                </ul>
+                </div>
               ) : (
                 <p className="text-muted-foreground text-sm">
                   {t('party.detail.noAddresses')}
@@ -1098,125 +1131,126 @@ export function PartyDetailPage() {
               )}
             </div>
 
-            {/* Activité récente — 5 dernières entrées d'historique (réel). « Voir tout »
-                bascule vers l'onglet Historique. Les événements transactionnels
-                (réservations/paiements) restent « à venir » (modules non construits). */}
-            <div className="border-border rounded-xl border p-4">
-              <div className="mb-3 flex items-center justify-between gap-2">
-                <h3 className="text-foreground text-sm font-semibold">
+            {/* Activité récente (style /_ref) — en-tête à icône + « Voir tout », puis
+                conteneur bordé à lignes : point + « qui · quoi » + date. */}
+            <div>
+              <div className="mb-2 flex items-center justify-between gap-2">
+                <div className="text-foreground flex items-center gap-2 text-sm font-semibold">
+                  <Activity className="text-muted-foreground size-4" />
                   {t('party.detail.activity.title')}
-                </h3>
-                <Button
-                  size="sm"
-                  variant="ghost"
-                  className="text-primary"
+                </div>
+                <button
+                  type="button"
                   onClick={() => setTab('history')}
+                  className="text-primary text-xs font-medium hover:underline"
                 >
                   {t('party.detail.activity.seeAll')}
-                  <ChevronRight />
-                </Button>
+                </button>
               </div>
               {recentHistory.isLoading ? (
                 <SkeletonRow columns={1} />
               ) : recentEntries.length > 0 ? (
-                <ul className="flex flex-col gap-2.5">
+                <div className="border-border rounded-xl border">
                   {recentEntries.map((entry, i) => (
-                    <li
+                    <div
                       key={`${entry.at}-${i}`}
-                      className="flex items-baseline justify-between gap-3 text-sm"
+                      className="border-border/60 flex items-center justify-between gap-3 border-b px-4 py-3 text-sm last:border-0"
                     >
-                      <span className="min-w-0 truncate">
-                        <span className="text-foreground font-medium">
-                          {entry.actor?.displayName ?? '—'}
-                        </span>
-                        <span className="text-muted-foreground">
-                          {' · '}
-                          {subjectLabel(entry.subject)}
-                          {' · '}
-                          {t(`party.history.op.${entry.operation}`)}
+                      <span className="flex min-w-0 items-center gap-3">
+                        <span className="bg-muted-foreground/40 size-2 shrink-0 rounded-full" />
+                        <span className="truncate">
+                          <span className="text-foreground font-medium">
+                            {entry.actor?.displayName ?? '—'}
+                          </span>
+                          <span className="text-muted-foreground">
+                            {' · '}
+                            {subjectLabel(entry.subject)}
+                            {' · '}
+                            {t(`party.history.op.${entry.operation}`)}
+                          </span>
                         </span>
                       </span>
                       <span className="text-muted-foreground shrink-0 text-xs">
                         {fmtActivity(entry.at)}
                       </span>
-                    </li>
+                    </div>
                   ))}
-                </ul>
+                </div>
               ) : (
                 <p className="text-muted-foreground text-sm">
                   {t('party.detail.activity.empty')}
                 </p>
               )}
-              <p className="text-muted-foreground/70 border-border/60 mt-3 border-t pt-3 text-xs">
+              <p className="text-muted-foreground/70 mt-2 text-xs">
                 {t('party.detail.soon.body')}
               </p>
             </div>
 
-            {/* Interlocuteurs (organisations) — APERÇU cliquable ; « Voir tout » ouvre
-                l'onglet Contacts & équipe (édition). Pas de tél/e-mail (donnée absente). */}
+            {/* Interlocuteurs (style /_ref) — avatar + nom + fonction, conteneur bordé.
+                « Voir tout » → onglet Contacts & équipe. Pas de tél/e-mail (donnée absente
+                sur le lien contact) : clic → fiche de l'interlocuteur. */}
             {view.nature === 'organization' && view.contacts.length > 0 ? (
-              <div className="border-border rounded-xl border p-4">
-                <div className="mb-3 flex items-center justify-between gap-2">
-                  <h3 className="text-foreground text-sm font-semibold">
+              <div>
+                <div className="mb-2 flex items-center justify-between gap-2">
+                  <div className="text-foreground flex items-center gap-2 text-sm font-semibold">
+                    <Users className="text-muted-foreground size-4" />
                     {t('party.detail.section.contacts')}
-                  </h3>
-                  <Button
-                    size="sm"
-                    variant="ghost"
-                    className="text-primary"
+                  </div>
+                  <button
+                    type="button"
                     onClick={() => setTab('team')}
+                    className="text-primary text-xs font-medium hover:underline"
                   >
                     {t('party.detail.activity.seeAll')}
-                    <ChevronRight />
-                  </Button>
+                  </button>
                 </div>
-                <ul className="flex flex-col gap-1">
+                <div className="border-border rounded-xl border">
                   {view.contacts.map((contact) => (
-                    <li key={contact.publicId}>
-                      <button
-                        type="button"
-                        onClick={() => navigate(`/parties/${contact.publicId}`)}
-                        className="hover:bg-accent flex w-full items-center justify-between gap-2 rounded-md px-2 py-1.5 text-start"
-                      >
-                        <span className="text-foreground truncate text-sm">
-                          {contact.displayName}
-                        </span>
-                        <Badge variant="secondary" appearance="light" size="sm">
-                          {functionLabel(contact.functionCode)}
-                        </Badge>
-                      </button>
-                    </li>
+                    <button
+                      key={contact.publicId}
+                      type="button"
+                      onClick={() => navigate(`/parties/${contact.publicId}`)}
+                      className="hover:bg-accent border-border/60 flex w-full items-center gap-3 border-b px-4 py-3 text-start last:border-0"
+                    >
+                      <Avatar name={contact.displayName} />
+                      <span className="text-foreground min-w-0 flex-1 truncate text-sm font-medium">
+                        {contact.displayName}
+                      </span>
+                      <Badge variant="secondary" appearance="light" size="sm">
+                        {functionLabel(contact.functionCode)}
+                      </Badge>
+                    </button>
                   ))}
-                </ul>
+                </div>
               </div>
             ) : null}
 
-            {/* Chargés de compte (interne) — nom + type d'affectation + portée société. */}
+            {/* Chargés de compte (style /_ref) — avatar + nom + affectation + bureau. */}
             {view.managers.length > 0 ? (
-              <div className="border-border rounded-xl border p-4">
-                <h3 className="text-foreground mb-3 text-sm font-semibold">
+              <div>
+                <div className="text-foreground mb-2 flex items-center gap-2 text-sm font-semibold">
+                  <Briefcase className="text-muted-foreground size-4" />
                   {t('party.finance.managers')}
-                </h3>
-                <ul className="flex flex-col gap-2">
+                </div>
+                <div className="border-border rounded-xl border">
                   {view.managers.map((m) => (
-                    <li
+                    <div
                       key={m.publicId}
-                      className="flex items-center justify-between gap-3 text-sm"
+                      className="border-border/60 flex items-center gap-3 border-b px-4 py-3 text-sm last:border-0"
                     >
-                      <span className="text-foreground truncate">
+                      <Avatar name={m.managerDisplayName} />
+                      <span className="text-foreground min-w-0 flex-1 truncate font-medium">
                         {m.managerDisplayName}
                       </span>
-                      <span className="flex shrink-0 items-center gap-2">
-                        <span className="text-muted-foreground text-xs">
-                          {t(`party.finance.assignment.${m.assignmentType}`)}
-                        </span>
-                        <Badge variant="secondary" appearance="light" size="sm">
-                          {officeName(m.officeAccountId)}
-                        </Badge>
+                      <span className="text-muted-foreground text-xs">
+                        {t(`party.finance.assignment.${m.assignmentType}`)}
                       </span>
-                    </li>
+                      <Badge variant="secondary" appearance="light" size="sm">
+                        {officeName(m.officeAccountId)}
+                      </Badge>
+                    </div>
                   ))}
-                </ul>
+                </div>
               </div>
             ) : null}
           </TabsContent>
