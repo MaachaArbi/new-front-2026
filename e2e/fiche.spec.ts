@@ -6,7 +6,7 @@ import fs from 'node:fs'
  * Clair + sombre — pour valider que les tokens tiennent dans les deux thèmes.
  */
 const SHOTS = 'e2e/screenshots'
-const EMAIL = 'mehdi.trabelsi@demo.ostravel.tn'
+const EMAIL = 'salma.ben.amor@demo.ostravel.tn'
 const PASSWORD = 'Demo-2026-OsTravel'
 
 test.use({ viewport: { width: 1600, height: 1180 } })
@@ -46,7 +46,7 @@ test('fiche Tiers — clair + sombre', async ({ page }) => {
   await page.getByText(/activité récente/i).scrollIntoViewIfNeeded()
   await page.waitForTimeout(500)
   await page.screenshot({ path: `${SHOTS}/fiche-activite.png` })
-  await page.getByRole('button', { name: /voir tout/i }).click()
+  await page.getByRole('button', { name: /voir tout/i }).first().click()
   await page.waitForTimeout(1200)
   await page.screenshot({ path: `${SHOTS}/fiche-voirtout.png` })
 
@@ -74,6 +74,15 @@ test('fiche Tiers — clair + sombre', async ({ page }) => {
   await page.getByRole('tab', { name: /^finance$/i }).click()
   await page.waitForTimeout(1000)
   await page.screenshot({ path: `${SHOTS}/fiche-finance.png` })
+
+  // Onglets Contacts & équipe + Documents (lot 6).
+  await page.getByRole('tab', { name: /contacts & équipe/i }).click()
+  await page.waitForTimeout(800)
+  await page.screenshot({ path: `${SHOTS}/fiche-team.png` })
+  await page.getByRole('tab', { name: /^documents$/i }).click()
+  await page.waitForTimeout(800)
+  await page.screenshot({ path: `${SHOTS}/fiche-documents.png` })
+
   await page.getByRole('tab', { name: /vue d'ensemble/i }).click()
   await page.waitForTimeout(500)
   await page.evaluate(() => window.scrollTo(0, 0))

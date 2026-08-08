@@ -4,20 +4,19 @@ import { useLocation, useNavigate, useParams } from 'react-router-dom'
 import {
   AlertTriangle,
   ArrowLeft,
-  CalendarDays,
   Check,
   ChevronDown,
   ChevronRight,
-  CreditCard,
+  FileText,
   History,
   LayoutGrid,
   Mail,
   MoreVertical,
   Pencil,
   Plus,
-  ReceiptText,
   ShieldAlert,
   Trash2,
+  Users,
   UserX,
   Wallet,
   X,
@@ -840,18 +839,17 @@ export function PartyDetailPage() {
               <History />
               {t('party.detail.tab.history')}
             </TabsTrigger>
-            <TabsTrigger value="bookings" disabled>
-              <CalendarDays />
-              {t('party.detail.tab.bookings')}
+            <TabsTrigger value="team">
+              <Users />
+              {t('party.detail.tab.team')}
             </TabsTrigger>
-            <TabsTrigger value="payments" disabled>
-              <CreditCard />
-              {t('party.detail.tab.payments')}
+            <TabsTrigger value="documents">
+              <FileText />
+              {t('party.detail.tab.documents')}
             </TabsTrigger>
-            <TabsTrigger value="invoices" disabled>
-              <ReceiptText />
-              {t('party.detail.tab.invoices')}
-            </TabsTrigger>
+            {/* Onglets futurs (Réservations/Paiements/Factures) retirés : ils débordaient
+                sur le rail, et le « à venir » est déjà signalé dans la Vue d'ensemble.
+                À rétablir quand les modules existent. */}
           </TabsList>
         </div>
 
@@ -1003,15 +1001,6 @@ export function PartyDetailPage() {
               )}
             </div>
 
-            {/* Documents (pièces du dossier) — gestion complète (fichier via lien signé) */}
-            <PartyDocumentsCard
-              publicId={id}
-              documents={view.documents}
-              editable={editable}
-              countries={referentials?.countries ?? []}
-              t={t}
-            />
-
             {/* Activité récente — 5 dernières entrées d'historique (réel). « Voir tout »
                 bascule vers l'onglet Historique. Les événements transactionnels
                 (réservations/paiements) restent « à venir » (modules non construits). */}
@@ -1066,14 +1055,24 @@ export function PartyDetailPage() {
               </p>
             </div>
 
-            {/* Interlocuteurs (organisations) — aperçu cliquable vers chaque fiche.
-                PAS de tél/e-mail : la donnée n'existe pas sur le lien (contact = nom +
-                fonction). Joignabilité = clic vers la fiche. « Voir tout » viendra au lot 6. */}
+            {/* Interlocuteurs (organisations) — APERÇU cliquable ; « Voir tout » ouvre
+                l'onglet Contacts & équipe (édition). Pas de tél/e-mail (donnée absente). */}
             {view.nature === 'organization' && view.contacts.length > 0 ? (
               <div className="border-border rounded-xl border p-4">
-                <h3 className="text-foreground mb-3 text-sm font-semibold">
-                  {t('party.detail.section.contacts')}
-                </h3>
+                <div className="mb-3 flex items-center justify-between gap-2">
+                  <h3 className="text-foreground text-sm font-semibold">
+                    {t('party.detail.section.contacts')}
+                  </h3>
+                  <Button
+                    size="sm"
+                    variant="ghost"
+                    className="text-primary"
+                    onClick={() => setTab('team')}
+                  >
+                    {t('party.detail.activity.seeAll')}
+                    <ChevronRight />
+                  </Button>
+                </div>
                 <ul className="flex flex-col gap-1">
                   {view.contacts.map((contact) => (
                     <li key={contact.publicId}>
@@ -1149,6 +1148,124 @@ export function PartyDetailPage() {
               publicId={id}
               officeNameByPublicId={officeNameByPublicId}
               serviceTypeLabel={codeLabel(referentials?.serviceTypes)}
+              t={t}
+            />
+          </TabsContent>
+
+          <TabsContent value="team" className="flex flex-col gap-4 pt-4">
+            {/* Interlocuteurs (organisations) — LEUR home : édition (ajout/retrait) + clic
+                vers la fiche. Pas de tél/e-mail (donnée absente sur le lien contact). */}
+            {view.nature === 'organization' ? (
+              <div className="border-border rounded-xl border p-4">
+                <div className="mb-3 flex items-center justify-between gap-2">
+                  <h3 className="text-foreground text-sm font-semibold">
+                    {t('party.detail.section.contacts')}
+                  </h3>
+                  {editable && view.accountId != null ? (
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() => setInterlocutorOpen(true)}
+                    >
+                      <Plus />
+                      {t('party.detail.addInterlocutor')}
+                    </Button>
+                  ) : null}
+                </div>
+                {view.contacts.length > 0 ? (
+                  <ul className="flex flex-col gap-1">
+                    {view.contacts.map((contact) => (
+                      <li
+                        key={contact.publicId}
+                        className="hover:bg-accent flex items-center gap-1 rounded-md px-2 py-1.5"
+                      >
+                        <button
+                          type="button"
+                          onClick={() =>
+                            navigate(`/parties/${contact.publicId}`)
+                          }
+                          className="flex min-w-0 flex-1 items-center justify-between gap-2 text-start"
+                        >
+                          <span className="text-foreground truncate text-sm">
+                            {contact.displayName}
+                          </span>
+                          <Badge
+                            variant="secondary"
+                            appearance="light"
+                            size="sm"
+                          >
+                            {functionLabel(contact.functionCode)}
+                          </Badge>
+                        </button>
+                        {editable && view.accountId != null ? (
+                          <Button
+                            size="sm"
+                            mode="icon"
+                            variant="ghost"
+                            className="text-muted-foreground shrink-0"
+                            aria-label={t('party.detail.removeInterlocutor')}
+                            disabled={functionMutations.revoke.isPending}
+                            onClick={() => removeInterlocutor(contact)}
+                          >
+                            <X />
+                          </Button>
+                        ) : null}
+                      </li>
+                    ))}
+                  </ul>
+                ) : (
+                  <p className="text-muted-foreground text-sm">
+                    {t('party.detail.noInterlocutor')}
+                  </p>
+                )}
+                {interlocutorError ? (
+                  <p className="text-destructive mt-1 text-xs">
+                    {interlocutorError}
+                  </p>
+                ) : null}
+              </div>
+            ) : null}
+
+            {/* Chargés de compte (interne) — liste ; ils se gèrent dans l'onglet Finance. */}
+            <div className="border-border rounded-xl border p-4">
+              <h3 className="text-foreground mb-3 text-sm font-semibold">
+                {t('party.finance.managers')}
+              </h3>
+              {view.managers.length > 0 ? (
+                <ul className="flex flex-col gap-2">
+                  {view.managers.map((m) => (
+                    <li
+                      key={m.publicId}
+                      className="flex items-center justify-between gap-3 text-sm"
+                    >
+                      <span className="text-foreground truncate">
+                        {m.managerDisplayName}
+                      </span>
+                      <span className="flex shrink-0 items-center gap-2">
+                        <span className="text-muted-foreground text-xs">
+                          {t(`party.finance.assignment.${m.assignmentType}`)}
+                        </span>
+                        <Badge variant="secondary" appearance="light" size="sm">
+                          {officeName(m.officeAccountId)}
+                        </Badge>
+                      </span>
+                    </li>
+                  ))}
+                </ul>
+              ) : (
+                <p className="text-muted-foreground text-sm">
+                  {t('party.finance.managers.empty')}
+                </p>
+              )}
+            </div>
+          </TabsContent>
+
+          <TabsContent value="documents" className="pt-4">
+            <PartyDocumentsCard
+              publicId={id}
+              documents={view.documents}
+              editable={editable}
+              countries={referentials?.countries ?? []}
               t={t}
             />
           </TabsContent>
@@ -1280,80 +1397,8 @@ export function PartyDetailPage() {
                       </Section>
                     ) : null}
 
-                    {/* Interlocuteurs (organisations seulement) — personnes reliées par une
-                fonction. Chaque nom est cliquable vers sa fiche (tiers indépendant).
-                Un interlocuteur ne se connecte pas : il apparaît, rien de plus. */}
-                    {view.nature === 'organization' ? (
-                      <Section
-                        title={t('party.detail.section.contacts')}
-                        action={
-                          editable && view.accountId != null ? (
-                            <Button
-                              size="sm"
-                              mode="icon"
-                              variant="ghost"
-                              className="text-muted-foreground shrink-0"
-                              onClick={() => setInterlocutorOpen(true)}
-                              aria-label={t('party.detail.addInterlocutor')}
-                            >
-                              <Plus />
-                            </Button>
-                          ) : undefined
-                        }
-                      >
-                        {view.contacts.length > 0 ? (
-                          <div className="flex flex-col gap-0.5 py-1.5">
-                            {view.contacts.map((contact) => (
-                              <div
-                                key={contact.publicId}
-                                className="hover:bg-accent flex items-center gap-1 rounded-md px-2 py-1"
-                              >
-                                <button
-                                  type="button"
-                                  onClick={() =>
-                                    navigate(`/parties/${contact.publicId}`)
-                                  }
-                                  className="flex min-w-0 flex-1 items-center justify-between gap-2 text-start"
-                                >
-                                  <span className="text-foreground truncate text-sm">
-                                    {contact.displayName}
-                                  </span>
-                                  <Badge variant="secondary" size="sm">
-                                    {functionLabel(contact.functionCode)}
-                                  </Badge>
-                                </button>
-                                {editable && view.accountId != null ? (
-                                  <Button
-                                    size="sm"
-                                    mode="icon"
-                                    variant="ghost"
-                                    className="text-muted-foreground shrink-0"
-                                    aria-label={t(
-                                      'party.detail.removeInterlocutor'
-                                    )}
-                                    disabled={
-                                      functionMutations.revoke.isPending
-                                    }
-                                    onClick={() => removeInterlocutor(contact)}
-                                  >
-                                    <X />
-                                  </Button>
-                                ) : null}
-                              </div>
-                            ))}
-                          </div>
-                        ) : (
-                          <p className="text-muted-foreground py-1.5 text-sm">
-                            {t('party.detail.noInterlocutor')}
-                          </p>
-                        )}
-                        {interlocutorError ? (
-                          <p className="text-destructive text-xs">
-                            {interlocutorError}
-                          </p>
-                        ) : null}
-                      </Section>
-                    ) : null}
+                    {/* Interlocuteurs : déplacés dans l'onglet « Contacts & équipe »
+                        (édition) + aperçu sur la Vue d'ensemble. Plus dans le rail. */}
 
                     {/* Agence mère (UNIQUE) — organisations seulement, éditable. */}
                     {view.nature === 'organization' ? (

@@ -243,6 +243,8 @@
   "party.detail.updatedOn": "modifié le {date}",
   "party.detail.tab.history": "Historique",
   "party.detail.tab.finance": "Finance",
+  "party.detail.tab.team": "Contacts & équipe",
+  "party.detail.tab.documents": "Documents",
   "party.detail.section.documents": "Documents",
   "party.document.type.passport": "Passeport",
   "party.document.type.cin": "CIN",

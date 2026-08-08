@@ -243,6 +243,8 @@
   "party.detail.updatedOn": "عُدّل في {date}",
   "party.detail.tab.history": "السجل",
   "party.detail.tab.finance": "المالية",
+  "party.detail.tab.team": "جهات الاتصال والفريق",
+  "party.detail.tab.documents": "المستندات",
   "party.detail.section.documents": "المستندات",
   "party.document.type.passport": "جواز سفر",
   "party.document.type.cin": "بطاقة تعريف وطنية",

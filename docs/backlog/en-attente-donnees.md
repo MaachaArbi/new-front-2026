@@ -39,6 +39,11 @@ Convention : `élément d'UI` · où · **statut** · débloqué par.
   **consolidera** aussi les interlocuteurs du rail (fin du doublon rail/Overview).
 
 ### Onglets
+- **Notes** et **Tâches** — **différés** (aucune notion côté back ; on n'ajoute pas d'onglets
+  vides). À créer quand les features existeront (annotations internes ; rappels/todos).
+- **Réservations / Paiements / Factures** — onglets **retirés** de la fiche (ils débordaient
+  sur le rail à 5+ onglets réels). À **rétablir** quand les modules existeront.
+
 - **Documents** (ex-Files) — **RÉEL** (`PartyDocument` : type, n°, dates, expiration,
   `hasFile`). À brancher : le calcul du statut d'expiration (valide/expire bientôt/expiré).
 - **Notes** — **PLACEHOLDER** (aucune notion de notes côté back). Feature à créer si utile :
