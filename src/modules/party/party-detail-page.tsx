@@ -258,6 +258,10 @@ export function PartyDetailPage() {
     () => codeLabel(referentials?.addressTypes),
     [referentials]
   )
+  const countryLabel = React.useMemo(
+    () => codeLabel(referentials?.countries),
+    [referentials]
+  )
   const functionLabel = React.useMemo(
     () => codeLabel(referentials?.functions),
     [referentials]
@@ -1579,25 +1583,23 @@ export function PartyDetailPage() {
                                 </Badge>
                               ) : null}
                             </span>
-                            <span className="text-muted-foreground inline-flex flex-wrap items-center gap-x-1.5 text-sm">
-                              <span>
-                                {[
-                                  address.line1,
-                                  address.line2,
-                                  [address.postalCode, address.city]
-                                    .filter(Boolean)
-                                    .join(' '),
-                                ]
+                            <span className="text-muted-foreground text-sm">
+                              {[
+                                address.line1,
+                                address.line2,
+                                [address.postalCode, address.city]
                                   .filter(Boolean)
-                                  .join(', ')}
-                              </span>
-                              {address.countryAlpha2 ? (
-                                <CountryDisplay code={address.countryAlpha2} />
-                              ) : null}
+                                  .join(' '),
+                                address.countryAlpha2
+                                  ? countryLabel(address.countryAlpha2)
+                                  : null,
+                              ]
+                                .filter(Boolean)
+                                .join(', ')}
                             </span>
                           </div>
                           {editable ? (
-                            <div className="flex shrink-0 items-center">
+                            <div className="-me-2 flex shrink-0 items-center">
                               <Button
                                 size="sm"
                                 mode="icon"
