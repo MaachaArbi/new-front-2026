@@ -1,5 +1,5 @@
 import * as React from 'react'
-import { AlertTriangle, FileCheck, Pencil, X } from 'lucide-react'
+import { AlertTriangle, FileCheck, Pencil, Plus, X } from 'lucide-react'
 import { Button } from '@/shared/ui/button'
 import { formatMinor } from '@/shared/lib/money'
 import { cn } from '@/shared/lib/cn'
@@ -47,40 +47,58 @@ function FinanceHead({
         ) : null}
       </div>
       {action && onAction ? (
-        <button
-          type="button"
+        <Button
+          size="sm"
+          variant="outline"
           onClick={onAction}
-          className="text-primary shrink-0 text-xs font-medium hover:underline"
+          className="shrink-0"
         >
+          <Plus />
           {action}
-        </button>
+        </Button>
       ) : null}
     </div>
   )
 }
 
-// Interrupteur d'ÉTAT (lecture) — reflète un réglage ; l'édition passe par le crayon.
-function SwitchPill({ on }: { on: boolean }) {
+// Interrupteur FONCTIONNEL (vert = actif, comme le /_ref). Le clic bascule le réglage.
+function SwitchPill({
+  on,
+  onToggle,
+  disabled,
+}: {
+  on: boolean
+  onToggle?: () => void
+  disabled?: boolean
+}) {
   return (
-    <span
+    <button
+      type="button"
+      role="switch"
+      aria-checked={on}
+      disabled={disabled || !onToggle}
+      onClick={onToggle}
       className={cn(
         'inline-flex h-5 w-9 shrink-0 items-center rounded-full p-0.5 transition-colors',
-        on ? 'bg-primary justify-end' : 'bg-muted justify-start'
+        on ? 'justify-end bg-emerald-500' : 'bg-muted justify-start',
+        disabled || !onToggle ? 'cursor-default' : 'cursor-pointer'
       )}
     >
       <span className="size-4 rounded-full bg-white shadow-sm" />
-    </span>
+    </button>
   )
 }
 
-// Avatar (approbations) — initiales + couleur stable du nom.
+// Avatar (approbations) — initiales + couleur stable du nom. Palette ALIGNÉE sur celle
+// de la fiche (même nom → même couleur en Overview et Finance). À mutualiser (composant).
 const AVATAR_COLORS = [
   'bg-blue-500',
   'bg-emerald-500',
   'bg-violet-500',
   'bg-amber-500',
   'bg-rose-500',
-  'bg-teal-500',
+  'bg-cyan-500',
+  'bg-sky-500',
 ]
 function Avatar({ name }: { name: string }) {
   const parts = name.trim().split(/\s+/)
@@ -139,7 +157,7 @@ export function PartyFinanceTab({
   functionLabel: (code: string) => string
   t: Translate
 }) {
-  const { creditLimit, manager, taxExemption, approvalRule } =
+  const { creditLimit, manager, taxExemption, policy, approvalRule } =
     usePartyFinanceMutations(publicId)
   const serviceTypeLabel = codeLabel(serviceTypes)
   const [creditOpen, setCreditOpen] = React.useState(false)
@@ -476,13 +494,41 @@ export function PartyFinanceTab({
                     <span className="text-foreground text-sm">
                       {t('party.finance.forceOnRequest')}
                     </span>
-                    <SwitchPill on={policyItem.forceOnRequest} />
+                    <SwitchPill
+                      on={policyItem.forceOnRequest}
+                      disabled={!editable || policy.put.isPending}
+                      onToggle={
+                        editable
+                          ? () =>
+                              policy.put.mutate({
+                                officeAccountId: policyItem.officeAccountId,
+                                forceOnRequest: !policyItem.forceOnRequest,
+                                blockWhenInsufficientBalance:
+                                  policyItem.blockWhenInsufficientBalance,
+                              })
+                          : undefined
+                      }
+                    />
                   </div>
                   <div className="flex items-center justify-between gap-3 py-2.5">
                     <span className="text-foreground text-sm">
                       {t('party.finance.blockInsufficient')}
                     </span>
-                    <SwitchPill on={policyItem.blockWhenInsufficientBalance} />
+                    <SwitchPill
+                      on={policyItem.blockWhenInsufficientBalance}
+                      disabled={!editable || policy.put.isPending}
+                      onToggle={
+                        editable
+                          ? () =>
+                              policy.put.mutate({
+                                officeAccountId: policyItem.officeAccountId,
+                                forceOnRequest: policyItem.forceOnRequest,
+                                blockWhenInsufficientBalance:
+                                  !policyItem.blockWhenInsufficientBalance,
+                              })
+                          : undefined
+                      }
+                    />
                   </div>
                 </div>
               </div>

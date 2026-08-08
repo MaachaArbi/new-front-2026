@@ -1621,7 +1621,7 @@ export function PartyDetailPage() {
                                 onClick={() => setAddressToDelete(address)}
                                 aria-label={t('party.detail.action.delete')}
                               >
-                                <Trash2 />
+                                <X />
                               </Button>
                             </div>
                           ) : null}
