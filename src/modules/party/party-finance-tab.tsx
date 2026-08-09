@@ -1,6 +1,7 @@
 import * as React from 'react'
 import { AlertTriangle, FileCheck, Pencil, Plus, X } from 'lucide-react'
 import { Button } from '@/shared/ui/button'
+import { EmptyState } from '@/shared/ui/empty-state'
 import { InitialsAvatar } from '@/shared/ui/initials-avatar'
 import { StatusChip } from '@/shared/ui/status-chip'
 import { formatMinor } from '@/shared/lib/money'
@@ -302,9 +303,7 @@ export function PartyFinanceTab({
             })}
           </div>
         ) : (
-          <p className="text-muted-foreground text-sm">
-            {t('party.finance.creditLimits.empty')}
-          </p>
+          <EmptyState className="px-0">{t('party.finance.creditLimits.empty')}</EmptyState>
         )}
       </section>
 
@@ -345,9 +344,7 @@ export function PartyFinanceTab({
             ))}
           </div>
         ) : (
-          <p className="text-muted-foreground text-sm">
-            {t('party.finance.managers.empty')}
-          </p>
+          <EmptyState className="px-0">{t('party.finance.managers.empty')}</EmptyState>
         )}
       </section>
 
@@ -421,9 +418,7 @@ export function PartyFinanceTab({
             ))}
           </div>
         ) : (
-          <p className="text-muted-foreground text-sm">
-            {t('party.finance.taxExemptions.empty')}
-          </p>
+          <EmptyState className="px-0">{t('party.finance.taxExemptions.empty')}</EmptyState>
         )}
       </section>
 
@@ -514,9 +509,7 @@ export function PartyFinanceTab({
             ))}
           </div>
         ) : (
-          <p className="text-muted-foreground text-sm">
-            {t('party.finance.commercialPolicy.empty')}
-          </p>
+          <EmptyState className="px-0">{t('party.finance.commercialPolicy.empty')}</EmptyState>
         )}
       </section>
 
@@ -561,9 +554,7 @@ export function PartyFinanceTab({
             ))}
           </div>
         ) : (
-          <p className="text-muted-foreground text-sm">
-            {t('party.finance.approvalRules.empty')}
-          </p>
+          <EmptyState className="px-0">{t('party.finance.approvalRules.empty')}</EmptyState>
         )}
       </section>
 

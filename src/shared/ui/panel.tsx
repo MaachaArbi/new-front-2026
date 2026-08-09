@@ -158,3 +158,47 @@ export function StatValue({
     </span>
   )
 }
+
+/**
+ * RAIL — la colonne de contexte d'une fiche : des groupes titrés, chacun fait de lignes
+ * « icône · libellé · valeur ». Toutes les fiches de l'ERP (tiers, réservation, facture)
+ * partageront cette colonne : c'est le motif le plus structurant du produit.
+ */
+export function RailGroupTitle({
+  title,
+  action,
+}: {
+  title: string
+  action?: React.ReactNode
+}) {
+  return (
+    <div className="mt-5 mb-1 flex items-center justify-between gap-2 first:mt-0">
+      <span className="text-muted-foreground text-[11px] font-semibold tracking-wider uppercase">
+        {title}
+      </span>
+      {action}
+    </div>
+  )
+}
+
+export function RailRow({
+  icon,
+  label,
+  children,
+}: {
+  icon: React.ReactNode
+  label: string
+  children: React.ReactNode
+}) {
+  return (
+    <div className="grid grid-cols-[168px_1fr] items-start gap-3 py-2.5">
+      <span className="text-muted-foreground flex items-center gap-2">
+        <span className="[&_svg]:text-muted-foreground [&_svg]:size-4">
+          {icon}
+        </span>
+        {label}
+      </span>
+      <span className="text-foreground min-w-0">{children}</span>
+    </div>
+  )
+}

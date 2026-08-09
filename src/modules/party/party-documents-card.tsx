@@ -9,6 +9,7 @@ import {
   Upload,
 } from 'lucide-react'
 import { Button } from '@/shared/ui/button'
+import { EmptyState } from '@/shared/ui/empty-state'
 import { useDateFormat } from '@/shared/lib/use-date-format'
 import { StatusChip, type StatusTone } from '@/shared/ui/status-chip'
 import { CountryDisplay } from '@/shared/ui/country-display'
@@ -293,9 +294,7 @@ export function PartyDocumentsCard({
           })}
         </div>
       ) : (
-        <p className="text-muted-foreground py-1 text-sm">
-          {t('party.document.empty')}
-        </p>
+        <EmptyState className="px-0">{t('party.document.empty')}</EmptyState>
       )}
 
       {fileError ? (

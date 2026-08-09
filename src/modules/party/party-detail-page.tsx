@@ -36,7 +36,14 @@ import { officesOf, officeCountryOf } from '@/shared/auth/me'
 import { useReferentials, codeLabel } from '@/shared/referentials'
 import { formatMinor } from '@/shared/lib/money'
 import './party-detail-page.css'
-import { Card, CardHead, Gauge, StatValue } from '@/shared/ui/panel'
+import {
+  Card,
+  CardHead,
+  Gauge,
+  RailGroupTitle,
+  RailRow,
+  StatValue,
+} from '@/shared/ui/panel'
 import { RowActions } from '@/shared/ui/row-actions'
 import { useDateFormat } from '@/shared/lib/use-date-format'
 import { InitialsAvatar } from '@/shared/ui/initials-avatar'
@@ -62,6 +69,7 @@ import type {
 import { ApiError } from '@/shared/api/errors'
 import { Badge, BadgeDot } from '@/shared/ui/badge'
 import { Button } from '@/shared/ui/button'
+import { EmptyState } from '@/shared/ui/empty-state'
 import { Input } from '@/shared/ui/input'
 import { PhoneDisplay } from '@/shared/ui/phone-display'
 import { CountryDisplay } from '@/shared/ui/country-display'
@@ -112,46 +120,6 @@ type FieldItem = { label: string; value: React.ReactNode }
 /** Conserve les champs réellement renseignés (le vide n'est jamais affiché). */
 function filled(items: FieldItem[]): FieldItem[] {
   return items.filter((i) => i.value != null && i.value !== '')
-}
-
-// Rail façon /_ref : titre de groupe + ligne « icône · libellé · valeur (à droite) ».
-function RailGroupTitle({
-  title,
-  action,
-}: {
-  title: string
-  action?: React.ReactNode
-}) {
-  return (
-    <div className="mt-5 mb-1 flex items-center justify-between gap-2 first:mt-0">
-      <span className="text-muted-foreground text-[11px] font-semibold tracking-wider uppercase">
-        {title}
-      </span>
-      {action}
-    </div>
-  )
-}
-
-function RailRow({
-  icon,
-  label,
-  children,
-}: {
-  icon: React.ReactNode
-  label: string
-  children: React.ReactNode
-}) {
-  return (
-    <div className="grid grid-cols-[168px_1fr] items-start gap-3 py-2.5">
-      <span className="text-muted-foreground flex items-center gap-2">
-        <span className="[&_svg]:text-muted-foreground [&_svg]:size-4">
-          {icon}
-        </span>
-        {label}
-      </span>
-      <span className="text-foreground min-w-0">{children}</span>
-    </div>
-  )
 }
 
 function Ext({ href, children }: { href: string; children: React.ReactNode }) {
@@ -1118,9 +1086,7 @@ export function PartyDetailPage() {
                   ))}
                 </div>
               ) : (
-                <p className="text-muted-foreground p-4 text-2sm">
-                  {t('party.detail.activity.empty')}
-                </p>
+                <EmptyState>{t('party.detail.activity.empty')}</EmptyState>
               )}
               <p className="text-muted-foreground/70 border-border border-t px-4 py-2.5 text-2xs">
                 {t('party.detail.soon.body')}
@@ -1292,9 +1258,7 @@ export function PartyDetailPage() {
                     ))}
                   </div>
                 ) : (
-                  <p className="text-muted-foreground text-sm">
-                    {t('party.detail.noInterlocutor')}
-                  </p>
+                  <EmptyState>{t('party.detail.noInterlocutor')}</EmptyState>
                 )}
                 {interlocutorError ? (
                   <p className="text-destructive mt-1 text-xs">
@@ -1368,9 +1332,7 @@ export function PartyDetailPage() {
                   ))}
                 </div>
               ) : (
-                <p className="text-muted-foreground text-sm">
-                  {t('party.finance.managers.empty')}
-                </p>
+                <EmptyState>{t('party.finance.managers.empty')}</EmptyState>
               )}
             </section>
           </TabsContent>
@@ -1701,9 +1663,9 @@ export function PartyDetailPage() {
                       ))}
                     </div>
                   ) : (
-                    <p className="text-muted-foreground py-1.5 text-sm">
+                    <EmptyState className="px-0">
                       {t('party.detail.noAddresses')}
-                    </p>
+                    </EmptyState>
                   )}
                 </div>
               </>
