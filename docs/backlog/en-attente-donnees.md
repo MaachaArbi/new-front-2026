@@ -76,11 +76,19 @@ Convention : `élément d'UI` · où · **statut** · débloqué par.
   recherche de personnes) — cause non identifiée. Le reste du semis fonctionne.
 - **Pages jetables** `/_ref` (spec de la fiche) et `/_ui` (socle + vocabulaire) : à
   supprimer une fois le port terminé et validé.
-- **Passe composants** : remonter `src/modules/party/party-ui.tsx` dans `shared/` quand la
-  2ᵉ utilisation sera certaine, avec le reste de l'inventaire (Avatar, StatusChip,
-  RowActions, MoneyText, DateText, EmptyState, SectionHead, ListCard, combobox, radios).
-  C'est cette passe qui rendra les **thèmes utilisateur** possibles (tout doit passer par
-  des tokens ; une valeur en dur ne répondra jamais à un thème).
+- **Champs de date natifs** (`<input type="date">`) : affichent `mm/dd/yyyy` — le format
+  vient de la langue du **système**, pas de celle de l'application ; ni option ni CSS ne
+  le changent. À remplacer par un `DateField` partagé + calendrier à nous (thème sombre
+  et arabe/RTL corrects, que le natif ne sait pas faire). Affichage via `useDateFormat`,
+  valeur toujours ISO vers l'API. ~7 champs (documents, plafonds, exonérations).
+  Bénéfice second : bloquer les dates impossibles à la saisie (expiration < émission).
+  **Décidé le 09/08 — à faire juste après la revue en cours.**
+- ~~**Passe composants**~~ : **FAITE le 09/08** (8 incréments). Dans `shared/ui/` :
+  InitialsAvatar, StatusChip, panel (Card/CardHead/Gauge/StatValue/RailRow), RowActions,
+  MoneyText, EmptyState, SelectField, timeline, Segmented, RadioField, Checkbox,
+  RecordShell ; `useDateFormat` dans `shared/lib/`. Reste le `DateField` (ci-dessus).
+  C'est cette passe qui rend les **thèmes utilisateur** possibles (tout passe par des
+  tokens ; une valeur en dur ne répondrait jamais à un thème).
 
 ### À traiter AVANT la mise en production (pas urgent en dev)
 - **Jauge « Encours »** : aujourd'hui une barre grise vide + « EN ATTENTE ». Acceptable en
