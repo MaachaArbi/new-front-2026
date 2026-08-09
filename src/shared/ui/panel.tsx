@@ -2,11 +2,12 @@ import * as React from 'react'
 import { cn } from '@/shared/lib/cn'
 
 /**
- * Vocabulaire visuel du module Tiers — les briques reprises du socle Metronic.
+ * Vocabulaire de PANNEAU — les briques de mise en page reprises du socle Metronic.
+ * Remontées du module Tiers vers `shared/` à la passe composants : la 2ᵉ utilisation
+ * est certaine (toutes les fiches de l'ERP auront ces cartes).
  *
- * ⚠️ Volontairement LOCAL au module : elles n'ont qu'un consommateur aujourd'hui.
- * Elles monteront dans `shared/` à la passe composants, quand la 2ᵉ utilisation sera
- * certaine — figer une API partagée trop tôt coûte plus cher que la déplacer plus tard.
+ * Règle de séparation du produit : **le filet + l'espace**, jamais l'ombre — celle-ci
+ * est réservée à ce qui flotte vraiment (modales, menus).
  */
 
 /** Carte : conteneur blanc à filet. Pas d'ombre — elle est réservée à ce qui flotte

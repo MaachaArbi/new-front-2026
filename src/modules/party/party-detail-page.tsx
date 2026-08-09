@@ -37,7 +37,8 @@ import { officesOf, officeCountryOf } from '@/shared/auth/me'
 import { useReferentials, codeLabel } from '@/shared/referentials'
 import { formatMinor } from '@/shared/lib/money'
 import './party-detail-page.css'
-import { Card, CardHead, Gauge, StatValue } from './party-ui'
+import { Card, CardHead, Gauge, StatValue } from '@/shared/ui/panel'
+import { RowActions } from '@/shared/ui/row-actions'
 import { InitialsAvatar } from '@/shared/ui/initials-avatar'
 import {
   usePartyAccount,
@@ -1706,31 +1707,15 @@ export function PartyDetailPage() {
                             </span>
                           </div>
                           {editable ? (
-                            <div className="-me-2 flex shrink-0 items-center">
-                              <Button
-                                size="sm"
-                                mode="icon"
-                                variant="ghost"
-                                className="text-muted-foreground"
-                                onClick={() => {
-                                  setEditingAddress(address)
-                                  setAddressSheetOpen(true)
-                                }}
-                                aria-label={t('party.detail.editAddress')}
-                              >
-                                <Pencil />
-                              </Button>
-                              <Button
-                                size="sm"
-                                mode="icon"
-                                variant="ghost"
-                                className="text-muted-foreground"
-                                onClick={() => setAddressToDelete(address)}
-                                aria-label={t('party.detail.action.delete')}
-                              >
-                                <X />
-                              </Button>
-                            </div>
+                            <RowActions
+                              onEdit={() => {
+                                setEditingAddress(address)
+                                setAddressSheetOpen(true)
+                              }}
+                              editLabel={t('party.detail.editAddress')}
+                              onRemove={() => setAddressToDelete(address)}
+                              removeLabel={t('party.detail.action.delete')}
+                            />
                           ) : null}
                         </div>
                       ))}
