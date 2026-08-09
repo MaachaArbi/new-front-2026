@@ -10,7 +10,9 @@ const buttonVariants = cva(
     variants: {
       variant: {
         primary:
-          'bg-primary text-primary-foreground hover:bg-primary/90 data-[state=open]:bg-primary/90',
+          // Action principale = ENCRE (token `--ink`), pas l'accent : un bouton
+          // principal ne doit pas se confondre avec un lien (identité « Encre »).
+          'bg-ink text-ink-foreground hover:bg-ink/90 data-[state=open]:bg-ink/90',
         mono: 'bg-foreground text-background hover:bg-foreground/90 data-[state=open]:bg-foreground/90',
         destructive:
           'bg-destructive text-destructive-foreground hover:bg-destructive/90 data-[state=open]:bg-destructive/90',

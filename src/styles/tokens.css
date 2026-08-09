@@ -16,21 +16,28 @@
 /** Colors - https://tailwindcss.com/docs/colors **/
 :root {
   --background: var(--color-white);
-  --foreground: var(--color-zinc-950);
+  --foreground: #1c1917; /* stone-900 — neutres CHAUDS (identité « Encre ») */
   --card: var(--color-white);
-  --card-foreground: var(--color-zinc-950);
+  --card-foreground: #1c1917;
   --popover: var(--color-white);
-  --popover-foreground: var(--color-zinc-950);
-  --primary: var(
-    --color-blue-600
-  ); /* était blue-500 (3,68:1) → blue-600 pour WCAG AA — ADR-F03 §3.4 */
+  --popover-foreground: #1c1917;
+  /* ACCENT (liens, onglet actif, indicateurs) — sarcelle profonde, 5,9:1 sur blanc. */
+  --primary: #0f766e;
   --primary-foreground: var(--color-white);
-  --secondary: var(--color-zinc-100);
-  --secondary-foreground: var(--color-zinc-900);
-  --muted: var(--color-zinc-100);
-  --muted-foreground: var(--color-zinc-500);
-  --accent: var(--color-zinc-100);
-  --accent-foreground: var(--color-zinc-900);
+
+  /* ENCRE — réservé à l'action principale (bouton CTA). Séparé de l'accent :
+     un lien ne doit pas être noir, un bouton principal ne doit pas être un lien. */
+  --ink: #1c1917;
+  --ink-foreground: var(--color-white);
+  --secondary: #f5f5f4; /* stone-100 */
+  --secondary-foreground: #1c1917;
+  --muted: #f5f5f4;
+  --muted-foreground: #78716c; /* stone-500 */
+  --accent: #f5f5f4;
+  --accent-foreground: #1c1917;
+
+  /* Bande de titre de carte / en-tête de tableau — le SEUL gris de l'intérieur. */
+  --strip: #fafaf9; /* stone-50 */
   --destructive: var(--color-red-600);
   --destructive-foreground: var(--color-white);
   --chart-1: var(--color-blue-500);
@@ -38,12 +45,12 @@
   --chart-3: var(--color-yellow-500);
   --chart-4: var(--color-red-500);
   --chart-5: var(--color-purple-500);
-  --border: oklch(
-    94% 0.004 286.32
-  ); /* between --color-zinc-100 and --color-zinc-200 */
-  --input: var(--color-zinc-200);
-  --ring: var(--color-zinc-400);
-  --radius: 0.5rem;
+  /* DEUX niveaux de bordure (comme Metronic) : filet clair pour la STRUCTURE,
+     bordure plus franche pour les CONTRÔLES (boutons, champs). */
+  --border: #e7e5e4; /* stone-200 — structure */
+  --input: #d6d3d1; /* stone-300 — contrôles, volontairement plus net */
+  --ring: #a8a29e; /* stone-400 */
+  --radius: 0.625rem; /* 10px */
 
   /* Menu BLANC, identique au contenu (layout-21 Metronic : le panneau latéral est
      `bg-background`, c'est le fond de page gris qui crée la séparation). */
@@ -63,20 +70,24 @@
 .dark {
   /* Trois niveaux de surface (S3c §4.2/§4.3) :
      rail/menu (--sidebar) < fond de page (--background) < cartes (--card). */
-  --background: #1f1f23; /* fond de page — intermédiaire */
-  --foreground: #e4e4e7; /* texte principal adouci (pas de blanc pur) */
-  --card: #27272a; /* cartes/panneaux — le plus clair */
-  --card-foreground: #e4e4e7;
-  --popover: #27272a;
-  --popover-foreground: #e4e4e7;
-  --primary: var(--color-blue-600); /* accent vif, rare — inchangé */
-  --primary-foreground: var(--color-white);
-  --secondary: #27272a;
-  --secondary-foreground: #e4e4e7;
-  --muted: #27272a;
-  --muted-foreground: #a1a1aa; /* texte secondaire — 6,4:1 sur le fond */
-  --accent: #27272a;
-  --accent-foreground: #e4e4e7;
+  --background: #1c1a19; /* fond de page — neutres chauds */
+  --foreground: #e7e5e4;
+  --card: #232120;
+  --card-foreground: #e7e5e4;
+  --popover: #232120;
+  --popover-foreground: #e7e5e4;
+  --primary: #2dd4bf; /* sarcelle claire — lisible sur fond sombre */
+  --primary-foreground: #0c2a26;
+  /* En sombre l'ENCRE s'inverse : le CTA devient clair sur fond sombre. */
+  --ink: #fafaf9;
+  --ink-foreground: #1c1917;
+  --secondary: #232120;
+  --secondary-foreground: #e7e5e4;
+  --muted: #232120;
+  --muted-foreground: #a8a29e;
+  --accent: #292524;
+  --accent-foreground: #e7e5e4;
+  --strip: #201e1d;
   --destructive: var(--color-red-600);
   --destructive-foreground: var(--color-white);
   --chart-1: var(--color-blue-500);
@@ -84,9 +95,9 @@
   --chart-3: var(--color-yellow-500);
   --chart-4: var(--color-red-500);
   --chart-5: var(--color-purple-500);
-  --border: #3f3f46;
-  --input: #3f3f46;
-  --ring: #52525b;
+  --border: #37332f;
+  --input: #4a443f; /* contrôles : plus net que la structure */
+  --ring: #57534e;
 
   /* Rail et menu latéral — surface la plus sombre */
   /* Sombre : le menu suit aussi le fond des panneaux (cohérence layout-21). */
@@ -136,6 +147,11 @@
 
   --color-primary: var(--primary);
   --color-primary-foreground: var(--primary-foreground);
+
+  --color-ink: var(--ink);
+  --color-ink-foreground: var(--ink-foreground);
+
+  --color-strip: var(--strip);
 
   --color-secondary: var(--secondary);
   --color-secondary-foreground: var(--secondary-foreground);
