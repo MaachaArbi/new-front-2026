@@ -39,6 +39,8 @@ const SKINS: Skin[] = [
     pitch: 'Inter · accent indigo · neutres froids · ombres douces · rayons 14',
     font: "'Inter', ui-sans-serif, system-ui, sans-serif",
     vars: {
+      ['--page' as string]: '#FFFFFF',
+      ['--strip' as string]: '#F8FAFC',
       ['--bg' as string]: '#F8FAFC',
       ['--card' as string]: '#FFFFFF',
       ['--line' as string]: '#E9EEF5',
@@ -66,6 +68,8 @@ const SKINS: Skin[] = [
       'Plus Jakarta Sans · boutons encre · neutres chauds · accent sarcelle · rayons 10',
     font: "'Plus Jakarta Sans', ui-sans-serif, system-ui, sans-serif",
     vars: {
+      ['--page' as string]: '#FFFFFF',
+      ['--strip' as string]: '#FAFAF9',
       ['--bg' as string]: '#FAFAF9',
       ['--card' as string]: '#FFFFFF',
       ['--line' as string]: '#E7E5E4',
@@ -205,9 +209,9 @@ function CardHead({
   return (
     <div
       className="flex items-center justify-between gap-3 px-4 py-2.5"
-      style={{ borderBottom: '1px solid var(--line)', background: 'var(--bg)' }}
+      style={{ borderBottom: '1px solid var(--line)', background: 'var(--strip)' }}
     >
-      <span className="text-[13px] font-semibold">{title}</span>
+      <span className="text-[16px] leading-none font-semibold tracking-tight">{title}</span>
       {action}
     </div>
   )
@@ -285,8 +289,7 @@ function Kpi({
         background: 'var(--card)',
         border: '1px solid var(--line)',
         borderRadius: 'var(--radius)',
-        boxShadow: 'var(--shadow)',
-      }}
+        }}
     >
       <div className="px-4 pt-3.5">
         <div
@@ -357,7 +360,7 @@ function Segmented({ items, active }: { items: string[]; active: string }) {
   return (
     <div
       className="inline-flex items-center gap-0.5 p-0.5"
-      style={{ background: 'var(--bg)', borderRadius: 'var(--radius-sm)', border: '1px solid var(--line)' }}
+      style={{ background: 'var(--strip)', borderRadius: 'var(--radius-sm)', border: '1px solid var(--line)' }}
     >
       {items.map((it) => (
         <span
@@ -383,7 +386,7 @@ function Screen({ skin }: { skin: Skin }) {
     <div
       style={{
         ...skin.vars,
-        background: 'var(--bg)',
+        background: 'var(--page)',
         fontFamily: skin.font,
         color: 'var(--ink)',
       }}
@@ -480,7 +483,6 @@ function Screen({ skin }: { skin: Skin }) {
               background: 'var(--card)',
               border: '1px solid var(--line)',
               borderRadius: 'var(--radius)',
-              boxShadow: 'var(--shadow)',
             }}
           >
             <CardHead
@@ -499,11 +501,11 @@ function Screen({ skin }: { skin: Skin }) {
                   borderBottom: i < arr.length - 1 ? '1px solid var(--line)' : undefined,
                 }}
               >
-                <span className="flex min-w-0 items-center gap-3 text-[14px]">
+                <span className="flex min-w-0 items-center gap-3 text-[13px]">
                   <span className="size-2 shrink-0 rounded-full" style={{ background: dot }} />
                   {txt}
                 </span>
-                <button type="button" className="shrink-0 text-[13px] font-semibold" style={{ color: 'var(--accent)' }}>
+                <button type="button" className="shrink-0 text-[12.5px] font-semibold" style={{ color: 'var(--accent)' }}>
                   {cta}
                 </button>
               </div>
@@ -517,7 +519,6 @@ function Screen({ skin }: { skin: Skin }) {
               background: 'var(--card)',
               border: '1px solid var(--line)',
               borderRadius: 'var(--radius)',
-              boxShadow: 'var(--shadow)',
             }}
           >
             <CardHead
@@ -546,9 +547,9 @@ function Screen({ skin }: { skin: Skin }) {
             ].map(([ini, name, fn, tel, last, tint], i, arr) => (
               <div
                 key={name}
-                className="grid grid-cols-[1fr_130px_170px_90px_40px] items-center px-4 text-[14px]"
+                className="grid grid-cols-[1fr_130px_170px_90px_40px] items-center px-4 text-[13px]"
                 style={{
-                  height: 46,
+                  height: 42,
                   borderBottom: i < arr.length - 1 ? '1px solid var(--line)' : undefined,
                 }}
               >
@@ -574,7 +575,6 @@ function Screen({ skin }: { skin: Skin }) {
               background: 'var(--card)',
               border: '1px solid var(--line)',
               borderRadius: 'var(--radius)',
-              boxShadow: 'var(--shadow)',
             }}
           >
             <CardHead title="Crédit" />
@@ -604,14 +604,13 @@ function Screen({ skin }: { skin: Skin }) {
               background: 'var(--card)',
               border: '1px solid var(--line)',
               borderRadius: 'var(--radius)',
-              boxShadow: 'var(--shadow)',
             }}
           >
             <CardHead
               title="Identité"
               action={<Pencil className="size-4" style={{ color: 'var(--faint)' }} />}
             />
-            <dl className="flex flex-col gap-3 p-4 text-[14px]">
+            <dl className="flex flex-col gap-3 p-4 text-[13px]">
               {[
                 ['Matricule fiscal', 'MF : 123456'],
                 ['Registre de commerce', 'RC : 123456'],
@@ -684,7 +683,7 @@ function Screen({ skin }: { skin: Skin }) {
           </div>
           <div
             className="flex items-center justify-between gap-3 px-6 py-4"
-            style={{ borderTop: '1px solid var(--line)', background: 'var(--bg)' }}
+            style={{ borderTop: '1px solid var(--line)', background: 'var(--strip)' }}
           >
             <button type="button" className="text-[13px] font-semibold" style={{ color: '#DC2626' }}>
               Supprimer

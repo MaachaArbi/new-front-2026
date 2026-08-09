@@ -109,6 +109,15 @@
     'Inter', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto,
     'Helvetica Neue', Arial, 'Noto Sans', sans-serif;
 
+  /** Deux crans SOUS l'échelle Tailwind — repris tels quels du socle Metronic.
+      Sans eux, tout le texte dense reste à 14 px et l'interface paraît « grosse ».
+      Usage : `text-2sm` = zones denses (cellules, lignes de liste, méta),
+      `text-2xs` = micro-labels en capitales. **/
+  --text-2sm: 0.8125rem; /* 13 px */
+  --text-2sm--line-height: calc(1.075 / 0.8125);
+  --text-2xs: 0.6875rem; /* 11 px */
+  --text-2xs--line-height: calc(0.825 / 0.6875);
+
   /** Base Colors **/
   --color-background: var(--background);
   --color-foreground: var(--foreground);
