@@ -64,6 +64,24 @@ Convention : `élément d'UI` · où · **statut** · débloqué par.
   **client**, donc limité aux entrées chargées. Indispensable sur un gros historique.
 - **Nom du validateur** : l'audit expose `validator` en UUID brut → afficher un nom.
 
+### Socle visuel & vocabulaire (09/08/2026)
+- **Sparkline + chip de variation** : construits sur `/_ui`, **pas portés** sur la fiche —
+  aucune série temporelle réelle (CA, réservations) n'existe. À porter avec les modules
+  Réservations / Factures. Ne jamais afficher une courbe sans sa **période**.
+- **Jauge encours/plafond** : posée sur la fiche en état « en attente » ; se remplira le
+  jour où l'encours existera (modules Factures / Paiements).
+- **Segmented control + toolbar** (Trier / Vue / Filtrer) du layout-21 : construits sur
+  `/_ui`, restent à porter sur les onglets de la fiche.
+- **Semis interlocuteurs** : le bloc `SEED_ONLY=contacts` échoue encore (panneau de
+  recherche de personnes) — cause non identifiée. Le reste du semis fonctionne.
+- **Pages jetables** `/_ref` (spec de la fiche) et `/_ui` (socle + vocabulaire) : à
+  supprimer une fois le port terminé et validé.
+- **Passe composants** : remonter `src/modules/party/party-ui.tsx` dans `shared/` quand la
+  2ᵉ utilisation sera certaine, avec le reste de l'inventaire (Avatar, StatusChip,
+  RowActions, MoneyText, DateText, EmptyState, SectionHead, ListCard, combobox, radios).
+  C'est cette passe qui rendra les **thèmes utilisateur** possibles (tout doit passer par
+  des tokens ; une valeur en dur ne répondra jamais à un thème).
+
 ---
 _À compléter au fil des briques. Toute valeur en dur / « en attente » posée dans l'UI
 doit atterrir ici le jour où on la crée._
