@@ -254,6 +254,8 @@
   "party.detail.tab.history": "السجل",
   "party.detail.tab.finance": "المالية",
   "party.detail.tab.team": "جهات الاتصال والفريق",
+  "party.detail.team.contactsHint": "جهات الاتصال لدى العميل",
+  "party.detail.team.managersHint": "فريقك",
   "party.detail.tab.notes": "ملاحظات",
   "party.detail.tab.tasks": "مهام",
   "party.detail.tab.documents": "المستندات",

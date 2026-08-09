@@ -254,6 +254,8 @@
   "party.detail.tab.history": "History",
   "party.detail.tab.finance": "Finance",
   "party.detail.tab.team": "Contacts & team",
+  "party.detail.team.contactsHint": "contacts at the client",
+  "party.detail.team.managersHint": "your team",
   "party.detail.tab.notes": "Notes",
   "party.detail.tab.tasks": "Tasks",
   "party.detail.tab.documents": "Documents",

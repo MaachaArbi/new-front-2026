@@ -46,6 +46,7 @@ import {
   usePartyFunctionMutations,
   useAnonymizePartyAccount,
   usePartyHistory,
+  usePartyFinanceMutations,
 } from './queries'
 import type {
   PartyAccountListItem,
@@ -64,6 +65,7 @@ import { CountryDisplay } from '@/shared/ui/country-display'
 import { PartyLogoEditor } from './party-logo-editor'
 import { PartyCurrencySheet } from './party-currency-sheet'
 import { PartyInterlocutorSheet } from './party-interlocutor-sheet'
+import { PartyManagerSheet } from './party-manager-sheet'
 import { PartyHistoryTab, KNOWN_SUBJECTS } from './party-history-tab'
 import { PartyFinanceTab } from './party-finance-tab'
 import { PartyDocumentsCard } from './party-documents-card'
@@ -224,10 +226,14 @@ export function PartyDetailPage() {
     React.useState<PartyAddress | null>(null)
   const [currencyOpen, setCurrencyOpen] = React.useState(false)
   const [interlocutorOpen, setInterlocutorOpen] = React.useState(false)
+  // Chargés de compte — gérables depuis « Contacts & équipe » (comme le /_ref) ;
+  // mêmes mutations que l'onglet Finance (source unique côté API).
+  const [managerOpen, setManagerOpen] = React.useState(false)
   const [anonymizeOpen, setAnonymizeOpen] = React.useState(false)
   const { remove: removeAddress } = usePartyAddressMutations(id)
   const roleMutations = usePartyRoleMutations(id)
   const functionMutations = usePartyFunctionMutations(id)
+  const { manager: managerMutations } = usePartyFinanceMutations(id)
   const anonymize = useAnonymizePartyAccount(id)
   const intl = useIntl()
   const fmtDate = (iso: string | null): string | null =>
@@ -1164,19 +1170,26 @@ export function PartyDetailPage() {
             />
           </TabsContent>
 
-          <TabsContent value="team" className="flex flex-col gap-4 pt-4">
-            {/* Interlocuteurs (organisations) — LEUR home : édition (ajout/retrait) + clic
-                vers la fiche. Pas de tél/e-mail (donnée absente sur le lien contact). */}
+          <TabsContent value="team" className="pt-4">
+            {/* INTERLOCUTEURS (externes) — répertoire complet, style /_ref : en-tête à
+                icône + compteur + bouton, puis conteneur bordé (avatar · nom · fonction).
+                Pas de tél/e-mail : absents de `PartyContactRef` (demande back). */}
             {view.nature === 'organization' ? (
-              <div className="border-border rounded-xl border p-4">
-                <div className="mb-3 flex items-center justify-between gap-2">
-                  <h3 className="text-foreground text-sm font-semibold">
+              <section className="mb-9">
+                <div className="mb-3 flex items-center justify-between gap-3">
+                  <div className="text-foreground flex items-center gap-2 text-sm font-semibold">
+                    <Users className="text-muted-foreground size-4" />
                     {t('party.detail.section.contacts')}
-                  </h3>
+                    <span className="text-muted-foreground text-xs font-normal">
+                      · {t('party.detail.team.contactsHint')} ·{' '}
+                      {view.contacts.length}
+                    </span>
+                  </div>
                   {editable && view.accountId != null ? (
                     <Button
                       size="sm"
                       variant="outline"
+                      className="shrink-0"
                       onClick={() => setInterlocutorOpen(true)}
                     >
                       <Plus />
@@ -1185,29 +1198,26 @@ export function PartyDetailPage() {
                   ) : null}
                 </div>
                 {view.contacts.length > 0 ? (
-                  <ul className="flex flex-col gap-1">
+                  <div className="border-border rounded-xl border">
                     {view.contacts.map((contact) => (
-                      <li
+                      <div
                         key={contact.publicId}
-                        className="hover:bg-accent flex items-center gap-1 rounded-md px-2 py-1.5"
+                        className="border-border/60 flex items-center justify-between gap-3 border-b px-4 py-3 last:border-0"
                       >
                         <button
                           type="button"
                           onClick={() =>
                             navigate(`/parties/${contact.publicId}`)
                           }
-                          className="flex min-w-0 flex-1 items-center justify-between gap-2 text-start"
+                          className="flex min-w-0 items-center gap-3 text-start"
                         >
-                          <span className="text-foreground truncate text-sm">
+                          <Avatar name={contact.displayName} />
+                          <span className="text-foreground truncate font-medium">
                             {contact.displayName}
                           </span>
-                          <Badge
-                            variant="secondary"
-                            appearance="light"
-                            size="sm"
-                          >
+                          <span className="bg-muted text-muted-foreground shrink-0 rounded px-2 py-0.5 text-xs">
                             {functionLabel(contact.functionCode)}
-                          </Badge>
+                          </span>
                         </button>
                         {editable && view.accountId != null ? (
                           <Button
@@ -1222,9 +1232,9 @@ export function PartyDetailPage() {
                             <X />
                           </Button>
                         ) : null}
-                      </li>
+                      </div>
                     ))}
-                  </ul>
+                  </div>
                 ) : (
                   <p className="text-muted-foreground text-sm">
                     {t('party.detail.noInterlocutor')}
@@ -1235,41 +1245,78 @@ export function PartyDetailPage() {
                     {interlocutorError}
                   </p>
                 ) : null}
-              </div>
+              </section>
             ) : null}
 
-            {/* Chargés de compte (interne) — liste ; ils se gèrent dans l'onglet Finance. */}
-            <div className="border-border rounded-xl border p-4">
-              <h3 className="text-foreground mb-3 text-sm font-semibold">
-                {t('party.finance.managers')}
-              </h3>
+            {/* CHARGÉS DE COMPTE (internes) — votre équipe sur ce compte. Gérables ici
+                (mêmes mutations que l'onglet Finance). */}
+            <section>
+              <div className="mb-3 flex items-center justify-between gap-3">
+                <div className="text-foreground flex items-center gap-2 text-sm font-semibold">
+                  <Briefcase className="text-muted-foreground size-4" />
+                  {t('party.finance.managers')}
+                  <span className="text-muted-foreground text-xs font-normal">
+                    · {t('party.detail.team.managersHint')} ·{' '}
+                    {view.managers.length}
+                  </span>
+                </div>
+                {editable ? (
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    className="shrink-0"
+                    onClick={() => setManagerOpen(true)}
+                  >
+                    <Plus />
+                    {t('party.finance.addManager')}
+                  </Button>
+                ) : null}
+              </div>
               {view.managers.length > 0 ? (
-                <ul className="flex flex-col gap-2">
+                <div className="border-border rounded-xl border">
                   {view.managers.map((m) => (
-                    <li
+                    <div
                       key={m.publicId}
-                      className="flex items-center justify-between gap-3 text-sm"
+                      className="border-border/60 flex items-center justify-between gap-3 border-b px-4 py-3 last:border-0"
                     >
-                      <span className="text-foreground truncate">
-                        {m.managerDisplayName}
-                      </span>
-                      <span className="flex shrink-0 items-center gap-2">
-                        <span className="text-muted-foreground text-xs">
+                      <span className="flex min-w-0 items-center gap-3">
+                        <Avatar name={m.managerDisplayName} />
+                        <span className="text-foreground truncate font-medium">
+                          {m.managerDisplayName}
+                        </span>
+                        <span className="bg-muted text-muted-foreground shrink-0 rounded px-2 py-0.5 text-xs">
                           {t(`party.finance.assignment.${m.assignmentType}`)}
                         </span>
-                        <Badge variant="secondary" appearance="light" size="sm">
-                          {officeName(m.officeAccountId)}
-                        </Badge>
                       </span>
-                    </li>
+                      <span className="flex shrink-0 items-center gap-3">
+                        <span className="text-muted-foreground text-sm">
+                          {officeName(m.officeAccountId)}
+                        </span>
+                        {editable ? (
+                          <Button
+                            size="sm"
+                            mode="icon"
+                            variant="ghost"
+                            className="text-muted-foreground shrink-0"
+                            aria-label={t('party.finance.remove')}
+                            disabled={managerMutations.remove.isPending}
+                            onClick={() =>
+                              managerMutations.remove.mutate(m.publicId)
+                            }
+                          >
+                            <X />
+                          </Button>
+                        ) : null}
+                      </span>
+                    </div>
                   ))}
-                </ul>
+                </div>
               ) : (
                 <p className="text-muted-foreground text-sm">
                   {t('party.finance.managers.empty')}
                 </p>
               )}
-            </div>
+            </section>
           </TabsContent>
 
           {/* Notes / Tâches — placeholders (features sans back), reproduits du /_ref. */}
@@ -1754,6 +1801,14 @@ export function PartyDetailPage() {
           t={t}
         />
       ) : null}
+
+      <PartyManagerSheet
+        open={managerOpen}
+        onOpenChange={setManagerOpen}
+        publicId={id}
+        offices={officeOptions}
+        t={t}
+      />
 
       <PartyParentSheet
         open={parentOpen}
