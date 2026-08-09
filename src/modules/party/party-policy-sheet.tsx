@@ -1,16 +1,7 @@
 import * as React from 'react'
-import {
-  Sheet,
-  SheetBody,
-  SheetContent,
-  SheetDescription,
-  SheetFooter,
-  SheetHeader,
-  SheetTitle,
-} from '@/shared/ui/sheet'
-import { Button } from '@/shared/ui/button'
 import { SelectField } from '@/shared/ui/select'
 import { CheckboxField } from '@/shared/ui/checkbox'
+import { FormModal } from '@/shared/ui/form-modal'
 import { ApiError } from '@/shared/api/errors'
 import { usePartyFinanceMutations } from './queries'
 import type { OfficeChoice } from './party-credit-limit-sheet'
@@ -73,52 +64,41 @@ export function PartyPolicySheet({
     )
 
   return (
-    <Sheet open={open} onOpenChange={onOpenChange}>
-      <SheetContent>
-        <SheetHeader>
-          <SheetTitle>{t('party.finance.setPolicy')}</SheetTitle>
-          <SheetDescription>
-            {t('party.finance.commercialPolicy.hint')}
-          </SheetDescription>
-        </SheetHeader>
-        <SheetBody className="flex flex-col gap-4">
-          {error ? <p className="text-destructive text-xs">{error}</p> : null}
+    <FormModal
+      open={open}
+      onOpenChange={onOpenChange}
+      title={t('party.finance.setPolicy')}
+      description={t('party.finance.commercialPolicy.hint')}
+      submitLabel={t('party.detail.save')}
+      onSubmit={save}
+      submitting={put.isPending}
+      error={error}
+    >
+      <SelectField
+        label={t('party.finance.scope')}
+        value={officeAccountId === null ? '' : String(officeAccountId)}
+        disabled={isEdit}
+        onChange={(next) =>
+          setOfficeAccountId(next === '' ? null : Number(next))
+        }
+        emptyLabel={t('party.finance.commonPolicy')}
+        options={offices.map((office) => ({
+          code: String(office.value),
+          label: office.label,
+        }))}
+      />
 
-          <SelectField
-            label={t('party.finance.scope')}
-            value={officeAccountId === null ? '' : String(officeAccountId)}
-            disabled={isEdit}
-            onChange={(next) =>
-              setOfficeAccountId(next === '' ? null : Number(next))
-            }
-            emptyLabel={t('party.finance.commonPolicy')}
-            options={offices.map((office) => ({
-              code: String(office.value),
-              label: office.label,
-            }))}
-          />
+      <CheckboxField
+        label={t('party.finance.forceOnRequest')}
+        checked={forceOnRequest}
+        onChange={setForceOnRequest}
+      />
 
-          <CheckboxField
-            label={t('party.finance.forceOnRequest')}
-            checked={forceOnRequest}
-            onChange={setForceOnRequest}
-          />
-
-          <CheckboxField
-            label={t('party.finance.blockInsufficient')}
-            checked={blockInsufficient}
-            onChange={setBlockInsufficient}
-          />
-        </SheetBody>
-        <SheetFooter>
-          <Button variant="outline" onClick={() => onOpenChange(false)}>
-            {t('party.detail.cancel')}
-          </Button>
-          <Button variant="primary" onClick={save} disabled={put.isPending}>
-            {t('party.detail.save')}
-          </Button>
-        </SheetFooter>
-      </SheetContent>
-    </Sheet>
+      <CheckboxField
+        label={t('party.finance.blockInsufficient')}
+        checked={blockInsufficient}
+        onChange={setBlockInsufficient}
+      />
+    </FormModal>
   )
 }

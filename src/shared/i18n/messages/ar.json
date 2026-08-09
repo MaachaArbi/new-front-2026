@@ -523,5 +523,6 @@
   "party.document.issuedExpires": "صدر في {issued} · ينتهي في {expiry}",
   "party.document.issuedExpired": "صدر في {issued} · انتهى في {expiry}",
   "party.detail.partialLoad": "تعذّر تحميل البطاقة كاملة. ما يظهر غير مكتمل — قد يوجد سقف أو عنوان أو وثيقة دون أن تظهر هنا.",
-  "common.retry": "إعادة المحاولة"
+  "common.retry": "إعادة المحاولة",
+  "common.close": "إغلاق"
 }

@@ -1,14 +1,7 @@
 import * as React from 'react'
-import {
-  Sheet,
-  SheetBody,
-  SheetContent,
-  SheetDescription,
-  SheetHeader,
-  SheetTitle,
-} from '@/shared/ui/sheet'
 import { Input } from '@/shared/ui/input'
 import { Button } from '@/shared/ui/button'
+import { FormModal } from '@/shared/ui/form-modal'
 import { ApiError } from '@/shared/api/errors'
 import { usePartyAccounts, usePatchPartyAccount } from './queries'
 import type { PartyOfficeRef } from './api'
@@ -76,64 +69,63 @@ export function PartyParentSheet({
     )
 
   return (
-    <Sheet open={open} onOpenChange={onOpenChange}>
-      <SheetContent>
-        <SheetHeader>
-          <SheetTitle>{t('party.detail.editParent')}</SheetTitle>
-          <SheetDescription>{t('party.detail.parentHint')}</SheetDescription>
-        </SheetHeader>
-        <SheetBody className="flex flex-col gap-3">
-          {currentParent ? (
-            <div className="border-border flex items-center justify-between gap-2 rounded-md border p-2">
-              <span className="text-foreground truncate text-sm">
-                {currentParent.displayName}
+    <FormModal
+      open={open}
+      onOpenChange={onOpenChange}
+      title={t('party.detail.editParent')}
+      description={t('party.detail.parentHint')}
+      // Pas d'enregistrement : choisir dans la liste rattache aussitôt. Le pied ne
+      // propose donc que « Fermer », plutôt qu'un bouton qui ne ferait rien.
+      error={error}
+    >
+      {currentParent ? (
+        <div className="border-border flex items-center justify-between gap-2 rounded-md border px-3 py-2">
+          <span className="text-foreground text-2sm truncate">
+            {currentParent.displayName}
+          </span>
+          <Button
+            size="sm"
+            variant="ghost"
+            onClick={detach}
+            disabled={patch.isPending}
+          >
+            {t('party.detail.detachParent')}
+          </Button>
+        </div>
+      ) : null}
+
+      <Input
+        placeholder={t('party.detail.searchParent')}
+        value={searchInput}
+        onChange={(event) => setSearchInput(event.target.value)}
+      />
+
+      <ul className="flex max-h-64 flex-col overflow-y-auto">
+        {results.map((row) => (
+          <li key={row.publicId}>
+            <button
+              type="button"
+              onClick={() => attach(row.publicId)}
+              disabled={patch.isPending}
+              className="hover:bg-muted/50 flex w-full flex-col gap-0.5 rounded-md p-2 text-start"
+            >
+              <span className="text-foreground text-2sm truncate font-medium">
+                {row.displayName}
               </span>
-              <Button
-                size="sm"
-                variant="ghost"
-                onClick={detach}
-                disabled={patch.isPending}
-              >
-                {t('party.detail.detachParent')}
-              </Button>
-            </div>
-          ) : null}
-
-          <Input
-            placeholder={t('party.detail.searchParent')}
-            value={searchInput}
-            onChange={(event) => setSearchInput(event.target.value)}
-          />
-          {error ? <p className="text-destructive text-xs">{error}</p> : null}
-
-          <ul className="flex flex-col">
-            {results.map((row) => (
-              <li key={row.publicId}>
-                <button
-                  type="button"
-                  onClick={() => attach(row.publicId)}
-                  disabled={patch.isPending}
-                  className="hover:bg-muted/50 flex w-full flex-col gap-0.5 rounded-md p-2 text-start"
-                >
-                  <span className="text-foreground truncate text-sm font-medium">
-                    {row.displayName}
-                  </span>
-                  {row.email ? (
-                    <span className="text-muted-foreground truncate text-xs">
-                      {row.email}
-                    </span>
-                  ) : null}
-                </button>
-              </li>
-            ))}
-            {search !== '' && results.length === 0 && !query.isFetching ? (
-              <li className="text-muted-foreground p-2 text-sm">
-                {t('party.empty')}
-              </li>
-            ) : null}
-          </ul>
-        </SheetBody>
-      </SheetContent>
-    </Sheet>
+              {row.email ? (
+                <span className="text-muted-foreground truncate text-xs">
+                  {row.email}
+                </span>
+              ) : null}
+            </button>
+          </li>
+        ))}
+        {search !== '' && results.length === 0 && !query.isFetching ? (
+          <li className="text-muted-foreground text-2sm p-2">
+            {t('party.empty')}
+          </li>
+        ) : null}
+      </ul>
+    </FormModal>
   )
 }

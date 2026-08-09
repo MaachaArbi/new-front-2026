@@ -25,6 +25,28 @@ test('modale — ajouter un plafond', async ({ page }) => {
   await open()
   await page.screenshot({ path: 'e2e/screenshots/modale-clair.png' })
 
+  await page.keyboard.press('Escape')
+  await page.waitForTimeout(400)
+
+  // Coordonnées — crayon du rail.
+  await page.getByRole('button', { name: /éditer les coordonnées/i }).click()
+  await page.waitForTimeout(700)
+  await page.screenshot({ path: 'e2e/screenshots/modale-coordonnees.png' })
+  await page.keyboard.press('Escape')
+  await page.waitForTimeout(400)
+
+  // Chargé de compte — recherche de personne, validation au pied.
+  await page.getByRole('tab', { name: /^finance$/i }).click()
+  await page.waitForTimeout(800)
+  await page
+    .getByRole('button', { name: /ajouter un chargé de compte/i })
+    .first()
+    .click()
+  await page.waitForTimeout(700)
+  await page.screenshot({ path: 'e2e/screenshots/modale-charge.png' })
+  await page.keyboard.press('Escape')
+  await page.waitForTimeout(400)
+
   await page.evaluate(() => localStorage.setItem('ostravel-theme', 'dark'))
   await page.reload()
   await page.waitForTimeout(2000)

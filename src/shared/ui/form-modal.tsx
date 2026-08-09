@@ -49,8 +49,10 @@ export function FormModal({
   title: string
   description?: string
   destructive?: React.ReactNode
-  submitLabel: string
-  onSubmit: () => void
+  /** Absents = modale SANS enregistrement : l'action se fait au clic dans le corps
+   *  (choisir une agence mère, par exemple). Le pied ne propose alors que « Fermer ». */
+  submitLabel?: string
+  onSubmit?: () => void
   submitting?: boolean
   canSubmit?: boolean
   error?: string | null
@@ -66,7 +68,7 @@ export function FormModal({
         <form
           onSubmit={(event) => {
             event.preventDefault()
-            if (canSubmit && !submitting) onSubmit()
+            if (onSubmit && canSubmit && !submitting) onSubmit()
           }}
           className="flex min-h-0 flex-col"
         >
@@ -93,19 +95,23 @@ export function FormModal({
             <span className="flex items-center gap-2">
               <Button
                 type="button"
-                variant="outline"
+                variant={onSubmit ? 'outline' : 'primary'}
                 size="sm"
                 onClick={() => onOpenChange(false)}
               >
-                {intl.formatMessage({ id: 'party.detail.cancel' })}
+                {intl.formatMessage({
+                  id: onSubmit ? 'party.detail.cancel' : 'common.close',
+                })}
               </Button>
-              <Button
-                type="submit"
-                size="sm"
-                disabled={submitting || !canSubmit}
-              >
-                {submitLabel}
-              </Button>
+              {onSubmit ? (
+                <Button
+                  type="submit"
+                  size="sm"
+                  disabled={submitting || !canSubmit}
+                >
+                  {submitLabel}
+                </Button>
+              ) : null}
             </span>
           </div>
         </form>

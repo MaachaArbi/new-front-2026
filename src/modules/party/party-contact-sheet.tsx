@@ -1,16 +1,8 @@
 import * as React from 'react'
-import {
-  Sheet,
-  SheetBody,
-  SheetContent,
-  SheetFooter,
-  SheetHeader,
-  SheetTitle,
-} from '@/shared/ui/sheet'
 import { Input } from '@/shared/ui/input'
 import { PhoneInput } from '@/shared/ui/phone-input'
 import { CountrySelect } from '@/shared/ui/country-select'
-import { Button } from '@/shared/ui/button'
+import { FormField, FormModal } from '@/shared/ui/form-modal'
 import { ApiError } from '@/shared/api/errors'
 import type { ReferentialItem } from '@/shared/referentials'
 import { usePatchPartyAccount } from './queries'
@@ -31,24 +23,6 @@ function violationsOf(error: unknown): Record<string, string> {
   const map: Record<string, string> = {}
   for (const v of error.violations) map[v.field] = v.message
   return map
-}
-
-function LabeledField({
-  label,
-  error,
-  children,
-}: {
-  label: string
-  error?: string
-  children: React.ReactNode
-}) {
-  return (
-    <label className="flex flex-col gap-1">
-      <span className="text-muted-foreground text-sm">{label}</span>
-      {children}
-      {error ? <span className="text-destructive text-xs">{error}</span> : null}
-    </label>
-  )
 }
 
 /**
@@ -113,58 +87,47 @@ export function PartyContactSheet({
   }
 
   return (
-    <Sheet open={open} onOpenChange={onOpenChange}>
-      <SheetContent>
-        <SheetHeader>
-          <SheetTitle>{t('party.detail.editCoordinates')}</SheetTitle>
-        </SheetHeader>
-        <SheetBody className="flex flex-col gap-4">
-          <LabeledField label={t('party.detail.email')} error={errors.email}>
-            <Input
-              type="text"
-              value={emailValue}
-              onChange={(event) => setEmailValue(event.target.value)}
-            />
-          </LabeledField>
-          <LabeledField label={t('party.column.phone')}>
-            <PhoneInput
-              value={phone1}
-              onChange={setPhone1}
-              countries={countries}
-              defaultCountry={defaultCountry}
-              t={t}
-            />
-          </LabeledField>
-          <LabeledField label={t('party.detail.field.phoneSecondary')}>
-            <PhoneInput
-              value={phone2}
-              onChange={setPhone2}
-              countries={countries}
-              defaultCountry={defaultCountry}
-              t={t}
-            />
-          </LabeledField>
-          <LabeledField
-            label={t('party.column.country')}
-            error={errors.country}
-          >
-            <CountrySelect
-              countries={countries}
-              value={countryValue || null}
-              onChange={(value) => setCountryValue(value ?? '')}
-              t={t}
-            />
-          </LabeledField>
-        </SheetBody>
-        <SheetFooter>
-          <Button variant="outline" onClick={() => onOpenChange(false)}>
-            {t('party.detail.cancel')}
-          </Button>
-          <Button variant="primary" onClick={save} disabled={patch.isPending}>
-            {t('party.detail.save')}
-          </Button>
-        </SheetFooter>
-      </SheetContent>
-    </Sheet>
+    <FormModal
+      open={open}
+      onOpenChange={onOpenChange}
+      title={t('party.detail.editCoordinates')}
+      submitLabel={t('party.detail.save')}
+      onSubmit={save}
+      submitting={patch.isPending}
+    >
+      <FormField label={t('party.detail.email')} error={errors.email}>
+        <Input
+          type="text"
+          value={emailValue}
+          onChange={(event) => setEmailValue(event.target.value)}
+        />
+      </FormField>
+      <FormField label={t('party.column.phone')}>
+        <PhoneInput
+          value={phone1}
+          onChange={setPhone1}
+          countries={countries}
+          defaultCountry={defaultCountry}
+          t={t}
+        />
+      </FormField>
+      <FormField label={t('party.detail.field.phoneSecondary')}>
+        <PhoneInput
+          value={phone2}
+          onChange={setPhone2}
+          countries={countries}
+          defaultCountry={defaultCountry}
+          t={t}
+        />
+      </FormField>
+      <FormField label={t('party.column.country')} error={errors.country}>
+        <CountrySelect
+          countries={countries}
+          value={countryValue || null}
+          onChange={(value) => setCountryValue(value ?? '')}
+          t={t}
+        />
+      </FormField>
+    </FormModal>
   )
 }

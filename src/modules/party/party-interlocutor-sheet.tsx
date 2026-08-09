@@ -1,15 +1,8 @@
 import * as React from 'react'
-import {
-  Sheet,
-  SheetBody,
-  SheetContent,
-  SheetDescription,
-  SheetHeader,
-  SheetTitle,
-} from '@/shared/ui/sheet'
 import { Input } from '@/shared/ui/input'
 import { Button } from '@/shared/ui/button'
 import { SelectField } from '@/shared/ui/select'
+import { FormModal } from '@/shared/ui/form-modal'
 import { ApiError } from '@/shared/api/errors'
 import type { ReferentialItem } from '@/shared/referentials'
 import { usePartyAccounts, usePartyFunctionMutations } from './queries'
@@ -81,87 +74,78 @@ export function PartyInterlocutorSheet({
   }
 
   return (
-    <Sheet open={open} onOpenChange={onOpenChange}>
-      <SheetContent>
-        <SheetHeader>
-          <SheetTitle>{t('party.detail.addInterlocutor')}</SheetTitle>
-          <SheetDescription>
-            {t('party.detail.interlocutorHint')}
-          </SheetDescription>
-        </SheetHeader>
-        <SheetBody className="flex flex-col gap-3">
-          {error ? <p className="text-destructive text-xs">{error}</p> : null}
-
-          {selected ? (
-            <div className="border-border flex flex-col gap-2 rounded-md border p-2">
-              <div className="flex items-center justify-between gap-2">
-                <span className="text-foreground truncate text-sm font-medium">
-                  {selected.displayName}
-                </span>
-                <Button
-                  size="sm"
-                  variant="ghost"
-                  onClick={() => setSelected(null)}
+    <FormModal
+      open={open}
+      onOpenChange={onOpenChange}
+      title={t('party.detail.addInterlocutor')}
+      description={t('party.detail.interlocutorHint')}
+      submitLabel={t('party.detail.addInterlocutorSubmit')}
+      onSubmit={submit}
+      submitting={assign.isPending}
+      // Le bouton d'ajout était posé DANS la carte de la personne choisie : la
+      // validation changeait de place selon l'étape. Il vit maintenant au pied de la
+      // modale, comme dans tous les autres formulaires, et reste inerte tant qu'il
+      // manque une personne ou une fonction.
+      canSubmit={selected !== null && functionCode !== ''}
+      error={error}
+    >
+      {selected ? (
+        <>
+          <div className="border-border flex items-center justify-between gap-2 rounded-md border px-3 py-2">
+            <span className="text-foreground text-2sm truncate font-medium">
+              {selected.displayName}
+            </span>
+            <Button size="sm" variant="ghost" onClick={() => setSelected(null)}>
+              {t('party.detail.changePerson')}
+            </Button>
+          </div>
+          <SelectField
+            label={t('party.detail.function')}
+            value={functionCode}
+            onChange={setFunctionCode}
+            options={functions}
+          />
+        </>
+      ) : (
+        <>
+          <Input
+            placeholder={t('party.detail.searchPerson')}
+            value={searchInput}
+            onChange={(event) => setSearchInput(event.target.value)}
+            autoFocus
+          />
+          <ul className="flex max-h-64 flex-col overflow-y-auto">
+            {results.map((row) => (
+              <li key={row.publicId}>
+                <button
+                  type="button"
+                  onClick={() =>
+                    setSelected({
+                      publicId: row.publicId,
+                      displayName: row.displayName,
+                    })
+                  }
+                  className="hover:bg-muted/50 flex w-full flex-col gap-0.5 rounded-md p-2 text-start"
                 >
-                  {t('party.detail.changePerson')}
-                </Button>
-              </div>
-              <SelectField
-                label={t('party.detail.function')}
-                value={functionCode}
-                onChange={setFunctionCode}
-                options={functions}
-              />
-              <Button
-                variant="primary"
-                onClick={submit}
-                disabled={assign.isPending || !functionCode}
-              >
-                {t('party.detail.addInterlocutorSubmit')}
-              </Button>
-            </div>
-          ) : (
-            <>
-              <Input
-                placeholder={t('party.detail.searchPerson')}
-                value={searchInput}
-                onChange={(event) => setSearchInput(event.target.value)}
-                autoFocus
-              />
-              <ul className="flex flex-col">
-                {results.map((row) => (
-                  <li key={row.publicId}>
-                    <button
-                      type="button"
-                      onClick={() =>
-                        setSelected({
-                          publicId: row.publicId,
-                          displayName: row.displayName,
-                        })
-                      }
-                      className="hover:bg-muted/50 flex w-full flex-col gap-0.5 rounded-md p-2 text-start"
-                    >
-                      <span className="text-foreground truncate text-sm font-medium">
-                        {row.displayName}
-                      </span>
-                      {row.email ? (
-                        <span className="text-muted-foreground truncate text-xs">
-                          {row.email}
-                        </span>
-                      ) : null}
-                    </button>
-                  </li>
-                ))}
-                {search !== '' && results.length === 0 && !query.isFetching ? (
-                  <li className="text-muted-foreground p-2 text-sm">
-                    {t('party.empty')}
-                  </li>
-                ) : null}
-              </ul>
-            </>
-          )}
-        </SheetBody>
-      </SheetContent>
-    </Sheet>
+                  <span className="text-foreground text-2sm truncate font-medium">
+                    {row.displayName}
+                  </span>
+                  {row.email ? (
+                    <span className="text-muted-foreground truncate text-xs">
+                      {row.email}
+                    </span>
+                  ) : null}
+                </button>
+              </li>
+            ))}
+            {search !== '' && results.length === 0 && !query.isFetching ? (
+              <li className="text-muted-foreground text-2sm p-2">
+                {t('party.empty')}
+              </li>
+            ) : null}
+          </ul>
+        </>
+      )}
+    </FormModal>
   )
 }

@@ -1,14 +1,6 @@
 import * as React from 'react'
-import {
-  Sheet,
-  SheetBody,
-  SheetContent,
-  SheetFooter,
-  SheetHeader,
-  SheetTitle,
-} from '@/shared/ui/sheet'
-import { Button } from '@/shared/ui/button'
 import { CurrencySelect } from '@/shared/ui/currency-select'
+import { FormField, FormModal } from '@/shared/ui/form-modal'
 import { ApiError } from '@/shared/api/errors'
 import type { ReferentialItem } from '@/shared/referentials'
 import { usePatchPartyAccount } from './queries'
@@ -24,29 +16,6 @@ function violationsOf(error: unknown): Record<string, string> {
   const map: Record<string, string> = {}
   for (const v of error.violations) map[v.field] = v.message
   return map
-}
-
-function LabeledField({
-  label,
-  hint,
-  error,
-  children,
-}: {
-  label: string
-  hint?: string
-  error?: string
-  children: React.ReactNode
-}) {
-  return (
-    <label className="flex flex-col gap-1">
-      <span className="text-muted-foreground text-sm">{label}</span>
-      {children}
-      {hint ? (
-        <span className="text-muted-foreground text-xs">{hint}</span>
-      ) : null}
-      {error ? <span className="text-destructive text-xs">{error}</span> : null}
-    </label>
-  )
 }
 
 /**
@@ -94,46 +63,40 @@ export function PartyCurrencySheet({
   }
 
   return (
-    <Sheet open={open} onOpenChange={onOpenChange}>
-      <SheetContent>
-        <SheetHeader>
-          <SheetTitle>{t('party.detail.editCurrencies')}</SheetTitle>
-        </SheetHeader>
-        <SheetBody className="flex flex-col gap-4">
-          <LabeledField
-            label={t('party.detail.currencyDisplay')}
-            hint={t('party.detail.currencyDisplayHint')}
-            error={errors.displayCurrencyCode}
-          >
-            <CurrencySelect
-              currencies={currencies}
-              value={display}
-              onChange={setDisplay}
-              defaultLabel={defaultLabel}
-            />
-          </LabeledField>
-          <LabeledField
-            label={t('party.detail.currencyBilling')}
-            hint={t('party.detail.currencyBillingHint')}
-            error={errors.billingCurrencyCode}
-          >
-            <CurrencySelect
-              currencies={currencies}
-              value={billing}
-              onChange={setBilling}
-              defaultLabel={defaultLabel}
-            />
-          </LabeledField>
-        </SheetBody>
-        <SheetFooter>
-          <Button variant="outline" onClick={() => onOpenChange(false)}>
-            {t('party.detail.cancel')}
-          </Button>
-          <Button variant="primary" onClick={save} disabled={patch.isPending}>
-            {t('party.detail.save')}
-          </Button>
-        </SheetFooter>
-      </SheetContent>
-    </Sheet>
+    <FormModal
+      open={open}
+      onOpenChange={onOpenChange}
+      title={t('party.detail.editCurrencies')}
+      submitLabel={t('party.detail.save')}
+      onSubmit={save}
+      submitting={patch.isPending}
+    >
+      <FormField
+        label={t('party.detail.currencyDisplay')}
+        hint={t('party.detail.currencyDisplayHint')}
+        error={errors.displayCurrencyCode}
+      >
+        <CurrencySelect
+          currencies={currencies}
+          value={display}
+          onChange={setDisplay}
+          defaultLabel={defaultLabel}
+          ariaLabel={t('party.detail.currencyDisplay')}
+        />
+      </FormField>
+      <FormField
+        label={t('party.detail.currencyBilling')}
+        hint={t('party.detail.currencyBillingHint')}
+        error={errors.billingCurrencyCode}
+      >
+        <CurrencySelect
+          currencies={currencies}
+          value={billing}
+          onChange={setBilling}
+          defaultLabel={defaultLabel}
+          ariaLabel={t('party.detail.currencyBilling')}
+        />
+      </FormField>
+    </FormModal>
   )
 }

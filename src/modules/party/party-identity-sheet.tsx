@@ -1,16 +1,7 @@
 import * as React from 'react'
-import {
-  Sheet,
-  SheetBody,
-  SheetContent,
-  SheetDescription,
-  SheetFooter,
-  SheetHeader,
-  SheetTitle,
-} from '@/shared/ui/sheet'
 import { Input } from '@/shared/ui/input'
-import { Button } from '@/shared/ui/button'
 import { SelectField } from '@/shared/ui/select'
+import { FormField, FormModal } from '@/shared/ui/form-modal'
 import type { ReferentialItem } from '@/shared/referentials'
 import { usePutPersonIdentity, usePutOrganizationIdentity } from './queries'
 import type {
@@ -28,23 +19,6 @@ type Translate = (
 function orNull(value: string): string | null {
   const trimmed = value.trim()
   return trimmed === '' ? null : trimmed
-}
-
-function LabeledInput({
-  label,
-  value,
-  onChange,
-}: {
-  label: string
-  value: string
-  onChange: (value: string) => void
-}) {
-  return (
-    <label className="flex flex-col gap-1">
-      <span className="text-muted-foreground text-sm">{label}</span>
-      <Input value={value} onChange={(event) => onChange(event.target.value)} />
-    </label>
-  )
 }
 
 /**
@@ -126,67 +100,66 @@ export function PartyIdentitySheet({
   }
 
   return (
-    <Sheet open={open} onOpenChange={onOpenChange}>
-      <SheetContent>
-        <SheetHeader>
-          <SheetTitle>{t('party.detail.editIdentity')}</SheetTitle>
-          <SheetDescription>{t('party.detail.identityHint')}</SheetDescription>
-        </SheetHeader>
-        <SheetBody className="flex flex-col gap-4">
-          {isPerson ? (
-            <>
-              <LabeledInput
-                label={t('party.detail.field.firstName')}
+    <FormModal
+      open={open}
+      onOpenChange={onOpenChange}
+      title={t('party.detail.editIdentity')}
+      description={t('party.detail.identityHint')}
+      submitLabel={t('party.detail.save')}
+      onSubmit={save}
+      submitting={pending}
+    >
+      {isPerson ? (
+        <>
+          <div className="grid grid-cols-2 gap-4">
+            <FormField label={t('party.detail.field.firstName')}>
+              <Input
                 value={firstName}
-                onChange={setFirstName}
+                onChange={(e) => setFirstName(e.target.value)}
               />
-              <LabeledInput
-                label={t('party.detail.field.lastName')}
+            </FormField>
+            <FormField label={t('party.detail.field.lastName')}>
+              <Input
                 value={lastName}
-                onChange={setLastName}
+                onChange={(e) => setLastName(e.target.value)}
               />
-              <LabeledInput
-                label={t('party.detail.field.employeeRef')}
-                value={employeeReference}
-                onChange={setEmployeeReference}
-              />
-            </>
-          ) : (
-            <>
-              <LabeledInput
-                label={t('party.detail.field.taxId')}
-                value={taxId}
-                onChange={setTaxId}
-              />
-              <LabeledInput
-                label={t('party.detail.field.tradeRegister')}
+            </FormField>
+          </div>
+          <FormField label={t('party.detail.field.employeeRef')}>
+            <Input
+              value={employeeReference}
+              onChange={(e) => setEmployeeReference(e.target.value)}
+            />
+          </FormField>
+        </>
+      ) : (
+        <>
+          <div className="grid grid-cols-2 gap-4">
+            <FormField label={t('party.detail.field.taxId')}>
+              <Input value={taxId} onChange={(e) => setTaxId(e.target.value)} />
+            </FormField>
+            <FormField label={t('party.detail.field.tradeRegister')}>
+              <Input
                 value={tradeRegister}
-                onChange={setTradeRegister}
+                onChange={(e) => setTradeRegister(e.target.value)}
               />
-              <SelectField
-                label={t('party.detail.field.legalForm')}
-                value={legalFormCode}
-                onChange={setLegalFormCode}
-                emptyLabel="—"
-                options={legalForms}
-              />
-              <LabeledInput
-                label={t('party.detail.field.website')}
-                value={website}
-                onChange={setWebsite}
-              />
-            </>
-          )}
-        </SheetBody>
-        <SheetFooter>
-          <Button variant="outline" onClick={() => onOpenChange(false)}>
-            {t('party.detail.cancel')}
-          </Button>
-          <Button variant="primary" onClick={save} disabled={pending}>
-            {t('party.detail.save')}
-          </Button>
-        </SheetFooter>
-      </SheetContent>
-    </Sheet>
+            </FormField>
+          </div>
+          <SelectField
+            label={t('party.detail.field.legalForm')}
+            value={legalFormCode}
+            onChange={setLegalFormCode}
+            emptyLabel="—"
+            options={legalForms}
+          />
+          <FormField label={t('party.detail.field.website')}>
+            <Input
+              value={website}
+              onChange={(e) => setWebsite(e.target.value)}
+            />
+          </FormField>
+        </>
+      )}
+    </FormModal>
   )
 }
