@@ -780,6 +780,9 @@ export function PartyDetailPage() {
         className="lg:grid lg:min-h-0 lg:grow lg:grid-cols-[minmax(0,1fr)_38%] lg:grid-rows-[auto_minmax(0,1fr)]"
       >
         {/* Haut-gauche : onglets. Ligne du bas + trait vertical portés par la cellule. */}
+        {/* Bande d'onglets — soulignement (et NON segmented control) : mesuré, le
+            segmented déborde sur le rail avec 7 onglets + icônes. Le layout-21 l'utilise
+            avec 4 libellés courts ; ici le soulignement reste le bon choix. */}
         <div className="border-border flex items-end overflow-x-auto border-b ps-4 lg:border-e lg:min-w-0 lg:ps-6 lg:pe-6 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
           <TabsList variant="line" size="md" className="gap-5 border-b-0!">
             <TabsTrigger value="overview">

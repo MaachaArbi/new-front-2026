@@ -90,33 +90,43 @@ test('semer les données de démo', async ({ page }) => {
     }
   }
 
-  /* ── INTERLOCUTEURS : plusieurs contacts chez le client ── */
+  /* ── INTERLOCUTEURS : plusieurs contacts chez le client ──
+     Le panneau se valide avec « Ajouter » (pas « Enregistrer ») : c'est ce qui
+     faisait échouer la V1 du script. Flux : chercher → choisir → fonction → Ajouter. */
   if (run('contacts')) {
     await page.getByRole('tab', { name: /contacts & équipe/i }).click()
     await page.waitForTimeout(1200)
-    for (const term of ['a', 'e']) {
+    for (const term of ['a', 'e', 'o']) {
       const add = page.getByRole('button', { name: /ajouter un interlocuteur/i })
       if ((await add.count()) === 0) break
       await add.click()
       await page.waitForTimeout(900)
-      const q = page.getByRole('dialog').getByRole('textbox').first()
-      await q.fill(term)
+      const sheet = page.getByRole('dialog')
+      await sheet.getByRole('textbox').first().fill(term)
       await page.waitForTimeout(1800)
-      const candidate = page
-        .getByRole('dialog')
-        .getByRole('button')
-        .filter({ hasText: /@/ })
-        .first()
-      if ((await candidate.count()) > 0) {
-        await candidate.click()
-        await page.waitForTimeout(600)
-        await save()
-        await page.waitForTimeout(1800)
-        log(`interlocuteur « ${term} »`)
-      } else {
+      // Les résultats sont des boutons « nom + e-mail » dans la liste du panneau.
+      const results = sheet.locator('ul button')
+      if ((await results.count()) === 0) {
         await page.keyboard.press('Escape')
-        await page.waitForTimeout(500)
-        log(`interlocuteur « ${term} » : aucun candidat`)
+        await page.waitForTimeout(400)
+        log(`interlocuteur « ${term} » : aucun résultat`)
+        continue
+      }
+      await results.first().click()
+      await page.waitForTimeout(600)
+      const submit = sheet.getByRole('button', { name: /^ajouter$/i })
+      if ((await submit.count()) === 0) {
+        await page.keyboard.press('Escape')
+        log(`interlocuteur « ${term} » : bouton absent`)
+        continue
+      }
+      await submit.click()
+      await page.waitForTimeout(2000)
+      const stillOpen = await sheet.count()
+      log(`interlocuteur « ${term} » ${stillOpen ? '— panneau encore ouvert (doublon ?)' : 'ajouté'}`)
+      if (stillOpen) {
+        await page.keyboard.press('Escape')
+        await page.waitForTimeout(400)
       }
     }
   }
