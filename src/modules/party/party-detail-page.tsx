@@ -592,17 +592,49 @@ export function PartyDetailPage() {
     <>
       <RecordShell
         banner={
-          /* Bandeau RGPD — tiers anonymisé : formulaire fermé, aucune édition. */
-          !editable ? (
-            <div className="border-destructive/30 bg-destructive/10 text-destructive mx-4 flex items-center gap-2 rounded-md border px-3 py-2 text-sm lg:mx-7.5">
-              <UserX className="size-4 shrink-0" />
-              <span>
-                {t('party.detail.anonymized.banner', {
-                  date: fmtDate(view.anonymizedAt) ?? '',
-                })}
-              </span>
-            </div>
-          ) : null
+          <>
+            {/* La fiche a échoué mais la LISTE était en cache : sans ce bandeau, on
+                afficherait le nom du tiers au-dessus de sections vides, et un agent
+                conclurait « ce client n'a ni plafond ni adresse ». Un écran incomplet
+                doit se dénoncer — c'est plus grave qu'une page d'erreur franche. */}
+            {detailQuery.isError ? (
+              <div
+                role="alert"
+                className="border-destructive/30 bg-destructive/10 text-destructive mx-4 mb-2 flex flex-wrap items-center gap-2 rounded-md border px-3 py-2 text-sm lg:mx-7.5"
+              >
+                <AlertTriangle className="size-4 shrink-0" />
+                <span>
+                  {notFound
+                    ? t('party.detail.notFound')
+                    : t('party.detail.partialLoad')}
+                </span>
+                {requestId && !notFound ? (
+                  <span className="text-destructive/70 text-xs">
+                    {t('error.requestId')} {requestId}
+                  </span>
+                ) : null}
+                <Button
+                  size="sm"
+                  variant="outline"
+                  className="ms-auto"
+                  onClick={() => void detailQuery.refetch()}
+                >
+                  {t('common.retry')}
+                </Button>
+              </div>
+            ) : null}
+            {/* Bandeau RGPD — tiers anonymisé : formulaire fermé, aucune édition. */}
+            {!editable ? (
+              <div className="border-destructive/30 bg-destructive/10 text-destructive mx-4 flex items-center gap-2 rounded-md border px-3 py-2 text-sm lg:mx-7.5">
+                <UserX className="size-4 shrink-0" />
+                <span>
+                  {t('party.detail.anonymized.banner', {
+                    date: fmtDate(view.anonymizedAt) ?? '',
+                  })}
+                </span>
+              </div>
+            ) : null}
+          </>
         }
         back={backButton}
         avatar={
