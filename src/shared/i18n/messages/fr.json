@@ -244,6 +244,8 @@
   "party.detail.addInterlocutorSubmit": "Ajouter",
   "party.detail.editCurrencies": "Modifier les devises",
   "party.detail.location": "Localisation",
+  "party.detail.modifiedByRel": "Modifié {when} par {who}",
+  "party.detail.modifiedRel": "Modifié {when}",
   "party.detail.currencyDisplay": "Devise d'affichage",
   "party.detail.currencyBilling": "Devise de facturation",
   "party.detail.currencyDisplayHint": "Ce que le client voit par défaut.",

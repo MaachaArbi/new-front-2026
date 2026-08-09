@@ -437,7 +437,8 @@ export function PartyDetailPage() {
           },
         ]
       : [
-          { label: t('party.detail.field.taxId'), value: organization?.taxId },
+          // Le matricule fiscal vit désormais dans la LIGNE MÉTA de l'en-tête :
+          // on ne le répète pas ici (règle anti-doublon posée par Arbi).
           {
             label: t('party.detail.field.tradeRegister'),
             value: organization?.tradeRegister,
@@ -590,6 +591,45 @@ export function PartyDetailPage() {
   // Activité récente — libellé du sujet réutilisé de l'onglet Historique (garde-fou
   // KNOWN_SUBJECTS : sujet inconnu → code brut). Verbe = participe (`op.*`).
   const recentEntries = recentHistory.data?.data ?? []
+
+  // Ligne méta de l'en-tête — uniquement des données réelles déjà chargées.
+  // « il y a 2 h » : Intl.RelativeTimeFormat via react-intl, jamais une date brute.
+  const fmtRelative = (iso: string): string => {
+    const diffMs = new Date(iso).getTime() - Date.now()
+    const abs = Math.abs(diffMs)
+    const units: [Intl.RelativeTimeFormatUnit, number][] = [
+      ['year', 31_536_000_000],
+      ['month', 2_592_000_000],
+      ['day', 86_400_000],
+      ['hour', 3_600_000],
+      ['minute', 60_000],
+    ]
+    for (const [unit, ms] of units) {
+      if (abs >= ms) return intl.formatRelativeTime(Math.round(diffMs / ms), unit)
+    }
+    return intl.formatRelativeTime(0, 'minute')
+  }
+  const headerMeta: string[] = []
+  if (organization?.taxId) headerMeta.push(organization.taxId)
+  if (view.roles.length > 0)
+    headerMeta.push(view.roles.map((c) => roleLabel(c)).join(' · '))
+  if (view.offices.length > 0)
+    headerMeta.push(
+      Array.from(new Set(view.offices.map((o) => o.displayName))).join(' · ')
+    )
+  else if (view.officeScope === 'all_offices')
+    headerMeta.push(t('party.offices.all'))
+  if (view.updatedAt) {
+    const who = recentEntries[0]?.actor?.displayName
+    headerMeta.push(
+      who
+        ? t('party.detail.modifiedByRel', {
+            when: fmtRelative(view.updatedAt),
+            who,
+          })
+        : t('party.detail.modifiedRel', { when: fmtRelative(view.updatedAt) })
+    )
+  }
   const subjectLabel = (subject: string) =>
     KNOWN_SUBJECTS.has(subject) ? t(`party.history.subject.${subject}`) : subject
   const fmtActivity = (iso: string) =>
@@ -677,26 +717,43 @@ export function PartyDetailPage() {
               </Button>
             </div>
           ) : (
-            <div className="flex min-w-0 items-center gap-2">
-              <h1 className="text-foreground truncate text-xl font-semibold">
-                {view.displayName}
-              </h1>
-              {editable ? (
-                <Button
-                  size="sm"
-                  mode="icon"
-                  variant="ghost"
-                  className="text-muted-foreground shrink-0"
-                  onClick={() => {
-                    setNameDraft(view.displayName)
-                    setEditingName(true)
-                  }}
-                  aria-label={t('party.detail.rename')}
-                >
-                  <Pencil />
-                </Button>
+            <div className="min-w-0">
+              <div className="flex min-w-0 items-center gap-2">
+                <h1 className="text-foreground truncate text-xl font-semibold">
+                  {view.displayName}
+                </h1>
+                {editable ? (
+                  <Button
+                    size="sm"
+                    mode="icon"
+                    variant="ghost"
+                    className="text-muted-foreground shrink-0"
+                    onClick={() => {
+                      setNameDraft(view.displayName)
+                      setEditingName(true)
+                    }}
+                    aria-label={t('party.detail.rename')}
+                  >
+                    <Pencil />
+                  </Button>
+                ) : null}
+                {stateBadges}
+              </div>
+              {/* Ligne méta — identifier le client SANS lire la page. Que du réel :
+                  matricule, rôles, bureau, dernière modification (+ son auteur, pris
+                  de l'historique déjà chargé pour « Activité récente »). */}
+              {headerMeta.length > 0 ? (
+                <p className="text-muted-foreground mt-1 flex flex-wrap items-center gap-x-2 text-2sm">
+                  {headerMeta.map((bit, i) => (
+                    <React.Fragment key={i}>
+                      {i > 0 ? (
+                        <span className="text-muted-foreground/50">·</span>
+                      ) : null}
+                      <span>{bit}</span>
+                    </React.Fragment>
+                  ))}
+                </p>
               ) : null}
-              {stateBadges}
             </div>
           )}
           <div className="ms-auto flex items-center gap-2">
@@ -1018,9 +1075,44 @@ export function PartyDetailPage() {
                         </Badge>
                       </div>
                     ) : null}
+                    {/* Portée « tous les bureaux » : sans ça, un tiers rattaché à TOUS
+                        les bureaux affichait une carte vide (donnée perdue au report). */}
                     {view.offices.length === 0 &&
+                    view.officeScope === 'all_offices' ? (
+                      <div className="flex items-center justify-between gap-2">
+                        <span className="text-muted-foreground">
+                          {t('party.column.offices')}
+                        </span>
+                        <span className="text-foreground font-medium">
+                          {t('party.offices.all')}
+                        </span>
+                      </div>
+                    ) : null}
+                    {/* Groupes — donnée réelle, également perdue au report. */}
+                    {view.groups.length > 0 ? (
+                      <div className="flex items-start justify-between gap-2">
+                        <span className="text-muted-foreground">
+                          {t('party.detail.section.groups')}
+                        </span>
+                        <span className="flex flex-wrap justify-end gap-1">
+                          {view.groups.map((group) => (
+                            <Badge
+                              key={group.publicId}
+                              variant="secondary"
+                              appearance="light"
+                              size="sm"
+                            >
+                              {group.name}
+                            </Badge>
+                          ))}
+                        </span>
+                      </div>
+                    ) : null}
+                    {view.offices.length === 0 &&
+                    view.officeScope !== 'all_offices' &&
                     !parent &&
-                    view.children.length === 0 ? (
+                    view.children.length === 0 &&
+                    view.groups.length === 0 ? (
                       <p className="text-muted-foreground">—</p>
                     ) : null}
                   </div>

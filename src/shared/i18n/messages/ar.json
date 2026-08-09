@@ -244,6 +244,8 @@
   "party.detail.addInterlocutorSubmit": "إضافة",
   "party.detail.editCurrencies": "تعديل العملات",
   "party.detail.location": "الموقع",
+  "party.detail.modifiedByRel": "عُدّل {when} بواسطة {who}",
+  "party.detail.modifiedRel": "عُدّل {when}",
   "party.detail.currencyDisplay": "عملة العرض",
   "party.detail.currencyBilling": "عملة الفوترة",
   "party.detail.currencyDisplayHint": "ما يراه العميل افتراضيًا.",

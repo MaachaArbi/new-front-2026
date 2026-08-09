@@ -244,6 +244,8 @@
   "party.detail.addInterlocutorSubmit": "Add",
   "party.detail.editCurrencies": "Edit currencies",
   "party.detail.location": "Location",
+  "party.detail.modifiedByRel": "Edited {when} by {who}",
+  "party.detail.modifiedRel": "Edited {when}",
   "party.detail.currencyDisplay": "Display currency",
   "party.detail.currencyBilling": "Billing currency",
   "party.detail.currencyDisplayHint": "What the client sees by default.",

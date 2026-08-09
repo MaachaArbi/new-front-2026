@@ -82,6 +82,16 @@ Convention : `élément d'UI` · où · **statut** · débloqué par.
   C'est cette passe qui rendra les **thèmes utilisateur** possibles (tout doit passer par
   des tokens ; une valeur en dur ne répondra jamais à un thème).
 
+### À traiter AVANT la mise en production (pas urgent en dev)
+- **Jauge « Encours »** : aujourd'hui une barre grise vide + « EN ATTENTE ». Acceptable en
+  développement (aucun utilisateur), mais à revoir avant la prod : barre hachurée, ou pas
+  de barre du tout tant que la donnée n'existe pas.
+- **Historique de la fiche Sahara pollué** par les scripts de semis (ajouts/retraits
+  d'interlocuteurs en rafale). Sans effet en dev ; l'audit n'est volontairement pas
+  éditable depuis le front. À nettoyer côté base si on garde ce tiers pour des démos.
+- **Libellés arabes** : ~35 clés écrites par Claude, **jamais relues par Arbi**. Prévoir
+  une relecture en une passe (tableau fr → ar).
+
 ---
 _À compléter au fil des briques. Toute valeur en dur / « en attente » posée dans l'UI
 doit atterrir ici le jour où on la crée._
