@@ -66,17 +66,23 @@ export function SidebarPrimary() {
       {/* Rail des modules */}
       <div className="relative w-full grow">
         <div className="relative flex grow flex-col items-center gap-[10px]">
-          {/* Indicateur de module actif — start-1.75 (propriété logique, ADR-F04) */}
+          {/* Indicateur de module actif — glisse d'une icône à l'autre (ressort).
+              start-1.75 = propriété logique (ADR-F04), donc correct en RTL. */}
           {activeIndex >= 0 && (
             <motion.div
-              className="bg-primary absolute start-1.75 z-10 h-3 w-0.5 rounded-full"
-              animate={{ y: activeIndex * RAIL_ITEM_SPACING + 11.5 }}
-              transition={{ type: 'spring', stiffness: 300, damping: 30 }}
+              className="bg-foreground absolute start-1 z-10 w-[3px] rounded-full"
+              initial={false}
+              animate={{
+                y: activeIndex * RAIL_ITEM_SPACING + 7,
+                height: 20,
+              }}
+              transition={{ type: 'spring', stiffness: 400, damping: 32 }}
             />
           )}
 
           {MODULES.map((module) => {
             const Icon = module.icon
+            const isActive = activeModule?.id === module.id
             return (
               <Tooltip key={module.id}>
                 <TooltipTrigger asChild>
@@ -91,9 +97,12 @@ export function SidebarPrimary() {
                       'size-[34px] rounded-lg border-2 border-white shadow-sm transition-all duration-300',
                       'hover:shadow-[0_4px_12px_0_rgba(37,47,74,0.35)] dark:border-transparent',
                       // Couleurs PLEINES (jamais estompées) : c'est ce qui rend le
-                      // rail net. Le module actif se repère au trait indicateur.
+                      // rail net. Le module actif se repère au trait indicateur
+                      // + une légère élévation (il « sort » du rail).
                       module.tint,
-                      'text-white hover:text-white'
+                      'text-white hover:text-white',
+                      isActive &&
+                        'scale-110 shadow-[0_4px_12px_0_rgba(37,47,74,0.35)]'
                     )}
                   >
                     <Link to={module.path} aria-label={t(module.titleKey)}>

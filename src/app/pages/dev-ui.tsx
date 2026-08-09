@@ -1,15 +1,16 @@
 import * as React from 'react'
 import {
-  AlertTriangle,
+  ArrowDownRight,
+  ArrowUpRight,
+  Eye,
+  Filter,
   Building2,
   Check,
   ChevronDown,
-  LayoutGrid,
   MoreHorizontal,
   Pencil,
   Plus,
   Search,
-  Users,
   X,
 } from 'lucide-react'
 
@@ -87,69 +88,6 @@ const SKINS: Skin[] = [
 ]
 
 /* ─────────────── primitives de la maquette (locales, jetables) ─────────────── */
-
-function Card({
-  children,
-  className = '',
-  pad = true,
-}: {
-  children: React.ReactNode
-  className?: string
-  pad?: boolean
-}) {
-  return (
-    <div
-      className={className}
-      style={{
-        background: 'var(--card)',
-        border: '1px solid var(--line)',
-        borderRadius: 'var(--radius)',
-        boxShadow: 'var(--shadow)',
-        padding: pad ? 20 : 0,
-      }}
-    >
-      {children}
-    </div>
-  )
-}
-
-function SectionHead({
-  icon,
-  title,
-  subtitle,
-  action,
-}: {
-  icon?: React.ReactNode
-  title: string
-  subtitle?: string
-  action?: React.ReactNode
-}) {
-  return (
-    <div className="mb-3 flex items-start justify-between gap-4">
-      <div className="flex items-start gap-2.5">
-        {icon ? (
-          <span style={{ color: 'var(--faint)' }} className="mt-0.5">
-            {icon}
-          </span>
-        ) : null}
-        <div>
-          <h3
-            className="text-[17px] leading-6 font-semibold"
-            style={{ color: 'var(--ink)', letterSpacing: 'var(--track)' }}
-          >
-            {title}
-          </h3>
-          {subtitle ? (
-            <p className="mt-0.5 text-[13px]" style={{ color: 'var(--muted)' }}>
-              {subtitle}
-            </p>
-          ) : null}
-        </div>
-      </div>
-      {action}
-    </div>
-  )
-}
 
 function BtnPrimary({ children }: { children: React.ReactNode }) {
   return (
@@ -252,6 +190,192 @@ const inputStyle: React.CSSProperties = {
   color: 'var(--ink)',
 }
 
+
+
+/* ══════════════ VOCABULAIRE CRM — les briques qui manquaient ══════════════ */
+
+/** Bande de titre de carte (device signature Metronic). */
+function CardHead({
+  title,
+  action,
+}: {
+  title: string
+  action?: React.ReactNode
+}) {
+  return (
+    <div
+      className="flex items-center justify-between gap-3 px-4 py-2.5"
+      style={{ borderBottom: '1px solid var(--line)', background: 'var(--bg)' }}
+    >
+      <span className="text-[13px] font-semibold">{title}</span>
+      {action}
+    </div>
+  )
+}
+
+/** Variation chiffrée : ↗ +18 % (vert) / ↘ −4 % (rouge). */
+function Delta({ value, up }: { value: string; up: boolean }) {
+  return (
+    <span
+      className="inline-flex items-center gap-0.5 rounded-full px-1.5 py-0.5 text-[11px] font-bold"
+      style={{
+        background: up ? '#DCFCE7' : '#FEE2E2',
+        color: up ? '#15803D' : '#B91C1C',
+      }}
+    >
+      {up ? <ArrowUpRight className="size-3" /> : <ArrowDownRight className="size-3" />}
+      {value}
+    </span>
+  )
+}
+
+/** Sparkline — SVG inline, aucun dépendance. */
+function Spark({ points, tint }: { points: number[]; tint: string }) {
+  const w = 150
+  const h = 40
+  const max = Math.max(...points)
+  const min = Math.min(...points)
+  const span = max - min || 1
+  const path = points
+    .map((p, i) => {
+      const x = (i / (points.length - 1)) * w
+      const y = h - ((p - min) / span) * (h - 6) - 3
+      return `${i === 0 ? 'M' : 'L'}${x.toFixed(1)},${y.toFixed(1)}`
+    })
+    .join(' ')
+  const id = `g${tint.replace(/[^a-z0-9]/gi, '')}`
+  return (
+    <svg viewBox={`0 0 ${w} ${h}`} className="h-10 w-full" preserveAspectRatio="none">
+      <defs>
+        <linearGradient id={id} x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stopColor={tint} stopOpacity="0.28" />
+          <stop offset="100%" stopColor={tint} stopOpacity="0" />
+        </linearGradient>
+      </defs>
+      <path d={`${path} L${w},${h} L0,${h} Z`} fill={`url(#${id})`} />
+      <path d={path} fill="none" stroke={tint} strokeWidth="2" strokeLinejoin="round" />
+    </svg>
+  )
+}
+
+/** Bloc KPI : label · grand chiffre · variation · sparkline. */
+function Kpi({
+  label,
+  value,
+  unit,
+  delta,
+  up,
+  points,
+  tint,
+  pending,
+}: {
+  label: string
+  value: string
+  unit?: string
+  delta?: string
+  up?: boolean
+  points?: number[]
+  tint?: string
+  pending?: boolean
+}) {
+  return (
+    <div
+      className="overflow-hidden"
+      style={{
+        background: 'var(--card)',
+        border: '1px solid var(--line)',
+        borderRadius: 'var(--radius)',
+        boxShadow: 'var(--shadow)',
+      }}
+    >
+      <div className="px-4 pt-3.5">
+        <div
+          className="text-[11px] font-semibold uppercase"
+          style={{ color: 'var(--faint)', letterSpacing: '.07em' }}
+        >
+          {label}
+        </div>
+        <div className="mt-1 flex items-baseline gap-2">
+          <span
+            className="text-[24px] leading-7 font-bold tabular-nums"
+            style={{
+              letterSpacing: 'var(--track)',
+              color: pending ? 'var(--faint)' : 'var(--ink)',
+            }}
+          >
+            {value}
+          </span>
+          {unit ? (
+            <span className="text-[13px] font-medium" style={{ color: 'var(--muted)' }}>
+              {unit}
+            </span>
+          ) : null}
+          {delta ? <Delta value={delta} up={!!up} /> : null}
+        </div>
+      </div>
+      {points && tint ? (
+        <Spark points={points} tint={tint} />
+      ) : (
+        <div className="px-4 pt-1 pb-4 text-[12px]" style={{ color: 'var(--faint)' }}>
+          en attente — module Factures
+        </div>
+      )}
+    </div>
+  )
+}
+
+/** Jauge d'utilisation (encours / plafond). */
+function Gauge({
+  used,
+  total,
+  label,
+}: {
+  used: number
+  total: number
+  label: string
+}) {
+  const pct = Math.min(100, Math.round((used / total) * 100))
+  const tone = pct > 85 ? '#DC2626' : pct > 60 ? '#F59E0B' : '#10B981'
+  return (
+    <div>
+      <div className="mb-1.5 flex items-baseline justify-between text-[13px]">
+        <span style={{ color: 'var(--muted)' }}>{label}</span>
+        <span className="font-semibold tabular-nums">{pct} %</span>
+      </div>
+      <div className="h-2 w-full overflow-hidden rounded-full" style={{ background: 'var(--line)' }}>
+        <div
+          className="h-full rounded-full transition-all"
+          style={{ width: `${pct}%`, background: tone }}
+        />
+      </div>
+    </div>
+  )
+}
+
+/** Segmented control (onglets façon layout-21). */
+function Segmented({ items, active }: { items: string[]; active: string }) {
+  return (
+    <div
+      className="inline-flex items-center gap-0.5 p-0.5"
+      style={{ background: 'var(--bg)', borderRadius: 'var(--radius-sm)', border: '1px solid var(--line)' }}
+    >
+      {items.map((it) => (
+        <span
+          key={it}
+          className="rounded-md px-2.5 py-1 text-[13px] font-medium"
+          style={
+            it === active
+              ? { background: 'var(--card)', color: 'var(--ink)', boxShadow: 'var(--shadow)' }
+              : { color: 'var(--muted)' }
+          }
+        >
+          {it}
+        </span>
+      ))}
+    </div>
+  )
+}
+
 /* ─────────────── l'écran, rendu à l'identique dans les 2 peaux ─────────────── */
 
 function Screen({ skin }: { skin: Skin }) {
@@ -265,31 +389,35 @@ function Screen({ skin }: { skin: Skin }) {
       }}
       className="p-6"
     >
-      {/* Bandeau nom — le chrome respire */}
-      <div className="mb-6 flex items-center gap-3">
+      {/* EN-TÊTE — logo, statut, méta, actions */}
+      <div className="mb-5 flex items-center gap-3.5">
         <span
-          className="inline-flex size-12 shrink-0 items-center justify-center"
+          className="inline-flex size-14 shrink-0 items-center justify-center"
           style={{
             background: 'var(--accent-soft)',
             color: 'var(--accent)',
-            borderRadius: 'var(--radius-sm)',
+            borderRadius: 'var(--radius)',
+            border: '1px solid var(--line)',
           }}
         >
-          <Building2 className="size-6" />
+          <Building2 className="size-7" />
         </span>
         <div className="min-w-0">
           <div className="flex items-center gap-2">
-            <h1
-              className="text-[22px] leading-7 font-bold"
-              style={{ letterSpacing: 'var(--track)' }}
-            >
+            <h1 className="text-[22px] leading-7 font-bold" style={{ letterSpacing: 'var(--track)' }}>
               Groupe Sahara Voyages
             </h1>
             <Pencil className="size-4" style={{ color: 'var(--faint)' }} />
             <Chip tone="ok">● Actif</Chip>
           </div>
-          <p className="mt-0.5 text-[13px]" style={{ color: 'var(--muted)' }}>
-            Client · Fournisseur · myGO Tunis-Arbi
+          <p className="mt-1 flex flex-wrap items-center gap-x-2 text-[12.5px]" style={{ color: 'var(--muted)' }}>
+            <span>MF 123456</span>
+            <span style={{ color: 'var(--faint)' }}>·</span>
+            <span>Client · Fournisseur</span>
+            <span style={{ color: 'var(--faint)' }}>·</span>
+            <span>myGO Tunis-Arbi</span>
+            <span style={{ color: 'var(--faint)' }}>·</span>
+            <span>Modifié il y a 2 h par Mehdi</span>
           </p>
         </div>
         <div className="ms-auto flex items-center gap-2">
@@ -302,148 +430,188 @@ function Screen({ skin }: { skin: Skin }) {
         </div>
       </div>
 
+      {/* BARRE : segmented + toolbar */}
+      <div className="mb-5 flex flex-wrap items-center justify-between gap-3">
+        <Segmented
+          items={['Vue d’ensemble', 'Finance', 'Historique', 'Contacts', 'Documents']}
+          active="Vue d’ensemble"
+        />
+        <div className="flex items-center gap-2">
+          <BtnGhost>
+            <Filter className="size-4" /> Filtrer
+          </BtnGhost>
+          <BtnGhost>
+            <Eye className="size-4" /> Vue
+          </BtnGhost>
+          <BtnGhost>
+            <Search className="size-4" />
+          </BtnGhost>
+        </div>
+      </div>
+
       <div className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_320px]">
         <div className="flex flex-col gap-5">
-          {/* À TRAITER */}
-          <Card pad={false}>
-            <div className="px-5 pt-4">
-              <SectionHead
-                icon={<AlertTriangle className="size-[18px]" />}
-                title="À traiter"
-                subtitle="3 points demandent une action."
-              />
-            </div>
-            <div>
-              {[
-                ['E-mail non vérifié', 'Vérifier', '#F43F5E'],
-                ['Exonération TVA sans justificatif', 'Ajouter', '#F43F5E'],
-                ['Rallonge Hébergement expire le 11/08', 'Voir', '#F59E0B'],
-              ].map(([txt, cta, dot], i) => (
-                <div
-                  key={txt}
-                  className="flex items-center justify-between gap-3 px-5 py-3"
-                  style={{
-                    borderTop: i === 0 ? '1px solid var(--line)' : undefined,
-                    borderBottom: '1px solid var(--line)',
-                  }}
-                >
-                  <span className="flex min-w-0 items-center gap-3 text-[14px]">
-                    <span
-                      className="size-2 shrink-0 rounded-full"
-                      style={{ background: dot }}
-                    />
-                    {txt}
-                  </span>
-                  <button
-                    type="button"
-                    className="shrink-0 text-[13px] font-semibold"
-                    style={{ color: 'var(--accent)' }}
-                  >
-                    {cta}
-                  </button>
-                </div>
-              ))}
-            </div>
-          </Card>
-
-          {/* CHIFFRES-CLÉS — traités comme des chiffres, pas comme des lignes */}
+          {/* KPI + sparklines */}
           <div className="grid gap-4 sm:grid-cols-3">
+            <Kpi
+              label="Chiffre d'affaires"
+              value="248 500"
+              unit="TND"
+              delta="+18 %"
+              up
+              points={[12, 18, 15, 22, 19, 26, 24, 31, 29, 35, 33, 42]}
+              tint="#6366F1"
+            />
+            <Kpi
+              label="Réservations"
+              value="126"
+              delta="−4 %"
+              up={false}
+              points={[30, 28, 32, 26, 29, 24, 27, 22, 25, 21, 23, 20]}
+              tint="#14B8A6"
+            />
+            <Kpi label="Encours" value="—" pending />
+          </div>
+
+          {/* À TRAITER — carte à bande de titre */}
+          <div
+            className="overflow-hidden"
+            style={{
+              background: 'var(--card)',
+              border: '1px solid var(--line)',
+              borderRadius: 'var(--radius)',
+              boxShadow: 'var(--shadow)',
+            }}
+          >
+            <CardHead
+              title="À traiter"
+              action={<Chip tone="warn">3</Chip>}
+            />
             {[
-              ['Plafond effectif', '550 000', 'TND', 'Hébergement'],
-              ['Encours', '—', '', 'en attente'],
-              ['Crédit disponible', '—', '', 'en attente'],
-            ].map(([label, val, cur, note]) => (
-              <Card key={label}>
-                <div
-                  className="text-[11px] font-semibold uppercase"
-                  style={{ color: 'var(--faint)', letterSpacing: '.08em' }}
-                >
-                  {label}
-                </div>
-                <div className="mt-1.5 flex items-baseline gap-1.5">
-                  <span
-                    className="text-[26px] leading-8 font-bold tabular-nums"
-                    style={{ letterSpacing: 'var(--track)' }}
-                  >
-                    {val}
-                  </span>
-                  <span
-                    className="text-[14px] font-medium"
-                    style={{ color: 'var(--muted)' }}
-                  >
-                    {cur}
-                  </span>
-                </div>
-                <div className="mt-1 text-[12px]" style={{ color: 'var(--muted)' }}>
-                  {note}
-                </div>
-              </Card>
+              ['E-mail non vérifié', 'Vérifier', '#F43F5E'],
+              ['Exonération TVA sans justificatif', 'Ajouter', '#F43F5E'],
+              ['Rallonge Hébergement expire le 11/08', 'Voir', '#F59E0B'],
+            ].map(([txt, cta, dot], i, arr) => (
+              <div
+                key={txt}
+                className="flex items-center justify-between gap-3 px-4 py-3"
+                style={{
+                  borderBottom: i < arr.length - 1 ? '1px solid var(--line)' : undefined,
+                }}
+              >
+                <span className="flex min-w-0 items-center gap-3 text-[14px]">
+                  <span className="size-2 shrink-0 rounded-full" style={{ background: dot }} />
+                  {txt}
+                </span>
+                <button type="button" className="shrink-0 text-[13px] font-semibold" style={{ color: 'var(--accent)' }}>
+                  {cta}
+                </button>
+              </div>
             ))}
           </div>
 
-          {/* DONNÉES DENSES — la moitié « ERP » de la règle hybride */}
-          <Card pad={false}>
-            <div className="px-5 pt-4">
-              <SectionHead
-                icon={<Users className="size-[18px]" />}
-                title="Interlocuteurs"
-                subtitle="Contacts chez le client · 5"
-                action={
-                  <BtnGhost>
-                    <Plus className="size-4" /> Ajouter
-                  </BtnGhost>
-                }
-              />
-            </div>
+          {/* TABLEAU DENSE — la moitié « ERP » */}
+          <div
+            className="overflow-hidden"
+            style={{
+              background: 'var(--card)',
+              border: '1px solid var(--line)',
+              borderRadius: 'var(--radius)',
+              boxShadow: 'var(--shadow)',
+            }}
+          >
+            <CardHead
+              title="Interlocuteurs · 4"
+              action={
+                <BtnGhost>
+                  <Plus className="size-4" /> Ajouter
+                </BtnGhost>
+              }
+            />
             <div
-              className="grid grid-cols-[1fr_140px_180px_40px] px-5 py-2 text-[11px] font-semibold uppercase"
-              style={{
-                color: 'var(--faint)',
-                letterSpacing: '.06em',
-                borderTop: '1px solid var(--line)',
-                borderBottom: '1px solid var(--line)',
-                background: 'var(--bg)',
-              }}
+              className="grid grid-cols-[1fr_130px_170px_90px_40px] px-4 py-2 text-[11px] font-semibold uppercase"
+              style={{ color: 'var(--faint)', letterSpacing: '.06em', borderBottom: '1px solid var(--line)' }}
             >
               <span>Nom</span>
               <span>Fonction</span>
               <span>Téléphone</span>
+              <span>Dernier contact</span>
               <span />
             </div>
             {[
-              ['YG', 'Yasmine Gharbi', 'Gérant', '+216 22 111 222', '#7C3AED'],
-              ['KB', 'Karim Belhadj', 'Comptable', '+216 55 333 444', '#0EA5E9'],
-              ['SB', 'Sarah Ben Salah', 'Agent', '+216 98 555 666', '#F43F5E'],
-              ['MT', 'Mohamed Trabelsi', 'Achats', '+216 71 222 333', '#14B8A6'],
-            ].map(([ini, name, fn, tel, tint]) => (
+              ['YG', 'Yasmine Gharbi', 'Gérant', '+216 22 111 222', 'il y a 2 j', '#7C3AED'],
+              ['KB', 'Karim Belhadj', 'Comptable', '+216 55 333 444', 'il y a 9 j', '#0EA5E9'],
+              ['SB', 'Sarah Ben Salah', 'Agent', '+216 98 555 666', 'il y a 1 mois', '#F43F5E'],
+              ['MT', 'Mohamed Trabelsi', 'Achats', '+216 71 222 333', '—', '#14B8A6'],
+            ].map(([ini, name, fn, tel, last, tint], i, arr) => (
               <div
                 key={name}
-                className="grid grid-cols-[1fr_140px_180px_40px] items-center px-5 text-[14px]"
-                style={{ height: 44, borderBottom: '1px solid var(--line)' }}
+                className="grid grid-cols-[1fr_130px_170px_90px_40px] items-center px-4 text-[14px]"
+                style={{
+                  height: 46,
+                  borderBottom: i < arr.length - 1 ? '1px solid var(--line)' : undefined,
+                }}
               >
                 <span className="flex min-w-0 items-center gap-2.5">
                   <Avatar initials={ini ?? ''} tint={tint ?? '#888'} />
                   <span className="truncate font-medium">{name}</span>
                 </span>
                 <span style={{ color: 'var(--muted)' }}>{fn}</span>
-                <span className="tabular-nums" style={{ color: 'var(--muted)' }}>
-                  {tel}
-                </span>
+                <span className="tabular-nums" style={{ color: 'var(--muted)' }}>{tel}</span>
+                <span className="text-[12.5px]" style={{ color: 'var(--faint)' }}>{last}</span>
                 <X className="size-4 justify-self-end" style={{ color: 'var(--faint)' }} />
               </div>
             ))}
-          </Card>
+          </div>
         </div>
 
-        {/* Rail */}
+        {/* RAIL */}
         <div className="flex flex-col gap-5">
-          <Card>
-            <SectionHead
-              icon={<LayoutGrid className="size-[18px]" />}
+          {/* Jauge de crédit */}
+          <div
+            className="overflow-hidden"
+            style={{
+              background: 'var(--card)',
+              border: '1px solid var(--line)',
+              borderRadius: 'var(--radius)',
+              boxShadow: 'var(--shadow)',
+            }}
+          >
+            <CardHead title="Crédit" />
+            <div className="flex flex-col gap-3.5 p-4">
+              <div>
+                <div className="text-[11px] font-semibold uppercase" style={{ color: 'var(--faint)', letterSpacing: '.07em' }}>
+                  Plafond effectif
+                </div>
+                <div className="mt-0.5 flex items-baseline gap-1.5">
+                  <span className="text-[24px] leading-7 font-bold tabular-nums" style={{ letterSpacing: 'var(--track)' }}>
+                    550 000
+                  </span>
+                  <span className="text-[13px] font-medium" style={{ color: 'var(--muted)' }}>TND</span>
+                </div>
+              </div>
+              <Gauge used={412000} total={550000} label="Encours / plafond" />
+              <div className="flex items-baseline justify-between text-[13px]">
+                <span style={{ color: 'var(--muted)' }}>Crédit disponible</span>
+                <span className="font-semibold tabular-nums">138 000 TND</span>
+              </div>
+            </div>
+          </div>
+
+          <div
+            className="overflow-hidden"
+            style={{
+              background: 'var(--card)',
+              border: '1px solid var(--line)',
+              borderRadius: 'var(--radius)',
+              boxShadow: 'var(--shadow)',
+            }}
+          >
+            <CardHead
               title="Identité"
               action={<Pencil className="size-4" style={{ color: 'var(--faint)' }} />}
             />
-            <dl className="flex flex-col gap-3 text-[14px]">
+            <dl className="flex flex-col gap-3 p-4 text-[14px]">
               {[
                 ['Matricule fiscal', 'MF : 123456'],
                 ['Registre de commerce', 'RC : 123456'],
@@ -456,35 +624,13 @@ function Screen({ skin }: { skin: Skin }) {
                 </div>
               ))}
             </dl>
-          </Card>
-
-          <Card>
-            <SectionHead title="Coordonnées" />
-            <div className="flex flex-col gap-3 text-[14px]">
-              <div className="flex items-baseline justify-between gap-3">
-                <span style={{ color: 'var(--muted)' }}>Téléphone</span>
-                <span className="tabular-nums font-medium">+216 71 111 111</span>
-              </div>
-              <div className="flex items-baseline justify-between gap-3">
-                <span style={{ color: 'var(--muted)' }}>E-mail</span>
-                <span className="flex flex-col items-end gap-1">
-                  <a style={{ color: 'var(--accent)' }} className="font-medium">
-                    contact@sahara.tn
-                  </a>
-                  <Chip tone="warn">Non vérifié</Chip>
-                </span>
-              </div>
-            </div>
-          </Card>
+          </div>
         </div>
       </div>
 
-      {/* MODALE CRUD — le point où l'écart se voit le plus */}
+      {/* MODALE CRUD */}
       <div className="mt-8">
-        <div
-          className="mb-2 text-[11px] font-semibold uppercase"
-          style={{ color: 'var(--faint)', letterSpacing: '.08em' }}
-        >
+        <div className="mb-2 text-[11px] font-semibold uppercase" style={{ color: 'var(--faint)', letterSpacing: '.08em' }}>
           Modale CRUD
         </div>
         <div
@@ -498,10 +644,7 @@ function Screen({ skin }: { skin: Skin }) {
         >
           <div className="flex items-start justify-between gap-4 p-6 pb-4">
             <div>
-              <h2
-                className="text-[19px] leading-6 font-bold"
-                style={{ letterSpacing: 'var(--track)' }}
-              >
+              <h2 className="text-[19px] leading-6 font-bold" style={{ letterSpacing: 'var(--track)' }}>
                 Ajouter un plafond
               </h2>
               <p className="mt-1 text-[13px]" style={{ color: 'var(--muted)' }}>
@@ -510,70 +653,40 @@ function Screen({ skin }: { skin: Skin }) {
             </div>
             <X className="size-5 shrink-0" style={{ color: 'var(--faint)' }} />
           </div>
-
           <div className="flex flex-col gap-4 px-6 pb-6">
             <Field label="Société">
-              <div
-                className="flex items-center justify-between px-3 text-[14px]"
-                style={inputStyle}
-              >
+              <div className="flex items-center justify-between px-3 text-[14px]" style={inputStyle}>
                 myGO Tunis-Arbi
                 <ChevronDown className="size-4" style={{ color: 'var(--faint)' }} />
               </div>
             </Field>
             <div className="grid grid-cols-2 gap-4">
               <Field label="Type de service">
-                <div
-                  className="flex items-center justify-between px-3 text-[14px]"
-                  style={inputStyle}
-                >
+                <div className="flex items-center justify-between px-3 text-[14px]" style={inputStyle}>
                   Hébergement
                   <ChevronDown className="size-4" style={{ color: 'var(--faint)' }} />
                 </div>
               </Field>
               <Field label="Devise">
-                <div
-                  className="flex items-center justify-between px-3 text-[14px]"
-                  style={inputStyle}
-                >
+                <div className="flex items-center justify-between px-3 text-[14px]" style={inputStyle}>
                   TND
                   <ChevronDown className="size-4" style={{ color: 'var(--faint)' }} />
                 </div>
               </Field>
             </div>
             <Field label="Montant" hint="Montant du socle, hors rallonges.">
-              <div
-                className="flex items-center gap-2 px-3 text-[14px]"
-                style={inputStyle}
-              >
+              <div className="flex items-center gap-2 px-3 text-[14px]" style={inputStyle}>
                 <span style={{ color: 'var(--faint)' }}>TND</span>
                 <span className="font-medium tabular-nums">500 000,000</span>
-                <Check
-                  className="ms-auto size-4"
-                  style={{ color: 'var(--accent)' }}
-                />
-              </div>
-            </Field>
-            <Field label="Recherche d'un bureau">
-              <div
-                className="flex items-center gap-2 px-3 text-[14px]"
-                style={inputStyle}
-              >
-                <Search className="size-4" style={{ color: 'var(--faint)' }} />
-                <span style={{ color: 'var(--faint)' }}>Rechercher…</span>
+                <Check className="ms-auto size-4" style={{ color: 'var(--accent)' }} />
               </div>
             </Field>
           </div>
-
           <div
             className="flex items-center justify-between gap-3 px-6 py-4"
             style={{ borderTop: '1px solid var(--line)', background: 'var(--bg)' }}
           >
-            <button
-              type="button"
-              className="text-[13px] font-semibold"
-              style={{ color: '#DC2626' }}
-            >
+            <button type="button" className="text-[13px] font-semibold" style={{ color: '#DC2626' }}>
               Supprimer
             </button>
             <div className="flex items-center gap-2">
