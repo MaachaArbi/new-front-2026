@@ -76,7 +76,13 @@ Convention : `élément d'UI` · où · **statut** · débloqué par.
   recherche de personnes) — cause non identifiée. Le reste du semis fonctionne.
 - **Pages jetables** `/_ref` (spec de la fiche) et `/_ui` (socle + vocabulaire) : à
   supprimer une fois le port terminé et validé.
-- **Champs de date natifs** (`<input type="date">`) : affichent `mm/dd/yyyy` — le format
+- **Pays du bureau dans `/me`** : manquant. Bloque DEUX choses, à demander au back en
+  une fois — (1) l'indicatif téléphonique par défaut du `PhoneInput`, (2) le premier
+  jour de la semaine du calendrier (aujourd'hui lundi en dur : convention Tunisie /
+  Algérie / France ; le Golfe voudrait samedi).
+- ~~**Champs de date natifs**~~ : **FAIT le 09/08** — `DateField` + `Calendar` maison
+  (aucune dépendance ; `Intl` comme unique source de langue). Ancien constat conservé
+  pour mémoire : (`<input type="date">`) : affichent `mm/dd/yyyy` — le format
   vient de la langue du **système**, pas de celle de l'application ; ni option ni CSS ne
   le changent. À remplacer par un `DateField` partagé + calendrier à nous (thème sombre
   et arabe/RTL corrects, que le natif ne sait pas faire). Affichage via `useDateFormat`,
