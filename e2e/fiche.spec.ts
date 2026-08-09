@@ -138,5 +138,15 @@ test('fiche Tiers — clair + sombre', async ({ page }) => {
   await page.waitForTimeout(2500)
   await page.screenshot({ path: `${SHOTS}/fiche-mobile.png`, fullPage: true })
 
+  // Repli du rail — son état vit maintenant dans la coquille partagée : on vérifie
+  // qu'il répond toujours, et que la colonne de gauche prend la place.
+  await page.setViewportSize({ width: 1600, height: 1180 })
+  await page.evaluate(() => localStorage.setItem('ostravel-theme', 'light'))
+  await page.reload()
+  await page.waitForTimeout(2000)
+  await page.getByRole('button', { name: /détails (société|personne)/i }).click()
+  await page.waitForTimeout(500)
+  await page.screenshot({ path: `${SHOTS}/fiche-rail-replie.png` })
+
   await signOut(page)
 })

@@ -7,7 +7,6 @@ import {
   Briefcase,
   Building2,
   Check,
-  ChevronDown,
   Copy,
   DollarSign,
   FileText,
@@ -81,8 +80,9 @@ import { PartyHistoryTab, KNOWN_SUBJECTS } from './party-history-tab'
 import { PartyFinanceTab } from './party-finance-tab'
 import { PartyDocumentsCard } from './party-documents-card'
 import { SkeletonRow } from '@/shared/feedback'
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/shared/ui/tabs'
+import { TabsContent, TabsTrigger } from '@/shared/ui/tabs'
 import { EventPhrase } from '@/shared/ui/timeline'
+import { RecordShell } from '@/shared/ui/record-shell'
 import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
@@ -157,7 +157,6 @@ export function PartyDetailPage() {
   const [identityOpen, setIdentityOpen] = React.useState(false)
   const [contactSheetOpen, setContactSheetOpen] = React.useState(false)
   // Rail « Détails société » : repli du bloc entier + divulgation des sections secondaires.
-  const [railCollapsed, setRailCollapsed] = React.useState(false)
   // Onglet actif contrôlé : « Voir tout » (Activité récente) bascule vers Historique.
   const [tab, setTab] = React.useState('overview')
   const [parentOpen, setParentOpen] = React.useState(false)
@@ -583,24 +582,23 @@ export function PartyDetailPage() {
   }
 
   return (
-    <div className="text-foreground text-[15px] lg:-mt-4 lg:flex lg:h-[calc(100dvh-128px)] lg:flex-col lg:overflow-hidden">
-      {/* Bandeau RGPD — tiers anonymisé : formulaire fermé, aucune édition. */}
-      {!editable ? (
-        <div className="border-destructive/30 bg-destructive/10 text-destructive mx-4 flex items-center gap-2 rounded-md border px-3 py-2 text-sm lg:mx-7.5">
-          <UserX className="size-4 shrink-0" />
-          <span>
-            {t('party.detail.anonymized.banner', {
-              date: fmtDate(view.anonymizedAt) ?? '',
-            })}
-          </span>
-        </div>
-      ) : null}
-
-      {/* Bandeau NOM (porté du /_ref) — compact, bordure sous la ligne des onglets.
-          Retour en petit au-dessus ; nom + statut + actions sur une seule ligne. */}
-      <div className="border-border border-b px-4 pb-4 lg:px-6">
-        {backButton}
-        <div className="mt-2 flex items-center gap-3">
+    <>
+      <RecordShell
+        banner={
+          /* Bandeau RGPD — tiers anonymisé : formulaire fermé, aucune édition. */
+          !editable ? (
+            <div className="border-destructive/30 bg-destructive/10 text-destructive mx-4 flex items-center gap-2 rounded-md border px-3 py-2 text-sm lg:mx-7.5">
+              <UserX className="size-4 shrink-0" />
+              <span>
+                {t('party.detail.anonymized.banner', {
+                  date: fmtDate(view.anonymizedAt) ?? '',
+                })}
+              </span>
+            </div>
+          ) : null
+        }
+        back={backButton}
+        avatar={
           <PartyLogoEditor
             publicId={id}
             logoUrl={view.logoUrl}
@@ -608,7 +606,9 @@ export function PartyDetailPage() {
             readOnly={!editable}
             t={t}
           />
-          {editingName ? (
+        }
+        title={
+          editingName ? (
             <div className="flex items-center gap-2">
               <Input
                 className="h-8 max-w-xs"
@@ -640,48 +640,32 @@ export function PartyDetailPage() {
               </Button>
             </div>
           ) : (
-            <div className="min-w-0">
-              <div className="flex min-w-0 items-center gap-2">
-                <h1 className="text-foreground truncate text-xl font-semibold">
-                  {view.displayName}
-                </h1>
-                {editable ? (
-                  <Button
-                    size="sm"
-                    mode="icon"
-                    variant="ghost"
-                    className="text-muted-foreground shrink-0"
-                    onClick={() => {
-                      setNameDraft(view.displayName)
-                      setEditingName(true)
-                    }}
-                    aria-label={t('party.detail.rename')}
-                  >
-                    <Pencil />
-                  </Button>
-                ) : null}
-                {stateBadges}
-              </div>
-              {/* Ligne méta — identifier le client SANS lire la page. Que du réel :
-                  matricule, rôles, bureau, dernière modification (+ son auteur, pris
-                  de l'historique déjà chargé pour « Activité récente »). */}
-              {headerMeta.length > 0 ? (
-                <p className="text-muted-foreground text-2sm mt-1 flex flex-wrap items-center gap-x-2">
-                  {headerMeta.map((bit, i) => (
-                    <React.Fragment key={i}>
-                      {i > 0 ? (
-                        <span className="text-muted-foreground/50">·</span>
-                      ) : null}
-                      <span>{bit}</span>
-                    </React.Fragment>
-                  ))}
-                </p>
+            <>
+              <h1 className="text-foreground truncate text-xl font-semibold">
+                {view.displayName}
+              </h1>
+              {editable ? (
+                <Button
+                  size="sm"
+                  mode="icon"
+                  variant="ghost"
+                  className="text-muted-foreground shrink-0"
+                  onClick={() => {
+                    setNameDraft(view.displayName)
+                    setEditingName(true)
+                  }}
+                  aria-label={t('party.detail.rename')}
+                >
+                  <Pencil />
+                </Button>
               ) : null}
-            </div>
-          )}
-          <div className="ms-auto flex items-center gap-2">
-            {/* Action phare (reproduction /_ref) — placeholder : le module Réservations
-                n'existe pas encore (voir docs/backlog/en-attente-donnees). */}
+            </>
+          )
+        }
+        badges={editingName ? null : stateBadges}
+        meta={editingName ? undefined : headerMeta}
+        actions={
+          <>
             {editable ? (
               <Button size="sm">
                 <Plus />
@@ -747,24 +731,12 @@ export function PartyDetailPage() {
                 ) : null}
               </DropdownMenuContent>
             </DropdownMenu>
-          </div>
-        </div>
-      </div>
-
-      {/* Corps — tableau : bande « onglets | Détails société » avec UNE ligne
-          horizontale pleine largeur dessous, puis contenu sur 2 colonnes séparées
-          par un trait vertical continu. Pas de card : que des bordures de grille. */}
-      <Tabs
+          </>
+        }
         value={tab}
         onValueChange={setTab}
-        className="lg:grid lg:min-h-0 lg:grow lg:grid-cols-[minmax(0,1fr)_38%] lg:grid-rows-[auto_minmax(0,1fr)]"
-      >
-        {/* Haut-gauche : onglets. Ligne du bas + trait vertical portés par la cellule. */}
-        {/* Bande d'onglets — soulignement (et NON segmented control) : mesuré, le
-            segmented déborde sur le rail avec 7 onglets + icônes. Le layout-21 l'utilise
-            avec 4 libellés courts ; ici le soulignement reste le bon choix. */}
-        <div className="border-border flex [scrollbar-width:none] items-end overflow-x-auto border-b ps-4 lg:min-w-0 lg:border-e lg:ps-6 lg:pe-6 [&::-webkit-scrollbar]:hidden">
-          <TabsList variant="line" size="md" className="gap-5 border-b-0!">
+        tabs={
+          <>
             <TabsTrigger value="overview">
               <LayoutGrid />
               {t('party.detail.tab.overview')}
@@ -804,901 +776,855 @@ export function PartyDetailPage() {
             {/* Onglets futurs (Réservations/Paiements/Factures) retirés : ils débordaient
                 sur le rail, et le « à venir » est déjà signalé dans la Vue d'ensemble.
                 À rétablir quand les modules existent. */}
-          </TabsList>
-        </div>
-
-        {/* Haut-droite : titre « Détails société » repliable, sur la même ligne. */}
-        <div className="border-border flex items-center border-b pe-4 lg:ps-6 lg:pe-6">
-          <button
-            type="button"
-            onClick={() => setRailCollapsed((v) => !v)}
-            className="flex w-full items-center gap-1.5 py-2.5 text-start"
-          >
-            <ChevronDown
-              className={cn(
-                'text-muted-foreground size-4 transition-transform',
-                railCollapsed && '-rotate-90'
-              )}
-            />
-            <span className="text-foreground text-sm font-semibold">
-              {t(
-                view.nature === 'person'
-                  ? 'party.detail.section.personDetails'
-                  : 'party.detail.section.companyDetails'
-              )}
-            </span>
-          </button>
-        </div>
-
-        {/* Bas-gauche : contenu de l'onglet — SEULE zone gauche qui défile (scroll central). */}
-        <div className="fiche-scroll border-border ps-4 lg:min-h-0 lg:overflow-y-auto lg:border-e lg:ps-6 lg:pe-6">
-          <TabsContent value="overview" className="flex flex-col gap-4 pt-4">
-            {/* « À traiter » (reproduction /_ref) — en-tête + compteur, puis lignes
-                point de sévérité + texte + ACTION. Alertes réelles ; masqué si rien. */}
-            {todoAlerts.length > 0 ? (
-              <Card>
-                <CardHead
-                  icon={<AlertTriangle />}
-                  title={t('party.todo.title')}
-                  tone="urgent"
-                  action={
-                    <Badge variant="warning" appearance="light" size="sm">
-                      {todoAlerts.length}
-                    </Badge>
-                  }
-                />
-                <div>
-                  {todoAlerts.map((a) => (
-                    <div
-                      key={a.key}
-                      className="border-border/60 hover:bg-strip text-2sm flex items-center justify-between gap-3 border-b px-4 py-3 transition-colors last:border-0"
+          </>
+        }
+        railTitle={t(
+          view.nature === 'person'
+            ? 'party.detail.section.personDetails'
+            : 'party.detail.section.companyDetails'
+        )}
+        rail={
+          <>
+            {/* Rail reproduit du /_ref : FINANCE → COORDONNÉES → IDENTITÉ.
+                Valeurs à droite ; crayons d'édition portés par les titres de groupe. */}
+            <div className="text-sm">
+              <RailGroupTitle
+                title={t('party.detail.tab.finance')}
+                action={
+                  editable ? (
+                    <Button
+                      size="sm"
+                      mode="icon"
+                      variant="ghost"
+                      className="text-muted-foreground shrink-0"
+                      onClick={() => setCurrencyOpen(true)}
+                      aria-label={t('party.detail.editCurrencies')}
                     >
-                      <span className="flex min-w-0 items-center gap-3">
-                        <span
-                          className={cn(
-                            'size-2 shrink-0 rounded-full',
-                            a.sev === 'rose' ? 'bg-rose-500' : 'bg-amber-500'
-                          )}
+                      <Pencil />
+                    </Button>
+                  ) : undefined
+                }
+              />
+              {/* CRÉDIT — le chiffre le plus cher de la fiche traité comme un
+                  chiffre (pas une ligne parmi d'autres), avec sa jauge d'usage.
+                  L'encours n'existe pas encore → jauge en attente, jamais un faux %. */}
+              <Card className="mt-1 mb-4">
+                <CardHead
+                  icon={<Wallet />}
+                  title={t('party.finance.creditLimits')}
+                />
+                <div className="flex flex-col gap-3.5 p-4">
+                  {creditGroups.length > 0 ? (
+                    creditGroups.map((g) => (
+                      <div key={g.key}>
+                        <div className="text-muted-foreground text-2xs font-semibold tracking-wide uppercase">
+                          {t('party.finance.effective')}
+                          {' · '}
+                          {g.serviceTypeCode
+                            ? railServiceLabel(g.serviceTypeCode)
+                            : t('party.finance.allServices')}
+                        </div>
+                        <StatValue
+                          value={formatMinor(g.effectiveMinor, g.currencyCode)}
+                          unit={g.currencyCode ?? undefined}
                         />
-                        <span className="text-foreground truncate">
-                          {a.text}
-                        </span>
-                      </span>
-                      {a.cta ? (
+                      </div>
+                    ))
+                  ) : (
+                    <p className="text-muted-foreground text-2sm">—</p>
+                  )}
+                  <Gauge
+                    label={t('party.finance.encours')}
+                    pending
+                    pendingLabel={t('party.detail.pending')}
+                  />
+                  <div className="text-2sm flex items-baseline justify-between gap-2">
+                    <span className="text-muted-foreground">
+                      {t('party.finance.availableCredit')}
+                    </span>
+                    <Badge variant="secondary" appearance="light" size="sm">
+                      {t('party.detail.pending')}
+                    </Badge>
+                  </div>
+                </div>
+              </Card>
+
+              <RailRow
+                icon={<DollarSign />}
+                label={t('party.detail.currencyDisplay')}
+              >
+                {view.displayCurrencyCode ?? currencyDefault}
+              </RailRow>
+              <RailRow
+                icon={<DollarSign />}
+                label={t('party.detail.currencyBilling')}
+              >
+                {view.billingCurrencyCode ?? currencyDefault}
+              </RailRow>
+
+              <RailGroupTitle
+                title={t('party.detail.section.coordinates')}
+                action={
+                  editable ? (
+                    <Button
+                      size="sm"
+                      mode="icon"
+                      variant="ghost"
+                      className="text-muted-foreground shrink-0"
+                      onClick={() => setContactSheetOpen(true)}
+                      aria-label={t('party.detail.editCoordinates')}
+                    >
+                      <Pencil />
+                    </Button>
+                  ) : undefined
+                }
+              />
+              <RailRow icon={<Phone />} label={t('party.column.phone')}>
+                {view.phonePrimary || view.phoneSecondary ? (
+                  <span className="inline-flex flex-wrap items-center gap-x-4 gap-y-1">
+                    {view.phonePrimary ? (
+                      <span className="inline-flex items-center gap-1">
+                        <PhoneDisplay value={view.phonePrimary} />
                         <button
                           type="button"
-                          onClick={a.onCta}
-                          className="text-primary shrink-0 text-sm font-medium hover:underline"
+                          onClick={() => copyText(view.phonePrimary ?? '')}
+                          aria-label={t('common.copy')}
+                          className="text-muted-foreground hover:text-foreground"
                         >
-                          {a.cta}
+                          <Copy className="size-3.5" />
                         </button>
+                      </span>
+                    ) : null}
+                    {view.phoneSecondary ? (
+                      <span className="inline-flex items-center gap-1">
+                        <PhoneDisplay value={view.phoneSecondary} />
+                        <button
+                          type="button"
+                          onClick={() => copyText(view.phoneSecondary ?? '')}
+                          aria-label={t('common.copy')}
+                          className="text-muted-foreground hover:text-foreground"
+                        >
+                          <Copy className="size-3.5" />
+                        </button>
+                      </span>
+                    ) : null}
+                  </span>
+                ) : (
+                  <span className="text-muted-foreground">—</span>
+                )}
+              </RailRow>
+              <RailRow icon={<Mail />} label={t('party.detail.email')}>
+                {view.email ? (
+                  <span className="inline-flex flex-wrap items-center gap-2">
+                    <Ext href={`mailto:${view.email}`}>{view.email}</Ext>
+                    <Badge
+                      variant={view.emailVerifiedAt ? 'success' : 'warning'}
+                      appearance="light"
+                      size="sm"
+                    >
+                      {view.emailVerifiedAt
+                        ? t('party.detail.emailVerified')
+                        : t('party.detail.emailNotVerified')}
+                    </Badge>
+                  </span>
+                ) : (
+                  <span className="text-muted-foreground">—</span>
+                )}
+              </RailRow>
+              {organization?.website ? (
+                <RailRow
+                  icon={<Globe />}
+                  label={t('party.detail.field.website')}
+                >
+                  <Ext href={organization.website}>
+                    {organization.website.replace(/^https?:\/\//, '')}
+                  </Ext>
+                </RailRow>
+              ) : null}
+              <RailRow icon={<MapPin />} label={t('party.detail.location')}>
+                {railLocation ? (
+                  <span className="text-foreground">{railLocation}</span>
+                ) : view.country ? (
+                  <CountryDisplay code={view.country} />
+                ) : (
+                  <span className="text-muted-foreground">—</span>
+                )}
+              </RailRow>
+
+              <RailGroupTitle title={t('party.detail.section.identity')} />
+              <RailRow icon={<Building2 />} label={t('party.column.nature')}>
+                {t(`party.nature.${view.nature}`)}
+              </RailRow>
+              <RailRow icon={<Handshake />} label={t('party.column.roles')}>
+                <span className="flex flex-wrap gap-1">
+                  {view.roles.map((code) => (
+                    <Badge
+                      key={code}
+                      variant={ROLE_VARIANT[code] ?? 'secondary'}
+                      appearance="light"
+                      size="sm"
+                      className="gap-1 pe-1"
+                    >
+                      {roleLabel(code)}
+                      {editable ? (
+                        <button
+                          type="button"
+                          onClick={() => roleMutations.revoke.mutate(code)}
+                          aria-label={t('party.detail.removeRole')}
+                          className="text-muted-foreground hover:text-foreground rounded-sm"
+                        >
+                          <X className="size-3" />
+                        </button>
+                      ) : null}
+                    </Badge>
+                  ))}
+                  {editable && availableRoles.length > 0 ? (
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <button
+                          type="button"
+                          aria-label={t('party.detail.addRole')}
+                          className="text-muted-foreground hover:text-foreground border-border rounded-sm border border-dashed px-1"
+                        >
+                          <Plus className="size-3" />
+                        </button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="end" className="min-w-44">
+                        {availableRoles.map((role) => (
+                          <DropdownMenuItem
+                            key={role.code}
+                            onSelect={() =>
+                              roleMutations.assign.mutate(role.code)
+                            }
+                          >
+                            {role.label}
+                          </DropdownMenuItem>
+                        ))}
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+                  ) : null}
+                </span>
+              </RailRow>
+
+              {/* Adresses — déplacées ici (hors /_ref Overview). Édition conservée. */}
+              <RailGroupTitle
+                title={t('party.detail.addresses')}
+                action={
+                  editable ? (
+                    <Button
+                      size="sm"
+                      mode="icon"
+                      variant="ghost"
+                      className="text-muted-foreground shrink-0"
+                      onClick={() => {
+                        setEditingAddress(null)
+                        setAddressSheetOpen(true)
+                      }}
+                      aria-label={t('party.detail.addAddress')}
+                    >
+                      <Plus />
+                    </Button>
+                  ) : undefined
+                }
+              />
+              {addressesLoading ? (
+                <SkeletonRow columns={1} />
+              ) : addresses.length > 0 ? (
+                <div className="flex flex-col gap-3 py-1">
+                  {addresses.map((address) => (
+                    <div
+                      key={address.publicId}
+                      className="flex items-start justify-between gap-2"
+                    >
+                      <div className="flex min-w-0 flex-col gap-0.5">
+                        <span className="flex items-center gap-2">
+                          <span className="text-foreground text-sm font-medium">
+                            {addressTypeLabel(address.addressType)}
+                          </span>
+                          {address.isPrimary ? (
+                            <Badge variant="secondary" size="xs">
+                              {t('party.address.primary')}
+                            </Badge>
+                          ) : null}
+                        </span>
+                        <span className="text-muted-foreground text-sm">
+                          {[
+                            address.line1,
+                            address.line2,
+                            [address.postalCode, address.city]
+                              .filter(Boolean)
+                              .join(' '),
+                            address.countryAlpha2
+                              ? countryLabel(address.countryAlpha2)
+                              : null,
+                          ]
+                            .filter(Boolean)
+                            .join(', ')}
+                        </span>
+                      </div>
+                      {editable ? (
+                        <RowActions
+                          onEdit={() => {
+                            setEditingAddress(address)
+                            setAddressSheetOpen(true)
+                          }}
+                          editLabel={t('party.detail.editAddress')}
+                          onRemove={() => setAddressToDelete(address)}
+                          removeLabel={t('party.detail.action.delete')}
+                        />
                       ) : null}
                     </div>
                   ))}
                 </div>
-              </Card>
-            ) : null}
-
-            {/* Aperçu (reproduction /_ref) : Identité (identifiants légaux) +
-                Rattachements (bureau · agence mère · agences filles) — données réelles. */}
-            <div>
-              <div className="text-foreground mb-2 flex items-center gap-2 text-sm font-semibold">
-                <LayoutGrid className="text-muted-foreground size-4" />
-                {t('party.detail.overview.summary')}
+              ) : (
+                <EmptyState className="px-0">
+                  {t('party.detail.noAddresses')}
+                </EmptyState>
+              )}
+            </div>
+          </>
+        }
+        footer={
+          view.createdAt || view.updatedAt ? (
+            <p className="text-muted-foreground px-4 text-xs lg:px-7.5">
+              {view.createdAt
+                ? t('party.detail.createdOn', {
+                    date: fmtDate(view.createdAt) ?? '',
+                  })
+                : null}
+              {view.createdAt && view.updatedAt ? ' · ' : null}
+              {view.updatedAt
+                ? t('party.detail.updatedOn', {
+                    date: fmtDate(view.updatedAt) ?? '',
+                  })
+                : null}
+            </p>
+          ) : null
+        }
+      >
+        <TabsContent value="overview" className="flex flex-col gap-4 pt-4">
+          {/* « À traiter » (reproduction /_ref) — en-tête + compteur, puis lignes
+              point de sévérité + texte + ACTION. Alertes réelles ; masqué si rien. */}
+          {todoAlerts.length > 0 ? (
+            <Card>
+              <CardHead
+                icon={<AlertTriangle />}
+                title={t('party.todo.title')}
+                tone="urgent"
+                action={
+                  <Badge variant="warning" appearance="light" size="sm">
+                    {todoAlerts.length}
+                  </Badge>
+                }
+              />
+              <div>
+                {todoAlerts.map((a) => (
+                  <div
+                    key={a.key}
+                    className="border-border/60 hover:bg-strip text-2sm flex items-center justify-between gap-3 border-b px-4 py-3 transition-colors last:border-0"
+                  >
+                    <span className="flex min-w-0 items-center gap-3">
+                      <span
+                        className={cn(
+                          'size-2 shrink-0 rounded-full',
+                          a.sev === 'rose' ? 'bg-rose-500' : 'bg-amber-500'
+                        )}
+                      />
+                      <span className="text-foreground truncate">{a.text}</span>
+                    </span>
+                    {a.cta ? (
+                      <button
+                        type="button"
+                        onClick={a.onCta}
+                        className="text-primary shrink-0 text-sm font-medium hover:underline"
+                      >
+                        {a.cta}
+                      </button>
+                    ) : null}
+                  </div>
+                ))}
               </div>
-              <div className="grid gap-4 sm:grid-cols-2">
-                <div className="border-border rounded-xl border p-4">
-                  <div className="mb-3 flex items-center justify-between gap-2">
-                    <span className="text-foreground text-sm font-semibold">
-                      {t('party.detail.section.identity')}
-                    </span>
-                    {editable ? (
-                      <Button
-                        size="sm"
-                        mode="icon"
-                        variant="ghost"
-                        className="text-muted-foreground shrink-0"
-                        onClick={() => setIdentityOpen(true)}
-                        aria-label={t('party.detail.editIdentity')}
-                      >
-                        <Pencil />
-                      </Button>
-                    ) : null}
-                  </div>
-                  {identityItems.length > 0 ? (
-                    <div className="flex flex-col gap-3 text-sm">
-                      {identityItems.map((it, i) => (
-                        <div
-                          key={i}
-                          className="flex items-center justify-between gap-2"
-                        >
-                          <span className="text-muted-foreground">
-                            {it.label}
-                          </span>
-                          <span className="text-foreground text-end font-medium">
-                            {it.value}
-                          </span>
-                        </div>
-                      ))}
-                    </div>
-                  ) : (
-                    <p className="text-muted-foreground text-sm">
-                      {t('party.detail.identityPending')}
-                    </p>
-                  )}
+            </Card>
+          ) : null}
+
+          {/* Aperçu (reproduction /_ref) : Identité (identifiants légaux) +
+              Rattachements (bureau · agence mère · agences filles) — données réelles. */}
+          <div>
+            <div className="text-foreground mb-2 flex items-center gap-2 text-sm font-semibold">
+              <LayoutGrid className="text-muted-foreground size-4" />
+              {t('party.detail.overview.summary')}
+            </div>
+            <div className="grid gap-4 sm:grid-cols-2">
+              <div className="border-border rounded-xl border p-4">
+                <div className="mb-3 flex items-center justify-between gap-2">
+                  <span className="text-foreground text-sm font-semibold">
+                    {t('party.detail.section.identity')}
+                  </span>
+                  {editable ? (
+                    <Button
+                      size="sm"
+                      mode="icon"
+                      variant="ghost"
+                      className="text-muted-foreground shrink-0"
+                      onClick={() => setIdentityOpen(true)}
+                      aria-label={t('party.detail.editIdentity')}
+                    >
+                      <Pencil />
+                    </Button>
+                  ) : null}
                 </div>
-                <div className="border-border rounded-xl border p-4">
-                  <div className="mb-3 flex items-center justify-between gap-2">
-                    <span className="text-foreground text-sm font-semibold">
-                      {t('party.detail.overview.attachments')}
-                    </span>
-                    {editable && view.nature === 'organization' ? (
-                      <Button
-                        size="sm"
-                        mode="icon"
-                        variant="ghost"
-                        className="text-muted-foreground shrink-0"
-                        onClick={() => setParentOpen(true)}
-                        aria-label={t('party.detail.editParent')}
-                      >
-                        <Pencil />
-                      </Button>
-                    ) : null}
-                  </div>
+                {identityItems.length > 0 ? (
                   <div className="flex flex-col gap-3 text-sm">
-                    {view.offices.map((o) => (
+                    {identityItems.map((it, i) => (
                       <div
-                        key={`${o.publicId}-${o.relationType}`}
+                        key={i}
                         className="flex items-center justify-between gap-2"
                       >
                         <span className="text-muted-foreground">
-                          {t('party.detail.overview.office')}
+                          {it.label}
                         </span>
-                        <span className="text-foreground inline-flex items-center gap-2 font-medium">
-                          {o.displayName}
+                        <span className="text-foreground text-end font-medium">
+                          {it.value}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <p className="text-muted-foreground text-sm">
+                    {t('party.detail.identityPending')}
+                  </p>
+                )}
+              </div>
+              <div className="border-border rounded-xl border p-4">
+                <div className="mb-3 flex items-center justify-between gap-2">
+                  <span className="text-foreground text-sm font-semibold">
+                    {t('party.detail.overview.attachments')}
+                  </span>
+                  {editable && view.nature === 'organization' ? (
+                    <Button
+                      size="sm"
+                      mode="icon"
+                      variant="ghost"
+                      className="text-muted-foreground shrink-0"
+                      onClick={() => setParentOpen(true)}
+                      aria-label={t('party.detail.editParent')}
+                    >
+                      <Pencil />
+                    </Button>
+                  ) : null}
+                </div>
+                <div className="flex flex-col gap-3 text-sm">
+                  {view.offices.map((o) => (
+                    <div
+                      key={`${o.publicId}-${o.relationType}`}
+                      className="flex items-center justify-between gap-2"
+                    >
+                      <span className="text-muted-foreground">
+                        {t('party.detail.overview.office')}
+                      </span>
+                      <span className="text-foreground inline-flex items-center gap-2 font-medium">
+                        {o.displayName}
+                        <Badge variant="secondary" appearance="light" size="sm">
+                          {roleLabel(o.relationType)}
+                        </Badge>
+                      </span>
+                    </div>
+                  ))}
+                  {parent ? (
+                    <div className="flex items-center justify-between gap-2">
+                      <span className="text-muted-foreground">
+                        {t('party.detail.overview.parent')}
+                      </span>
+                      <button
+                        type="button"
+                        onClick={() => navigate(`/parties/${parent.publicId}`)}
+                        className="text-primary font-medium hover:underline"
+                      >
+                        {parent.displayName}
+                      </button>
+                    </div>
+                  ) : null}
+                  {view.children.length > 0 ? (
+                    <div className="flex items-center justify-between gap-2">
+                      <span className="text-muted-foreground">
+                        {t('party.detail.overview.children')}
+                      </span>
+                      <Badge
+                        variant="secondary"
+                        appearance="light"
+                        size="sm"
+                        className="gap-1"
+                      >
+                        <Users className="size-3.5" />
+                        {t('party.detail.overview.childrenCount', {
+                          count: view.children.length,
+                        })}
+                      </Badge>
+                    </div>
+                  ) : null}
+                  {/* Portée « tous les bureaux » : sans ça, un tiers rattaché à TOUS
+                      les bureaux affichait une carte vide (donnée perdue au report). */}
+                  {view.offices.length === 0 &&
+                  view.officeScope === 'all_offices' ? (
+                    <div className="flex items-center justify-between gap-2">
+                      <span className="text-muted-foreground">
+                        {t('party.column.offices')}
+                      </span>
+                      <span className="text-foreground font-medium">
+                        {t('party.offices.all')}
+                      </span>
+                    </div>
+                  ) : null}
+                  {/* Groupes — donnée réelle, également perdue au report. */}
+                  {view.groups.length > 0 ? (
+                    <div className="flex items-start justify-between gap-2">
+                      <span className="text-muted-foreground">
+                        {t('party.detail.section.groups')}
+                      </span>
+                      <span className="flex flex-wrap justify-end gap-1">
+                        {view.groups.map((group) => (
                           <Badge
+                            key={group.publicId}
                             variant="secondary"
                             appearance="light"
                             size="sm"
                           >
-                            {roleLabel(o.relationType)}
+                            {group.name}
                           </Badge>
-                        </span>
-                      </div>
-                    ))}
-                    {parent ? (
-                      <div className="flex items-center justify-between gap-2">
-                        <span className="text-muted-foreground">
-                          {t('party.detail.overview.parent')}
-                        </span>
-                        <button
-                          type="button"
-                          onClick={() =>
-                            navigate(`/parties/${parent.publicId}`)
-                          }
-                          className="text-primary font-medium hover:underline"
-                        >
-                          {parent.displayName}
-                        </button>
-                      </div>
-                    ) : null}
-                    {view.children.length > 0 ? (
-                      <div className="flex items-center justify-between gap-2">
-                        <span className="text-muted-foreground">
-                          {t('party.detail.overview.children')}
-                        </span>
-                        <Badge
-                          variant="secondary"
-                          appearance="light"
-                          size="sm"
-                          className="gap-1"
-                        >
-                          <Users className="size-3.5" />
-                          {t('party.detail.overview.childrenCount', {
-                            count: view.children.length,
-                          })}
-                        </Badge>
-                      </div>
-                    ) : null}
-                    {/* Portée « tous les bureaux » : sans ça, un tiers rattaché à TOUS
-                        les bureaux affichait une carte vide (donnée perdue au report). */}
-                    {view.offices.length === 0 &&
-                    view.officeScope === 'all_offices' ? (
-                      <div className="flex items-center justify-between gap-2">
-                        <span className="text-muted-foreground">
-                          {t('party.column.offices')}
-                        </span>
-                        <span className="text-foreground font-medium">
-                          {t('party.offices.all')}
-                        </span>
-                      </div>
-                    ) : null}
-                    {/* Groupes — donnée réelle, également perdue au report. */}
-                    {view.groups.length > 0 ? (
-                      <div className="flex items-start justify-between gap-2">
-                        <span className="text-muted-foreground">
-                          {t('party.detail.section.groups')}
-                        </span>
-                        <span className="flex flex-wrap justify-end gap-1">
-                          {view.groups.map((group) => (
-                            <Badge
-                              key={group.publicId}
-                              variant="secondary"
-                              appearance="light"
-                              size="sm"
-                            >
-                              {group.name}
-                            </Badge>
-                          ))}
-                        </span>
-                      </div>
-                    ) : null}
-                    {view.offices.length === 0 &&
-                    view.officeScope !== 'all_offices' &&
-                    !parent &&
-                    view.children.length === 0 &&
-                    view.groups.length === 0 ? (
-                      <p className="text-muted-foreground">—</p>
-                    ) : null}
-                  </div>
+                        ))}
+                      </span>
+                    </div>
+                  ) : null}
+                  {view.offices.length === 0 &&
+                  view.officeScope !== 'all_offices' &&
+                  !parent &&
+                  view.children.length === 0 &&
+                  view.groups.length === 0 ? (
+                    <p className="text-muted-foreground">—</p>
+                  ) : null}
                 </div>
               </div>
             </div>
+          </div>
 
-            {/* Activité récente (style /_ref) — en-tête à icône + « Voir tout », puis
-                conteneur bordé à lignes : point + « qui · quoi » + date. */}
+          {/* Activité récente (style /_ref) — en-tête à icône + « Voir tout », puis
+              conteneur bordé à lignes : point + « qui · quoi » + date. */}
+          <Card>
+            <CardHead
+              icon={<Activity />}
+              title={t('party.detail.activity.title')}
+              action={
+                <button
+                  type="button"
+                  onClick={() => setTab('history')}
+                  className="text-primary text-2sm font-medium hover:underline"
+                >
+                  {t('party.detail.activity.seeAll')}
+                </button>
+              }
+            />
+            {recentHistory.isLoading ? (
+              <SkeletonRow columns={1} />
+            ) : recentEntries.length > 0 ? (
+              <div>
+                {recentEntries.map((entry, i) => (
+                  <div
+                    key={`${entry.at}-${i}`}
+                    className="border-border/60 flex items-center justify-between gap-3 border-b px-4 py-3 text-sm last:border-0"
+                  >
+                    <span className="flex min-w-0 items-center gap-3">
+                      <span className="bg-muted-foreground/40 size-2 shrink-0 rounded-full" />
+                      <EventPhrase
+                        className="truncate"
+                        actor={entry.actor?.displayName ?? '—'}
+                        parts={[
+                          subjectLabel(entry.subject),
+                          t(`party.history.op.${entry.operation}`),
+                        ]}
+                      />
+                    </span>
+                    <span className="text-muted-foreground shrink-0 text-xs">
+                      {fmtActivity(entry.at)}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <EmptyState>{t('party.detail.activity.empty')}</EmptyState>
+            )}
+            <p className="text-muted-foreground/70 border-border text-2xs border-t px-4 py-2.5">
+              {t('party.detail.soon.body')}
+            </p>
+          </Card>
+
+          {/* Interlocuteurs (style /_ref) — avatar + nom + fonction, conteneur bordé.
+              « Voir tout » → onglet Contacts & équipe. Pas de tél/e-mail (donnée absente
+              sur le lien contact) : clic → fiche de l'interlocuteur. */}
+          {view.nature === 'organization' && view.contacts.length > 0 ? (
             <Card>
               <CardHead
-                icon={<Activity />}
-                title={t('party.detail.activity.title')}
+                icon={<Users />}
+                title={t('party.detail.section.contacts')}
+                count={view.contacts.length}
                 action={
                   <button
                     type="button"
-                    onClick={() => setTab('history')}
+                    onClick={() => setTab('team')}
                     className="text-primary text-2sm font-medium hover:underline"
                   >
                     {t('party.detail.activity.seeAll')}
                   </button>
                 }
               />
-              {recentHistory.isLoading ? (
-                <SkeletonRow columns={1} />
-              ) : recentEntries.length > 0 ? (
-                <div>
-                  {recentEntries.map((entry, i) => (
-                    <div
-                      key={`${entry.at}-${i}`}
-                      className="border-border/60 flex items-center justify-between gap-3 border-b px-4 py-3 text-sm last:border-0"
-                    >
-                      <span className="flex min-w-0 items-center gap-3">
-                        <span className="bg-muted-foreground/40 size-2 shrink-0 rounded-full" />
-                        <EventPhrase
-                          className="truncate"
-                          actor={entry.actor?.displayName ?? '—'}
-                          parts={[
-                            subjectLabel(entry.subject),
-                            t(`party.history.op.${entry.operation}`),
-                          ]}
-                        />
-                      </span>
-                      <span className="text-muted-foreground shrink-0 text-xs">
-                        {fmtActivity(entry.at)}
-                      </span>
-                    </div>
-                  ))}
-                </div>
-              ) : (
-                <EmptyState>{t('party.detail.activity.empty')}</EmptyState>
-              )}
-              <p className="text-muted-foreground/70 border-border text-2xs border-t px-4 py-2.5">
-                {t('party.detail.soon.body')}
-              </p>
-            </Card>
-
-            {/* Interlocuteurs (style /_ref) — avatar + nom + fonction, conteneur bordé.
-                « Voir tout » → onglet Contacts & équipe. Pas de tél/e-mail (donnée absente
-                sur le lien contact) : clic → fiche de l'interlocuteur. */}
-            {view.nature === 'organization' && view.contacts.length > 0 ? (
-              <Card>
-                <CardHead
-                  icon={<Users />}
-                  title={t('party.detail.section.contacts')}
-                  count={view.contacts.length}
-                  action={
-                    <button
-                      type="button"
-                      onClick={() => setTab('team')}
-                      className="text-primary text-2sm font-medium hover:underline"
-                    >
-                      {t('party.detail.activity.seeAll')}
-                    </button>
-                  }
-                />
-                <div>
-                  {view.contacts.map((contact) => (
-                    <button
-                      key={contact.publicId}
-                      type="button"
-                      onClick={() => navigate(`/parties/${contact.publicId}`)}
-                      className="hover:bg-accent border-border/60 flex w-full items-center gap-3 border-b px-4 py-3 text-start last:border-0"
-                    >
-                      <InitialsAvatar name={contact.displayName} />
-                      <span className="text-foreground min-w-0 flex-1 truncate text-sm font-medium">
-                        {contact.displayName}
-                      </span>
-                      <Badge variant="secondary" appearance="light" size="sm">
-                        {functionLabel(contact.functionCode)}
-                      </Badge>
-                    </button>
-                  ))}
-                </div>
-              </Card>
-            ) : null}
-
-            {/* Chargés de compte (style /_ref) — avatar + nom + affectation + bureau. */}
-            {view.managers.length > 0 ? (
-              <Card>
-                <CardHead
-                  icon={<Briefcase />}
-                  title={t('party.finance.managers')}
-                  count={view.managers.length}
-                />
-                <div>
-                  {view.managers.map((m) => (
-                    <div
-                      key={m.publicId}
-                      className="border-border/60 flex items-center gap-3 border-b px-4 py-3 text-sm last:border-0"
-                    >
-                      <InitialsAvatar name={m.managerDisplayName} />
-                      <span className="text-foreground min-w-0 flex-1 truncate font-medium">
-                        {m.managerDisplayName}
-                      </span>
-                      <span className="text-muted-foreground text-xs">
-                        {t(`party.finance.assignment.${m.assignmentType}`)}
-                      </span>
-                      <Badge variant="secondary" appearance="light" size="sm">
-                        {officeName(m.officeAccountId)}
-                      </Badge>
-                    </div>
-                  ))}
-                </div>
-              </Card>
-            ) : null}
-          </TabsContent>
-
-          <TabsContent value="finance" className="pt-4">
-            <PartyFinanceTab
-              publicId={id}
-              editable={editable}
-              offices={officeOptions}
-              currencies={referentials?.currencies ?? []}
-              serviceTypes={referentials?.serviceTypes ?? []}
-              functions={referentials?.functions ?? []}
-              creditLimits={view.creditLimits}
-              managers={view.managers}
-              taxExemptions={view.taxExemptions}
-              commercialPolicies={view.commercialPolicies}
-              approvalRules={view.approvalRules}
-              officeName={officeName}
-              functionLabel={functionLabel}
-              t={t}
-            />
-          </TabsContent>
-
-          <TabsContent value="history" className="pt-4">
-            <PartyHistoryTab
-              publicId={id}
-              officeNameByPublicId={officeNameByPublicId}
-              serviceTypeLabel={codeLabel(referentials?.serviceTypes)}
-              t={t}
-            />
-          </TabsContent>
-
-          <TabsContent value="team" className="pt-4">
-            {/* INTERLOCUTEURS (externes) — répertoire complet, style /_ref : en-tête à
-                icône + compteur + bouton, puis conteneur bordé (avatar · nom · fonction).
-                Pas de tél/e-mail : absents de `PartyContactRef` (demande back). */}
-            {view.nature === 'organization' ? (
-              <section className="mb-9">
-                <div className="mb-3 flex items-center justify-between gap-3">
-                  <div className="text-foreground flex items-center gap-2 text-sm font-semibold">
-                    <Users className="text-muted-foreground size-4" />
-                    {t('party.detail.section.contacts')}
-                    <span className="text-muted-foreground text-xs font-normal">
-                      · {t('party.detail.team.contactsHint')} ·{' '}
-                      {view.contacts.length}
+              <div>
+                {view.contacts.map((contact) => (
+                  <button
+                    key={contact.publicId}
+                    type="button"
+                    onClick={() => navigate(`/parties/${contact.publicId}`)}
+                    className="hover:bg-accent border-border/60 flex w-full items-center gap-3 border-b px-4 py-3 text-start last:border-0"
+                  >
+                    <InitialsAvatar name={contact.displayName} />
+                    <span className="text-foreground min-w-0 flex-1 truncate text-sm font-medium">
+                      {contact.displayName}
                     </span>
-                  </div>
-                  {editable && view.accountId != null ? (
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      className="shrink-0"
-                      onClick={() => setInterlocutorOpen(true)}
-                    >
-                      <Plus />
-                      {t('party.detail.addInterlocutor')}
-                    </Button>
-                  ) : null}
-                </div>
-                {view.contacts.length > 0 ? (
-                  <div className="border-border rounded-xl border">
-                    {view.contacts.map((contact) => (
-                      <div
-                        key={contact.publicId}
-                        className="border-border/60 flex items-center justify-between gap-3 border-b px-4 py-3 last:border-0"
-                      >
-                        <button
-                          type="button"
-                          onClick={() =>
-                            navigate(`/parties/${contact.publicId}`)
-                          }
-                          className="flex min-w-0 items-center gap-3 text-start"
-                        >
-                          <InitialsAvatar name={contact.displayName} />
-                          <span className="text-foreground truncate font-medium">
-                            {contact.displayName}
-                          </span>
-                          <span className="bg-muted text-muted-foreground shrink-0 rounded px-2 py-0.5 text-xs">
-                            {functionLabel(contact.functionCode)}
-                          </span>
-                        </button>
-                        {editable && view.accountId != null ? (
-                          <Button
-                            size="sm"
-                            mode="icon"
-                            variant="ghost"
-                            className="text-muted-foreground shrink-0"
-                            aria-label={t('party.detail.removeInterlocutor')}
-                            disabled={functionMutations.revoke.isPending}
-                            onClick={() => removeInterlocutor(contact)}
-                          >
-                            <X />
-                          </Button>
-                        ) : null}
-                      </div>
-                    ))}
-                  </div>
-                ) : (
-                  <EmptyState>{t('party.detail.noInterlocutor')}</EmptyState>
-                )}
-                {interlocutorError ? (
-                  <p className="text-destructive mt-1 text-xs">
-                    {interlocutorError}
-                  </p>
-                ) : null}
-              </section>
-            ) : null}
+                    <Badge variant="secondary" appearance="light" size="sm">
+                      {functionLabel(contact.functionCode)}
+                    </Badge>
+                  </button>
+                ))}
+              </div>
+            </Card>
+          ) : null}
 
-            {/* CHARGÉS DE COMPTE (internes) — votre équipe sur ce compte. Gérables ici
-                (mêmes mutations que l'onglet Finance). */}
-            <section>
+          {/* Chargés de compte (style /_ref) — avatar + nom + affectation + bureau. */}
+          {view.managers.length > 0 ? (
+            <Card>
+              <CardHead
+                icon={<Briefcase />}
+                title={t('party.finance.managers')}
+                count={view.managers.length}
+              />
+              <div>
+                {view.managers.map((m) => (
+                  <div
+                    key={m.publicId}
+                    className="border-border/60 flex items-center gap-3 border-b px-4 py-3 text-sm last:border-0"
+                  >
+                    <InitialsAvatar name={m.managerDisplayName} />
+                    <span className="text-foreground min-w-0 flex-1 truncate font-medium">
+                      {m.managerDisplayName}
+                    </span>
+                    <span className="text-muted-foreground text-xs">
+                      {t(`party.finance.assignment.${m.assignmentType}`)}
+                    </span>
+                    <Badge variant="secondary" appearance="light" size="sm">
+                      {officeName(m.officeAccountId)}
+                    </Badge>
+                  </div>
+                ))}
+              </div>
+            </Card>
+          ) : null}
+        </TabsContent>
+
+        <TabsContent value="finance" className="pt-4">
+          <PartyFinanceTab
+            publicId={id}
+            editable={editable}
+            offices={officeOptions}
+            currencies={referentials?.currencies ?? []}
+            serviceTypes={referentials?.serviceTypes ?? []}
+            functions={referentials?.functions ?? []}
+            creditLimits={view.creditLimits}
+            managers={view.managers}
+            taxExemptions={view.taxExemptions}
+            commercialPolicies={view.commercialPolicies}
+            approvalRules={view.approvalRules}
+            officeName={officeName}
+            functionLabel={functionLabel}
+            t={t}
+          />
+        </TabsContent>
+
+        <TabsContent value="history" className="pt-4">
+          <PartyHistoryTab
+            publicId={id}
+            officeNameByPublicId={officeNameByPublicId}
+            serviceTypeLabel={codeLabel(referentials?.serviceTypes)}
+            t={t}
+          />
+        </TabsContent>
+
+        <TabsContent value="team" className="pt-4">
+          {/* INTERLOCUTEURS (externes) — répertoire complet, style /_ref : en-tête à
+              icône + compteur + bouton, puis conteneur bordé (avatar · nom · fonction).
+              Pas de tél/e-mail : absents de `PartyContactRef` (demande back). */}
+          {view.nature === 'organization' ? (
+            <section className="mb-9">
               <div className="mb-3 flex items-center justify-between gap-3">
                 <div className="text-foreground flex items-center gap-2 text-sm font-semibold">
-                  <Briefcase className="text-muted-foreground size-4" />
-                  {t('party.finance.managers')}
+                  <Users className="text-muted-foreground size-4" />
+                  {t('party.detail.section.contacts')}
                   <span className="text-muted-foreground text-xs font-normal">
-                    · {t('party.detail.team.managersHint')} ·{' '}
-                    {view.managers.length}
+                    · {t('party.detail.team.contactsHint')} ·{' '}
+                    {view.contacts.length}
                   </span>
                 </div>
-                {editable ? (
+                {editable && view.accountId != null ? (
                   <Button
                     size="sm"
                     variant="outline"
                     className="shrink-0"
-                    onClick={() => setManagerOpen(true)}
+                    onClick={() => setInterlocutorOpen(true)}
                   >
                     <Plus />
-                    {t('party.finance.addManager')}
+                    {t('party.detail.addInterlocutor')}
                   </Button>
                 ) : null}
               </div>
-              {view.managers.length > 0 ? (
+              {view.contacts.length > 0 ? (
                 <div className="border-border rounded-xl border">
-                  {view.managers.map((m) => (
+                  {view.contacts.map((contact) => (
                     <div
-                      key={m.publicId}
+                      key={contact.publicId}
                       className="border-border/60 flex items-center justify-between gap-3 border-b px-4 py-3 last:border-0"
                     >
-                      <span className="flex min-w-0 items-center gap-3">
-                        <InitialsAvatar name={m.managerDisplayName} />
+                      <button
+                        type="button"
+                        onClick={() => navigate(`/parties/${contact.publicId}`)}
+                        className="flex min-w-0 items-center gap-3 text-start"
+                      >
+                        <InitialsAvatar name={contact.displayName} />
                         <span className="text-foreground truncate font-medium">
-                          {m.managerDisplayName}
+                          {contact.displayName}
                         </span>
                         <span className="bg-muted text-muted-foreground shrink-0 rounded px-2 py-0.5 text-xs">
-                          {t(`party.finance.assignment.${m.assignmentType}`)}
+                          {functionLabel(contact.functionCode)}
                         </span>
-                      </span>
-                      <span className="flex shrink-0 items-center gap-3">
-                        <span className="text-muted-foreground text-sm">
-                          {officeName(m.officeAccountId)}
-                        </span>
-                        {editable ? (
-                          <Button
-                            size="sm"
-                            mode="icon"
-                            variant="ghost"
-                            className="text-muted-foreground shrink-0"
-                            aria-label={t('party.finance.remove')}
-                            disabled={managerMutations.remove.isPending}
-                            onClick={() =>
-                              managerMutations.remove.mutate(m.publicId)
-                            }
-                          >
-                            <X />
-                          </Button>
-                        ) : null}
-                      </span>
+                      </button>
+                      {editable && view.accountId != null ? (
+                        <Button
+                          size="sm"
+                          mode="icon"
+                          variant="ghost"
+                          className="text-muted-foreground shrink-0"
+                          aria-label={t('party.detail.removeInterlocutor')}
+                          disabled={functionMutations.revoke.isPending}
+                          onClick={() => removeInterlocutor(contact)}
+                        >
+                          <X />
+                        </Button>
+                      ) : null}
                     </div>
                   ))}
                 </div>
               ) : (
-                <EmptyState>{t('party.finance.managers.empty')}</EmptyState>
+                <EmptyState>{t('party.detail.noInterlocutor')}</EmptyState>
               )}
+              {interlocutorError ? (
+                <p className="text-destructive mt-1 text-xs">
+                  {interlocutorError}
+                </p>
+              ) : null}
             </section>
-          </TabsContent>
+          ) : null}
 
-          {/* Notes / Tâches — placeholders (features sans back), reproduits du /_ref. */}
-          <TabsContent value="notes" className="pt-4">
-            <div className="border-border bg-muted/20 rounded-xl border border-dashed p-6">
-              <p className="text-muted-foreground text-sm">
-                {t('party.detail.soon.tabBody')}
-              </p>
+          {/* CHARGÉS DE COMPTE (internes) — votre équipe sur ce compte. Gérables ici
+              (mêmes mutations que l'onglet Finance). */}
+          <section>
+            <div className="mb-3 flex items-center justify-between gap-3">
+              <div className="text-foreground flex items-center gap-2 text-sm font-semibold">
+                <Briefcase className="text-muted-foreground size-4" />
+                {t('party.finance.managers')}
+                <span className="text-muted-foreground text-xs font-normal">
+                  · {t('party.detail.team.managersHint')} ·{' '}
+                  {view.managers.length}
+                </span>
+              </div>
+              {editable ? (
+                <Button
+                  size="sm"
+                  variant="outline"
+                  className="shrink-0"
+                  onClick={() => setManagerOpen(true)}
+                >
+                  <Plus />
+                  {t('party.finance.addManager')}
+                </Button>
+              ) : null}
             </div>
-          </TabsContent>
-          <TabsContent value="tasks" className="pt-4">
-            <div className="border-border bg-muted/20 rounded-xl border border-dashed p-6">
-              <p className="text-muted-foreground text-sm">
-                {t('party.detail.soon.tabBody')}
-              </p>
-            </div>
-          </TabsContent>
-
-          <TabsContent value="documents" className="pt-4">
-            <PartyDocumentsCard
-              publicId={id}
-              documents={view.documents}
-              editable={editable}
-              countries={referentials?.countries ?? []}
-              t={t}
-            />
-          </TabsContent>
-        </div>
-
-        {/* Bas-droite : champs « Détails société » — pas de card. Le titre est déjà
-            sur la bande du haut ; le trait vertical de la grille sépare du contenu.
-            Rôles/État restent dans l'en-tête → « Voir tous les détails » ne perd rien. */}
-        <aside className="fiche-scroll pe-4 pt-5 lg:min-h-0 lg:overflow-y-auto lg:ps-6 lg:pe-6">
-          <div>
-            {!railCollapsed ? (
-              <>
-                {/* Rail reproduit du /_ref : FINANCE → COORDONNÉES → IDENTITÉ.
-                    Valeurs à droite ; crayons d'édition portés par les titres de groupe. */}
-                <div className="text-sm">
-                  <RailGroupTitle
-                    title={t('party.detail.tab.finance')}
-                    action={
-                      editable ? (
+            {view.managers.length > 0 ? (
+              <div className="border-border rounded-xl border">
+                {view.managers.map((m) => (
+                  <div
+                    key={m.publicId}
+                    className="border-border/60 flex items-center justify-between gap-3 border-b px-4 py-3 last:border-0"
+                  >
+                    <span className="flex min-w-0 items-center gap-3">
+                      <InitialsAvatar name={m.managerDisplayName} />
+                      <span className="text-foreground truncate font-medium">
+                        {m.managerDisplayName}
+                      </span>
+                      <span className="bg-muted text-muted-foreground shrink-0 rounded px-2 py-0.5 text-xs">
+                        {t(`party.finance.assignment.${m.assignmentType}`)}
+                      </span>
+                    </span>
+                    <span className="flex shrink-0 items-center gap-3">
+                      <span className="text-muted-foreground text-sm">
+                        {officeName(m.officeAccountId)}
+                      </span>
+                      {editable ? (
                         <Button
                           size="sm"
                           mode="icon"
                           variant="ghost"
                           className="text-muted-foreground shrink-0"
-                          onClick={() => setCurrencyOpen(true)}
-                          aria-label={t('party.detail.editCurrencies')}
+                          aria-label={t('party.finance.remove')}
+                          disabled={managerMutations.remove.isPending}
+                          onClick={() =>
+                            managerMutations.remove.mutate(m.publicId)
+                          }
                         >
-                          <Pencil />
+                          <X />
                         </Button>
-                      ) : undefined
-                    }
-                  />
-                  {/* CRÉDIT — le chiffre le plus cher de la fiche traité comme un
-                      chiffre (pas une ligne parmi d'autres), avec sa jauge d'usage.
-                      L'encours n'existe pas encore → jauge en attente, jamais un faux %. */}
-                  <Card className="mt-1 mb-4">
-                    <CardHead
-                      icon={<Wallet />}
-                      title={t('party.finance.creditLimits')}
-                    />
-                    <div className="flex flex-col gap-3.5 p-4">
-                      {creditGroups.length > 0 ? (
-                        creditGroups.map((g) => (
-                          <div key={g.key}>
-                            <div className="text-muted-foreground text-2xs font-semibold tracking-wide uppercase">
-                              {t('party.finance.effective')}
-                              {' · '}
-                              {g.serviceTypeCode
-                                ? railServiceLabel(g.serviceTypeCode)
-                                : t('party.finance.allServices')}
-                            </div>
-                            <StatValue
-                              value={formatMinor(
-                                g.effectiveMinor,
-                                g.currencyCode
-                              )}
-                              unit={g.currencyCode ?? undefined}
-                            />
-                          </div>
-                        ))
-                      ) : (
-                        <p className="text-muted-foreground text-2sm">—</p>
-                      )}
-                      <Gauge
-                        label={t('party.finance.encours')}
-                        pending
-                        pendingLabel={t('party.detail.pending')}
-                      />
-                      <div className="text-2sm flex items-baseline justify-between gap-2">
-                        <span className="text-muted-foreground">
-                          {t('party.finance.availableCredit')}
-                        </span>
-                        <Badge variant="secondary" appearance="light" size="sm">
-                          {t('party.detail.pending')}
-                        </Badge>
-                      </div>
-                    </div>
-                  </Card>
-
-                  <RailRow
-                    icon={<DollarSign />}
-                    label={t('party.detail.currencyDisplay')}
-                  >
-                    {view.displayCurrencyCode ?? currencyDefault}
-                  </RailRow>
-                  <RailRow
-                    icon={<DollarSign />}
-                    label={t('party.detail.currencyBilling')}
-                  >
-                    {view.billingCurrencyCode ?? currencyDefault}
-                  </RailRow>
-
-                  <RailGroupTitle
-                    title={t('party.detail.section.coordinates')}
-                    action={
-                      editable ? (
-                        <Button
-                          size="sm"
-                          mode="icon"
-                          variant="ghost"
-                          className="text-muted-foreground shrink-0"
-                          onClick={() => setContactSheetOpen(true)}
-                          aria-label={t('party.detail.editCoordinates')}
-                        >
-                          <Pencil />
-                        </Button>
-                      ) : undefined
-                    }
-                  />
-                  <RailRow icon={<Phone />} label={t('party.column.phone')}>
-                    {view.phonePrimary || view.phoneSecondary ? (
-                      <span className="inline-flex flex-wrap items-center gap-x-4 gap-y-1">
-                        {view.phonePrimary ? (
-                          <span className="inline-flex items-center gap-1">
-                            <PhoneDisplay value={view.phonePrimary} />
-                            <button
-                              type="button"
-                              onClick={() => copyText(view.phonePrimary ?? '')}
-                              aria-label={t('common.copy')}
-                              className="text-muted-foreground hover:text-foreground"
-                            >
-                              <Copy className="size-3.5" />
-                            </button>
-                          </span>
-                        ) : null}
-                        {view.phoneSecondary ? (
-                          <span className="inline-flex items-center gap-1">
-                            <PhoneDisplay value={view.phoneSecondary} />
-                            <button
-                              type="button"
-                              onClick={() =>
-                                copyText(view.phoneSecondary ?? '')
-                              }
-                              aria-label={t('common.copy')}
-                              className="text-muted-foreground hover:text-foreground"
-                            >
-                              <Copy className="size-3.5" />
-                            </button>
-                          </span>
-                        ) : null}
-                      </span>
-                    ) : (
-                      <span className="text-muted-foreground">—</span>
-                    )}
-                  </RailRow>
-                  <RailRow icon={<Mail />} label={t('party.detail.email')}>
-                    {view.email ? (
-                      <span className="inline-flex flex-wrap items-center gap-2">
-                        <Ext href={`mailto:${view.email}`}>{view.email}</Ext>
-                        <Badge
-                          variant={view.emailVerifiedAt ? 'success' : 'warning'}
-                          appearance="light"
-                          size="sm"
-                        >
-                          {view.emailVerifiedAt
-                            ? t('party.detail.emailVerified')
-                            : t('party.detail.emailNotVerified')}
-                        </Badge>
-                      </span>
-                    ) : (
-                      <span className="text-muted-foreground">—</span>
-                    )}
-                  </RailRow>
-                  {organization?.website ? (
-                    <RailRow
-                      icon={<Globe />}
-                      label={t('party.detail.field.website')}
-                    >
-                      <Ext href={organization.website}>
-                        {organization.website.replace(/^https?:\/\//, '')}
-                      </Ext>
-                    </RailRow>
-                  ) : null}
-                  <RailRow icon={<MapPin />} label={t('party.detail.location')}>
-                    {railLocation ? (
-                      <span className="text-foreground">{railLocation}</span>
-                    ) : view.country ? (
-                      <CountryDisplay code={view.country} />
-                    ) : (
-                      <span className="text-muted-foreground">—</span>
-                    )}
-                  </RailRow>
-
-                  <RailGroupTitle title={t('party.detail.section.identity')} />
-                  <RailRow
-                    icon={<Building2 />}
-                    label={t('party.column.nature')}
-                  >
-                    {t(`party.nature.${view.nature}`)}
-                  </RailRow>
-                  <RailRow icon={<Handshake />} label={t('party.column.roles')}>
-                    <span className="flex flex-wrap gap-1">
-                      {view.roles.map((code) => (
-                        <Badge
-                          key={code}
-                          variant={ROLE_VARIANT[code] ?? 'secondary'}
-                          appearance="light"
-                          size="sm"
-                          className="gap-1 pe-1"
-                        >
-                          {roleLabel(code)}
-                          {editable ? (
-                            <button
-                              type="button"
-                              onClick={() => roleMutations.revoke.mutate(code)}
-                              aria-label={t('party.detail.removeRole')}
-                              className="text-muted-foreground hover:text-foreground rounded-sm"
-                            >
-                              <X className="size-3" />
-                            </button>
-                          ) : null}
-                        </Badge>
-                      ))}
-                      {editable && availableRoles.length > 0 ? (
-                        <DropdownMenu>
-                          <DropdownMenuTrigger asChild>
-                            <button
-                              type="button"
-                              aria-label={t('party.detail.addRole')}
-                              className="text-muted-foreground hover:text-foreground border-border rounded-sm border border-dashed px-1"
-                            >
-                              <Plus className="size-3" />
-                            </button>
-                          </DropdownMenuTrigger>
-                          <DropdownMenuContent align="end" className="min-w-44">
-                            {availableRoles.map((role) => (
-                              <DropdownMenuItem
-                                key={role.code}
-                                onSelect={() =>
-                                  roleMutations.assign.mutate(role.code)
-                                }
-                              >
-                                {role.label}
-                              </DropdownMenuItem>
-                            ))}
-                          </DropdownMenuContent>
-                        </DropdownMenu>
                       ) : null}
                     </span>
-                  </RailRow>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <EmptyState>{t('party.finance.managers.empty')}</EmptyState>
+            )}
+          </section>
+        </TabsContent>
 
-                  {/* Adresses — déplacées ici (hors /_ref Overview). Édition conservée. */}
-                  <RailGroupTitle
-                    title={t('party.detail.addresses')}
-                    action={
-                      editable ? (
-                        <Button
-                          size="sm"
-                          mode="icon"
-                          variant="ghost"
-                          className="text-muted-foreground shrink-0"
-                          onClick={() => {
-                            setEditingAddress(null)
-                            setAddressSheetOpen(true)
-                          }}
-                          aria-label={t('party.detail.addAddress')}
-                        >
-                          <Plus />
-                        </Button>
-                      ) : undefined
-                    }
-                  />
-                  {addressesLoading ? (
-                    <SkeletonRow columns={1} />
-                  ) : addresses.length > 0 ? (
-                    <div className="flex flex-col gap-3 py-1">
-                      {addresses.map((address) => (
-                        <div
-                          key={address.publicId}
-                          className="flex items-start justify-between gap-2"
-                        >
-                          <div className="flex min-w-0 flex-col gap-0.5">
-                            <span className="flex items-center gap-2">
-                              <span className="text-foreground text-sm font-medium">
-                                {addressTypeLabel(address.addressType)}
-                              </span>
-                              {address.isPrimary ? (
-                                <Badge variant="secondary" size="xs">
-                                  {t('party.address.primary')}
-                                </Badge>
-                              ) : null}
-                            </span>
-                            <span className="text-muted-foreground text-sm">
-                              {[
-                                address.line1,
-                                address.line2,
-                                [address.postalCode, address.city]
-                                  .filter(Boolean)
-                                  .join(' '),
-                                address.countryAlpha2
-                                  ? countryLabel(address.countryAlpha2)
-                                  : null,
-                              ]
-                                .filter(Boolean)
-                                .join(', ')}
-                            </span>
-                          </div>
-                          {editable ? (
-                            <RowActions
-                              onEdit={() => {
-                                setEditingAddress(address)
-                                setAddressSheetOpen(true)
-                              }}
-                              editLabel={t('party.detail.editAddress')}
-                              onRemove={() => setAddressToDelete(address)}
-                              removeLabel={t('party.detail.action.delete')}
-                            />
-                          ) : null}
-                        </div>
-                      ))}
-                    </div>
-                  ) : (
-                    <EmptyState className="px-0">
-                      {t('party.detail.noAddresses')}
-                    </EmptyState>
-                  )}
-                </div>
-              </>
-            ) : null}
+        {/* Notes / Tâches — placeholders (features sans back), reproduits du /_ref. */}
+        <TabsContent value="notes" className="pt-4">
+          <div className="border-border bg-muted/20 rounded-xl border border-dashed p-6">
+            <p className="text-muted-foreground text-sm">
+              {t('party.detail.soon.tabBody')}
+            </p>
           </div>
-        </aside>
-      </Tabs>
+        </TabsContent>
+        <TabsContent value="tasks" className="pt-4">
+          <div className="border-border bg-muted/20 rounded-xl border border-dashed p-6">
+            <p className="text-muted-foreground text-sm">
+              {t('party.detail.soon.tabBody')}
+            </p>
+          </div>
+        </TabsContent>
 
-      {view.createdAt || view.updatedAt ? (
-        <p className="text-muted-foreground px-4 text-xs lg:px-7.5">
-          {view.createdAt
-            ? t('party.detail.createdOn', {
-                date: fmtDate(view.createdAt) ?? '',
-              })
-            : null}
-          {view.createdAt && view.updatedAt ? ' · ' : null}
-          {view.updatedAt
-            ? t('party.detail.updatedOn', {
-                date: fmtDate(view.updatedAt) ?? '',
-              })
-            : null}
-        </p>
-      ) : null}
+        <TabsContent value="documents" className="pt-4">
+          <PartyDocumentsCard
+            publicId={id}
+            documents={view.documents}
+            editable={editable}
+            countries={referentials?.countries ?? []}
+            t={t}
+          />
+        </TabsContent>
+      </RecordShell>
 
       <Dialog open={deleteOpen} onOpenChange={setDeleteOpen}>
         <DialogContent>
@@ -1854,6 +1780,6 @@ export function PartyDetailPage() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
-    </div>
+    </>
   )
 }
