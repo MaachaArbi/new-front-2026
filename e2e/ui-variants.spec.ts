@@ -3,7 +3,7 @@ import fs from 'node:fs'
 
 /** Capture des 2 directions visuelles proposées sur `/_ui` (page jetable). */
 const SHOTS = 'e2e/screenshots'
-const EMAIL = 'karim.belhadj@demo.ostravel.tn'
+const EMAIL = 'salma.ben.amor@demo.ostravel.tn'
 const PASSWORD = 'Demo-2026-OsTravel'
 
 test.use({ viewport: { width: 1500, height: 1400 } })

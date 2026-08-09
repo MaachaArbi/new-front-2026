@@ -1,5 +1,6 @@
 import * as React from 'react'
 import {
+  AlertTriangle,
   ArrowDownRight,
   ArrowUpRight,
   Eye,
@@ -99,7 +100,7 @@ function BtnPrimary({ children }: { children: React.ReactNode }) {
   return (
     <button
       type="button"
-      className="inline-flex h-9 shrink-0 items-center gap-1.5 px-3.5 text-[13px] font-semibold transition-opacity hover:opacity-90"
+      className="inline-flex h-9 shrink-0 items-center gap-1.5 px-3.5 text-[13px] font-semibold transition-opacity hover:opacity-90 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--accent)]"
       style={{
         background: 'var(--btn)',
         color: 'var(--btn-ink)',
@@ -116,7 +117,7 @@ function BtnGhost({ children }: { children: React.ReactNode }) {
   return (
     <button
       type="button"
-      className="inline-flex h-9 shrink-0 items-center gap-1.5 px-3 text-[13px] font-semibold"
+      className="inline-flex h-9 shrink-0 items-center gap-1.5 px-3 text-[13px] font-semibold transition-colors hover:bg-[var(--strip)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--accent)]"
       style={{
         background: 'var(--card)',
         color: 'var(--ink)',
@@ -267,23 +268,33 @@ function Spark({ points, tint }: { points: number[]; tint: string }) {
 /** Bloc KPI : label · grand chiffre · variation · sparkline. */
 function Kpi({
   label,
+  period,
   value,
   unit,
   delta,
   up,
   points,
   tint,
-  pending,
+  ranges,
+  activeRange,
 }: {
   label: string
+  /** Période couverte — SANS elle, « +18 % » ne veut rien dire. */
+  period: string
   value: string
   unit?: string
   delta?: string
   up?: boolean
-  points?: number[]
-  tint?: string
-  pending?: boolean
+  points: number[]
+  tint: string
+  ranges?: string[]
+  activeRange?: string
 }) {
+  const last = points[points.length - 1] ?? 0
+  const max = Math.max(...points)
+  const min = Math.min(...points)
+  const span = max - min || 1
+  const lastY = 40 - ((last - min) / span) * 34 - 3
   return (
     <div
       className="overflow-hidden"
@@ -291,40 +302,61 @@ function Kpi({
         background: 'var(--card)',
         border: '1px solid var(--line)',
         borderRadius: 'var(--radius)',
-        }}
+      }}
     >
-      <div className="px-4 pt-3.5">
-        <div
-          className="text-[11px] font-semibold uppercase"
-          style={{ color: 'var(--faint)', letterSpacing: '.07em' }}
-        >
-          {label}
-        </div>
-        <div className="mt-1 flex items-baseline gap-2">
-          <span
-            className="text-[24px] leading-7 font-bold tabular-nums"
-            style={{
-              letterSpacing: 'var(--track)',
-              color: pending ? 'var(--faint)' : 'var(--ink)',
-            }}
+      <div className="flex items-start justify-between gap-2 px-4 pt-3.5">
+        <div>
+          <div
+            className="text-[11px] font-semibold uppercase"
+            style={{ color: 'var(--faint)', letterSpacing: '.07em' }}
           >
-            {value}
-          </span>
-          {unit ? (
-            <span className="text-[13px] font-medium" style={{ color: 'var(--muted)' }}>
-              {unit}
+            {label}
+          </div>
+          <div className="mt-1 flex items-baseline gap-2">
+            <span
+              className="text-[24px] leading-7 font-bold tabular-nums"
+              style={{ letterSpacing: 'var(--track)' }}
+            >
+              {value}
             </span>
-          ) : null}
-          {delta ? <Delta value={delta} up={!!up} /> : null}
+            {unit ? (
+              <span className="text-[13px] font-medium" style={{ color: 'var(--muted)' }}>
+                {unit}
+              </span>
+            ) : null}
+            {delta ? <Delta value={delta} up={!!up} /> : null}
+          </div>
         </div>
+        {/* Sélecteur de période — le repère qui manquait. */}
+        {ranges ? (
+          <div className="flex items-center gap-0.5 p-0.5"
+            style={{ background: 'var(--strip)', border: '1px solid var(--line)', borderRadius: 'var(--radius-sm)' }}>
+            {ranges.map((r) => (
+              <span
+                key={r}
+                className="rounded px-1.5 py-0.5 text-[11px] font-semibold"
+                style={
+                  r === activeRange
+                    ? { background: 'var(--card)', color: 'var(--ink)', boxShadow: 'var(--shadow)' }
+                    : { color: 'var(--faint)' }
+                }
+              >
+                {r}
+              </span>
+            ))}
+          </div>
+        ) : null}
       </div>
-      {points && tint ? (
+      <div className="relative">
         <Spark points={points} tint={tint} />
-      ) : (
-        <div className="px-4 pt-1 pb-4 text-[12px]" style={{ color: 'var(--faint)' }}>
-          en attente — module Factures
-        </div>
-      )}
+        {/* Point terminal — l'œil sait où « maintenant » se trouve. */}
+        <svg viewBox="0 0 150 40" className="pointer-events-none absolute inset-0 h-10 w-full" preserveAspectRatio="none">
+          <circle cx="149" cy={lastY} r="2.5" fill={tint} />
+        </svg>
+      </div>
+      <div className="px-4 pt-1 pb-3 text-[11px]" style={{ color: 'var(--faint)' }}>
+        {period}
+      </div>
     </div>
   )
 }
@@ -457,13 +489,16 @@ function Screen({ skin }: { skin: Skin }) {
       <div className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_320px]">
         <div className="flex flex-col gap-5">
           {/* KPI + sparklines */}
-          <div className="grid gap-4 sm:grid-cols-3">
+          <div className="grid gap-4 sm:grid-cols-2">
             <Kpi
               label="Chiffre d'affaires"
               value="248 500"
               unit="TND"
               delta="+18 %"
               up
+              period="12 derniers mois · août 2025 → août 2026"
+              ranges={['3M', '6M', '12M']}
+              activeRange="12M"
               points={[12, 18, 15, 22, 19, 26, 24, 31, 29, 35, 33, 42]}
               tint="#6366F1"
             />
@@ -472,25 +507,37 @@ function Screen({ skin }: { skin: Skin }) {
               value="126"
               delta="−4 %"
               up={false}
+              period="12 derniers mois · août 2025 → août 2026"
+              ranges={['3M', '6M', '12M']}
+              activeRange="12M"
               points={[30, 28, 32, 26, 29, 24, 27, 22, 25, 21, 23, 20]}
               tint="#14B8A6"
             />
-            <Kpi label="Encours" value="—" pending />
           </div>
 
-          {/* À TRAITER — carte à bande de titre */}
+          {/* À TRAITER — hiérarchie d'urgence : liseré ambre + bande teintée. */}
           <div
             className="overflow-hidden"
             style={{
               background: 'var(--card)',
               border: '1px solid var(--line)',
+              borderInlineStart: '3px solid #F59E0B',
               borderRadius: 'var(--radius)',
             }}
           >
-            <CardHead
-              title="À traiter"
-              action={<Chip tone="warn">3</Chip>}
-            />
+            <div
+              className="flex items-center justify-between gap-3 px-4 py-2.5"
+              style={{
+                borderBottom: '1px solid var(--line)',
+                background: '#FFFBEB',
+              }}
+            >
+              <span className="flex items-center gap-2 text-[16px] leading-none font-semibold tracking-tight">
+                <AlertTriangle className="size-4" style={{ color: '#D97706' }} />
+                À traiter
+              </span>
+              <Chip tone="warn">3</Chip>
+            </div>
             {[
               ['E-mail non vérifié', 'Vérifier', '#F43F5E'],
               ['Exonération TVA sans justificatif', 'Ajouter', '#F43F5E'],
@@ -498,7 +545,7 @@ function Screen({ skin }: { skin: Skin }) {
             ].map(([txt, cta, dot], i, arr) => (
               <div
                 key={txt}
-                className="flex items-center justify-between gap-3 px-4 py-3"
+                className="hover:bg-[var(--strip)] flex items-center justify-between gap-3 px-4 py-3 transition-colors"
                 style={{
                   borderBottom: i < arr.length - 1 ? '1px solid var(--line)' : undefined,
                 }}
@@ -549,7 +596,7 @@ function Screen({ skin }: { skin: Skin }) {
             ].map(([ini, name, fn, tel, last, tint], i, arr) => (
               <div
                 key={name}
-                className="grid grid-cols-[1fr_130px_170px_90px_40px] items-center px-4 text-[13px]"
+                className="hover:bg-[var(--strip)] grid cursor-pointer grid-cols-[1fr_130px_170px_90px_40px] items-center px-4 text-[13px] transition-colors"
                 style={{
                   height: 42,
                   borderBottom: i < arr.length - 1 ? '1px solid var(--line)' : undefined,
@@ -625,6 +672,34 @@ function Screen({ skin }: { skin: Skin }) {
                 </div>
               ))}
             </dl>
+          </div>
+
+          {/* Chargés de compte — comble la colonne avec de l'utile, pas du remplissage. */}
+          <div
+            className="overflow-hidden"
+            style={{
+              background: 'var(--card)',
+              border: '1px solid var(--line)',
+              borderRadius: 'var(--radius)',
+            }}
+          >
+            <CardHead title="Chargés de compte" />
+            <div className="flex flex-col">
+              {[
+                ['NH', 'Nizar Hamdi', 'Commercial', '#10B981'],
+                ['FZ', 'Fatma Zouari', 'Recouvrement', '#F59E0B'],
+              ].map(([ini, name, role, tint], i, arr) => (
+                <div
+                  key={name}
+                  className="hover:bg-[var(--strip)] flex items-center gap-2.5 px-4 py-2.5 text-[13px] transition-colors"
+                  style={{ borderBottom: i < arr.length - 1 ? '1px solid var(--line)' : undefined }}
+                >
+                  <Avatar initials={ini ?? ''} tint={tint ?? '#888'} />
+                  <span className="min-w-0 flex-1 truncate font-medium">{name}</span>
+                  <span style={{ color: 'var(--muted)' }}>{role}</span>
+                </div>
+              ))}
+            </div>
           </div>
         </div>
       </div>
