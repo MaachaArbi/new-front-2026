@@ -76,10 +76,15 @@ Convention : `élément d'UI` · où · **statut** · débloqué par.
   recherche de personnes) — cause non identifiée. Le reste du semis fonctionne.
 - **Pages jetables** `/_ref` (spec de la fiche) et `/_ui` (socle + vocabulaire) : à
   supprimer une fois le port terminé et validé.
-- **Pays du bureau dans `/me`** : manquant. Bloque DEUX choses, à demander au back en
-  une fois — (1) l'indicatif téléphonique par défaut du `PhoneInput`, (2) le premier
-  jour de la semaine du calendrier (aujourd'hui lundi en dur : convention Tunisie /
-  Algérie / France ; le Golfe voudrait samedi).
+- **Lot de demandes au back du 09/08** — parti dans
+  `docs/demandes-backend/2026-08-09-trois-manques-fiche-tiers.md` :
+  (1) pays du bureau dans `/me` (bloque l'indicatif par défaut et le premier jour de la
+  semaine, aujourd'hui lundi en dur) ; (2) nom du bureau sur plafonds / exonérations /
+  règles / politiques — sans lui, l'écran affiche `#119751` ; (3) `meta.hasMore` sur
+  l'historique.
+- **Champs vides** : depuis le 09/08, un champ nul s'affiche avec « — » et n'est plus
+  masqué. Un champ caché parce que vide est indiscernable d'un champ que l'API n'expose
+  pas — c'est ce qui avait laissé passer quatre champs invisibles sur la fiche.
 - ~~**Champs de date natifs**~~ : **FAIT le 09/08** — `DateField` + `Calendar` maison
   (aucune dépendance ; `Intl` comme unique source de langue). Ancien constat conservé
   pour mémoire : (`<input type="date">`) : affichent `mm/dd/yyyy` — le format

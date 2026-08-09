@@ -11,7 +11,6 @@ import {
   DollarSign,
   FileText,
   Earth,
-  Globe,
   Handshake,
   Hash,
   History,
@@ -126,9 +125,20 @@ type FieldItem = {
   hint?: string
 }
 
-/** Conserve les champs réellement renseignés (le vide n'est jamais affiché). */
-function filled(items: FieldItem[]): FieldItem[] {
-  return items.filter((i) => i.value != null && i.value !== '')
+/**
+ * Un champ vide s'affiche quand même, avec un tiret.
+ *
+ * Règle posée par Arbi le 09/08 : masquer un champ nul le rend indiscernable d'un champ
+ * que l'API n'expose pas. On ne peut alors ni vérifier qu'un écran est complet, ni
+ * savoir ce qu'il reste à renseigner — c'est ce qui a laissé quatre champs invisibles
+ * sur cette fiche. Afficher n'est pas inventer : on ne montre que le contrat d'API.
+ */
+function withDashes(items: FieldItem[]): FieldItem[] {
+  return items.map((item) =>
+    item.value == null || item.value === ''
+      ? { ...item, value: <span className="text-muted-foreground">—</span> }
+      : item
+  )
 }
 
 function Ext({ href, children }: { href: string; children: React.ReactNode }) {
@@ -368,7 +378,7 @@ export function PartyDetailPage() {
   // Sections Détails — construites en données, vides masqués.
   // Carte « Identité » de l'Aperçu = identifiants légaux SEULEMENT. Nature + Site web
   // vivent au rail → pas de doublon (points 7 & 8).
-  const identityItems = filled(
+  const identityItems = withDashes(
     view.nature === 'person'
       ? [
           {
@@ -394,6 +404,19 @@ export function PartyDetailPage() {
             value: organization?.legalFormCode
               ? legalFormLabel(organization.legalFormCode)
               : null,
+          },
+          // Le site web était AFFICHÉ dans Coordonnées et MODIFIÉ par le crayon
+          // Identité : le crayon des coordonnées ne faisait pas ce qu'il annonçait.
+          // C'est l'affichage qui bouge, pas le champ — le site web est enregistré par
+          // l'endpoint identité, et un panneau qui écrirait sur deux endpoints pourrait
+          // échouer à moitié sur un formulaire que l'utilisateur croit indivisible.
+          {
+            label: t('party.detail.field.website'),
+            value: organization?.website ? (
+              <Ext href={organization.website}>
+                {organization.website.replace(/^https?:\/\//, '')}
+              </Ext>
+            ) : null,
           },
           // Codes comptables : renvoyés par l'API, définis dans l'export comptable et
           // non modifiables ici. Affichés pour que rien de ce que l'API expose ne reste
@@ -772,23 +795,12 @@ export function PartyDetailPage() {
             {/* Rail reproduit de la maquette de référence : FINANCE → COORDONNÉES → IDENTITÉ.
                 Valeurs à droite ; crayons d'édition portés par les titres de groupe. */}
             <div className="text-sm">
-              <RailGroupTitle
-                title={t('party.detail.tab.finance')}
-                action={
-                  editable ? (
-                    <Button
-                      size="sm"
-                      mode="icon"
-                      variant="ghost"
-                      className="text-muted-foreground shrink-0"
-                      onClick={() => setCurrencyOpen(true)}
-                      aria-label={t('party.detail.editCurrencies')}
-                    >
-                      <Pencil />
-                    </Button>
-                  ) : undefined
-                }
-              />
+              {/* Pas de crayon sur ce titre : le groupe est occupé par des valeurs
+                  CALCULÉES — plafond effectif, encours, crédit disponible — qu'aucun
+                  formulaire ne modifie. Un crayon devant un plafond de crédit laisse
+                  croire qu'on peut le corriger à la main. Il descend sur les devises,
+                  la seule chose qu'il modifie réellement. */}
+              <RailGroupTitle title={t('party.detail.tab.finance')} />
               {/* CRÉDIT — le chiffre le plus cher de la fiche traité comme un
                   chiffre (pas une ligne parmi d'autres), avec sa jauge d'usage.
                   L'encours n'existe pas encore → jauge en attente, jamais un faux %. */}
@@ -836,6 +848,23 @@ export function PartyDetailPage() {
                 </div>
               </Card>
 
+              <RailGroupTitle
+                title={t('party.detail.section.currencies')}
+                action={
+                  editable ? (
+                    <Button
+                      size="sm"
+                      mode="icon"
+                      variant="ghost"
+                      className="text-muted-foreground shrink-0"
+                      onClick={() => setCurrencyOpen(true)}
+                      aria-label={t('party.detail.editCurrencies')}
+                    >
+                      <Pencil />
+                    </Button>
+                  ) : undefined
+                }
+              />
               <RailRow
                 icon={<DollarSign />}
                 label={t('party.detail.currencyDisplay')}
@@ -918,16 +947,6 @@ export function PartyDetailPage() {
                   <span className="text-muted-foreground">—</span>
                 )}
               </RailRow>
-              {organization?.website ? (
-                <RailRow
-                  icon={<Globe />}
-                  label={t('party.detail.field.website')}
-                >
-                  <Ext href={organization.website}>
-                    {organization.website.replace(/^https?:\/\//, '')}
-                  </Ext>
-                </RailRow>
-              ) : null}
               <RailRow icon={<MapPin />} label={t('party.detail.location')}>
                 {railLocation ? (
                   <span className="text-foreground">{railLocation}</span>
@@ -1201,32 +1220,26 @@ export function PartyDetailPage() {
                     </Button>
                   ) : null}
                 </div>
-                {identityItems.length > 0 ? (
-                  <div className="flex flex-col gap-3 text-sm">
-                    {identityItems.map((it, i) => (
-                      <div
-                        key={i}
-                        className="flex items-center justify-between gap-2"
-                      >
-                        <span className="text-muted-foreground flex flex-col">
-                          {it.label}
-                          {it.hint ? (
-                            <span className="text-muted-foreground/70 text-xs">
-                              {it.hint}
-                            </span>
-                          ) : null}
-                        </span>
-                        <span className="text-foreground text-end font-medium">
-                          {it.value}
-                        </span>
-                      </div>
-                    ))}
-                  </div>
-                ) : (
-                  <p className="text-muted-foreground text-sm">
-                    {t('party.detail.identityPending')}
-                  </p>
-                )}
+                <div className="flex flex-col gap-3 text-sm">
+                  {identityItems.map((it, i) => (
+                    <div
+                      key={i}
+                      className="flex items-center justify-between gap-2"
+                    >
+                      <span className="text-muted-foreground flex flex-col">
+                        {it.label}
+                        {it.hint ? (
+                          <span className="text-muted-foreground/70 text-xs">
+                            {it.hint}
+                          </span>
+                        ) : null}
+                      </span>
+                      <span className="text-foreground text-end font-medium">
+                        {it.value}
+                      </span>
+                    </div>
+                  ))}
+                </div>
               </div>
               <div className="border-border rounded-xl border p-4">
                 <div className="mb-3 flex items-center justify-between gap-2">
@@ -1263,37 +1276,50 @@ export function PartyDetailPage() {
                       </span>
                     </div>
                   ))}
-                  {parent ? (
-                    <div className="flex items-center justify-between gap-2">
-                      <span className="text-muted-foreground">
-                        {t('party.detail.overview.parent')}
-                      </span>
-                      <button
-                        type="button"
-                        onClick={() => navigate(`/parties/${parent.publicId}`)}
-                        className="text-primary font-medium hover:underline"
-                      >
-                        {parent.displayName}
-                      </button>
-                    </div>
-                  ) : null}
-                  {view.children.length > 0 ? (
-                    <div className="flex items-center justify-between gap-2">
-                      <span className="text-muted-foreground">
-                        {t('party.detail.overview.children')}
-                      </span>
-                      <Badge
-                        variant="secondary"
-                        appearance="light"
-                        size="sm"
-                        className="gap-1"
-                      >
-                        <Users className="size-3.5" />
-                        {t('party.detail.overview.childrenCount', {
-                          count: view.children.length,
-                        })}
-                      </Badge>
-                    </div>
+                  {/* Agence mère, agences filles et groupes s'affichent MÊME vides :
+                      un rattachement absent doit se distinguer d'un rattachement que
+                      la fiche ne gère pas. */}
+                  {view.nature === 'organization' ? (
+                    <>
+                      <div className="flex items-center justify-between gap-2">
+                        <span className="text-muted-foreground">
+                          {t('party.detail.overview.parent')}
+                        </span>
+                        {parent ? (
+                          <button
+                            type="button"
+                            onClick={() =>
+                              navigate(`/parties/${parent.publicId}`)
+                            }
+                            className="text-primary font-medium hover:underline"
+                          >
+                            {parent.displayName}
+                          </button>
+                        ) : (
+                          <span className="text-muted-foreground">—</span>
+                        )}
+                      </div>
+                      <div className="flex items-center justify-between gap-2">
+                        <span className="text-muted-foreground">
+                          {t('party.detail.overview.children')}
+                        </span>
+                        {view.children.length > 0 ? (
+                          <Badge
+                            variant="secondary"
+                            appearance="light"
+                            size="sm"
+                            className="gap-1"
+                          >
+                            <Users className="size-3.5" />
+                            {t('party.detail.overview.childrenCount', {
+                              count: view.children.length,
+                            })}
+                          </Badge>
+                        ) : (
+                          <span className="text-muted-foreground">—</span>
+                        )}
+                      </div>
+                    </>
                   ) : null}
                   {/* Portée « tous les bureaux » : sans ça, un tiers rattaché à TOUS
                       les bureaux affichait une carte vide (donnée perdue au report). */}
@@ -1308,12 +1334,11 @@ export function PartyDetailPage() {
                       </span>
                     </div>
                   ) : null}
-                  {/* Groupes — donnée réelle, également perdue au report. */}
-                  {view.groups.length > 0 ? (
-                    <div className="flex items-start justify-between gap-2">
-                      <span className="text-muted-foreground">
-                        {t('party.detail.section.groups')}
-                      </span>
+                  <div className="flex items-start justify-between gap-2">
+                    <span className="text-muted-foreground">
+                      {t('party.detail.section.groups')}
+                    </span>
+                    {view.groups.length > 0 ? (
                       <span className="flex flex-wrap justify-end gap-1">
                         {view.groups.map((group) => (
                           <Badge
@@ -1326,15 +1351,10 @@ export function PartyDetailPage() {
                           </Badge>
                         ))}
                       </span>
-                    </div>
-                  ) : null}
-                  {view.offices.length === 0 &&
-                  view.officeScope !== 'all_offices' &&
-                  !parent &&
-                  view.children.length === 0 &&
-                  view.groups.length === 0 ? (
-                    <p className="text-muted-foreground">—</p>
-                  ) : null}
+                    ) : (
+                      <span className="text-muted-foreground">—</span>
+                    )}
+                  </div>
                 </div>
               </div>
             </div>
