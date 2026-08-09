@@ -37,6 +37,7 @@ import { officesOf, officeCountryOf } from '@/shared/auth/me'
 import { useReferentials, codeLabel } from '@/shared/referentials'
 import { formatMinor } from '@/shared/lib/money'
 import './party-detail-page.css'
+import { Card, CardHead, Gauge, StatValue } from './party-ui'
 import {
   usePartyAccount,
   usePatchPartyAccount,
@@ -852,24 +853,22 @@ export function PartyDetailPage() {
             {/* « À traiter » (reproduction /_ref) — en-tête + compteur, puis lignes
                 point de sévérité + texte + ACTION. Alertes réelles ; masqué si rien. */}
             {todoAlerts.length > 0 ? (
-              <div>
-                <div className="text-foreground mb-2 flex items-center gap-2 text-sm font-semibold">
-                  <AlertTriangle className="size-4 text-amber-500" />
-                  {t('party.todo.title')}
-                  <Badge
-                    variant="warning"
-                    appearance="light"
-                    size="sm"
-                    className="rounded-full"
-                  >
-                    {todoAlerts.length}
-                  </Badge>
-                </div>
-                <div className="border-border rounded-xl border">
+              <Card>
+                <CardHead
+                  icon={<AlertTriangle />}
+                  title={t('party.todo.title')}
+                  tone="urgent"
+                  action={
+                    <Badge variant="warning" appearance="light" size="sm">
+                      {todoAlerts.length}
+                    </Badge>
+                  }
+                />
+                <div>
                   {todoAlerts.map((a) => (
                     <div
                       key={a.key}
-                      className="border-border/60 flex items-center justify-between gap-3 border-b px-4 py-3 text-sm last:border-0"
+                      className="border-border/60 hover:bg-strip text-2sm flex items-center justify-between gap-3 border-b px-4 py-3 transition-colors last:border-0"
                     >
                       <span className="flex min-w-0 items-center gap-3">
                         <span
@@ -894,7 +893,7 @@ export function PartyDetailPage() {
                     </div>
                   ))}
                 </div>
-              </div>
+              </Card>
             ) : null}
 
             {/* Aperçu (reproduction /_ref) : Identité (identifiants légaux) +
@@ -1028,24 +1027,24 @@ export function PartyDetailPage() {
 
             {/* Activité récente (style /_ref) — en-tête à icône + « Voir tout », puis
                 conteneur bordé à lignes : point + « qui · quoi » + date. */}
-            <div>
-              <div className="mb-2 flex items-center justify-between gap-2">
-                <div className="text-foreground flex items-center gap-2 text-sm font-semibold">
-                  <Activity className="text-muted-foreground size-4" />
-                  {t('party.detail.activity.title')}
-                </div>
-                <button
-                  type="button"
-                  onClick={() => setTab('history')}
-                  className="text-primary text-xs font-medium hover:underline"
-                >
-                  {t('party.detail.activity.seeAll')}
-                </button>
-              </div>
+            <Card>
+              <CardHead
+                icon={<Activity />}
+                title={t('party.detail.activity.title')}
+                action={
+                  <button
+                    type="button"
+                    onClick={() => setTab('history')}
+                    className="text-primary text-2sm font-medium hover:underline"
+                  >
+                    {t('party.detail.activity.seeAll')}
+                  </button>
+                }
+              />
               {recentHistory.isLoading ? (
                 <SkeletonRow columns={1} />
               ) : recentEntries.length > 0 ? (
-                <div className="border-border rounded-xl border">
+                <div>
                   {recentEntries.map((entry, i) => (
                     <div
                       key={`${entry.at}-${i}`}
@@ -1072,34 +1071,35 @@ export function PartyDetailPage() {
                   ))}
                 </div>
               ) : (
-                <p className="text-muted-foreground text-sm">
+                <p className="text-muted-foreground p-4 text-2sm">
                   {t('party.detail.activity.empty')}
                 </p>
               )}
-              <p className="text-muted-foreground/70 mt-2 text-xs">
+              <p className="text-muted-foreground/70 border-border border-t px-4 py-2.5 text-2xs">
                 {t('party.detail.soon.body')}
               </p>
-            </div>
+            </Card>
 
             {/* Interlocuteurs (style /_ref) — avatar + nom + fonction, conteneur bordé.
                 « Voir tout » → onglet Contacts & équipe. Pas de tél/e-mail (donnée absente
                 sur le lien contact) : clic → fiche de l'interlocuteur. */}
             {view.nature === 'organization' && view.contacts.length > 0 ? (
-              <div>
-                <div className="mb-2 flex items-center justify-between gap-2">
-                  <div className="text-foreground flex items-center gap-2 text-sm font-semibold">
-                    <Users className="text-muted-foreground size-4" />
-                    {t('party.detail.section.contacts')}
-                  </div>
-                  <button
-                    type="button"
-                    onClick={() => setTab('team')}
-                    className="text-primary text-xs font-medium hover:underline"
-                  >
-                    {t('party.detail.activity.seeAll')}
-                  </button>
-                </div>
-                <div className="border-border rounded-xl border">
+              <Card>
+                <CardHead
+                  icon={<Users />}
+                  title={t('party.detail.section.contacts')}
+                  count={view.contacts.length}
+                  action={
+                    <button
+                      type="button"
+                      onClick={() => setTab('team')}
+                      className="text-primary text-2sm font-medium hover:underline"
+                    >
+                      {t('party.detail.activity.seeAll')}
+                    </button>
+                  }
+                />
+                <div>
                   {view.contacts.map((contact) => (
                     <button
                       key={contact.publicId}
@@ -1117,17 +1117,18 @@ export function PartyDetailPage() {
                     </button>
                   ))}
                 </div>
-              </div>
+              </Card>
             ) : null}
 
             {/* Chargés de compte (style /_ref) — avatar + nom + affectation + bureau. */}
             {view.managers.length > 0 ? (
-              <div>
-                <div className="text-foreground mb-2 flex items-center gap-2 text-sm font-semibold">
-                  <Briefcase className="text-muted-foreground size-4" />
-                  {t('party.finance.managers')}
-                </div>
-                <div className="border-border rounded-xl border">
+              <Card>
+                <CardHead
+                  icon={<Briefcase />}
+                  title={t('party.finance.managers')}
+                  count={view.managers.length}
+                />
+                <div>
                   {view.managers.map((m) => (
                     <div
                       key={m.publicId}
@@ -1146,7 +1147,7 @@ export function PartyDetailPage() {
                     </div>
                   ))}
                 </div>
-              </div>
+              </Card>
             ) : null}
           </TabsContent>
 
@@ -1381,65 +1382,50 @@ export function PartyDetailPage() {
                       ) : undefined
                     }
                   />
-                  <RailRow
-                    icon={<DollarSign />}
-                    label={t('party.finance.effective')}
-                  >
-                    {creditGroups.length > 0 ? (
-                      <span className="flex flex-col gap-0.5">
-                        {creditGroups.map((g) => (
-                          <span
-                            key={g.key}
-                            className="flex items-baseline justify-between gap-2"
-                          >
-                            <span className="text-muted-foreground">
+                  {/* CRÉDIT — le chiffre le plus cher de la fiche traité comme un
+                      chiffre (pas une ligne parmi d'autres), avec sa jauge d'usage.
+                      L'encours n'existe pas encore → jauge en attente, jamais un faux %. */}
+                  <Card className="mt-1 mb-4">
+                    <CardHead
+                      icon={<Wallet />}
+                      title={t('party.finance.creditLimits')}
+                    />
+                    <div className="flex flex-col gap-3.5 p-4">
+                      {creditGroups.length > 0 ? (
+                        creditGroups.map((g) => (
+                          <div key={g.key}>
+                            <div className="text-muted-foreground text-2xs font-semibold tracking-wide uppercase">
+                              {t('party.finance.effective')}
+                              {' · '}
                               {g.serviceTypeCode
                                 ? railServiceLabel(g.serviceTypeCode)
                                 : t('party.finance.allServices')}
-                            </span>
-                            <span className="text-foreground font-semibold tabular-nums">
-                              {formatMinor(g.effectiveMinor, g.currencyCode)}{' '}
-                              {g.currencyCode}
-                            </span>
-                          </span>
-                        ))}
-                      </span>
-                    ) : (
-                      <span className="text-muted-foreground">—</span>
-                    )}
-                  </RailRow>
-                  <RailRow
-                    icon={<DollarSign />}
-                    label={t('party.finance.encours')}
-                  >
-                    <span className="text-muted-foreground inline-flex items-center gap-1.5">
-                      —
-                      <Badge
-                        variant="secondary"
-                        appearance="light"
-                        size="sm"
-                        className="uppercase"
-                      >
-                        {t('party.detail.pending')}
-                      </Badge>
-                    </span>
-                  </RailRow>
-                  <RailRow
-                    icon={<DollarSign />}
-                    label={t('party.finance.availableCredit')}
-                  >
-                    <span className="text-muted-foreground inline-flex items-center gap-1.5">
-                      —
-                      <Badge
-                        variant="secondary"
-                        appearance="light"
-                        size="sm"
-                        className="uppercase"
-                      >
-                        {t('party.detail.pending')}
-                      </Badge>
-                    </span>
-                  </RailRow>
+                            </div>
+                            <StatValue
+                              value={formatMinor(g.effectiveMinor, g.currencyCode)}
+                              unit={g.currencyCode}
+                            />
+                          </div>
+                        ))
+                      ) : (
+                        <p className="text-muted-foreground text-2sm">—</p>
+                      )}
+                      <Gauge
+                        label={t('party.finance.encours')}
+                        pending
+                        pendingLabel={t('party.detail.pending')}
+                      />
+                      <div className="flex items-baseline justify-between gap-2 text-2sm">
+                        <span className="text-muted-foreground">
+                          {t('party.finance.availableCredit')}
+                        </span>
+                        <Badge variant="secondary" appearance="light" size="sm">
+                          {t('party.detail.pending')}
+                        </Badge>
+                      </div>
+                    </div>
+                  </Card>
+
                   <RailRow
                     icon={<DollarSign />}
                     label={t('party.detail.currencyDisplay')}
