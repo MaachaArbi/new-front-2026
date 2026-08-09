@@ -44,6 +44,7 @@ const SKINS: Skin[] = [
       ['--bg' as string]: '#F8FAFC',
       ['--card' as string]: '#FFFFFF',
       ['--line' as string]: '#E9EEF5',
+      ['--line-strong' as string]: '#CFD6E0',
       ['--ink' as string]: '#0F172A',
       ['--muted' as string]: '#64748B',
       ['--faint' as string]: '#94A3B8',
@@ -65,14 +66,15 @@ const SKINS: Skin[] = [
     id: 'B',
     name: 'Encre',
     pitch:
-      'Plus Jakarta Sans · boutons encre · neutres chauds · accent sarcelle · rayons 10',
-    font: "'Plus Jakarta Sans', ui-sans-serif, system-ui, sans-serif",
+      'Inter (full demo) · boutons encre · neutres chauds · accent sarcelle · rayons 10',
+    font: "'Inter', ui-sans-serif, system-ui, sans-serif",
     vars: {
       ['--page' as string]: '#FFFFFF',
       ['--strip' as string]: '#FAFAF9',
       ['--bg' as string]: '#FAFAF9',
       ['--card' as string]: '#FFFFFF',
       ['--line' as string]: '#E7E5E4',
+      ['--line-strong' as string]: '#D2CFCC',
       ['--ink' as string]: '#1C1917',
       ['--muted' as string]: '#78716C',
       ['--faint' as string]: '#A8A29E',
@@ -118,7 +120,7 @@ function BtnGhost({ children }: { children: React.ReactNode }) {
       style={{
         background: 'var(--card)',
         color: 'var(--ink)',
-        border: '1px solid var(--line)',
+        border: '1px solid var(--line-strong)',
         borderRadius: 'var(--radius-sm)',
         boxShadow: 'var(--shadow)',
       }}
@@ -189,7 +191,7 @@ function Field({
 const inputStyle: React.CSSProperties = {
   height: 'var(--field-h)',
   background: 'var(--card)',
-  border: '1px solid var(--line)',
+  border: '1px solid var(--line-strong)',
   borderRadius: 'var(--radius-sm)',
   color: 'var(--ink)',
 }
