@@ -4,6 +4,7 @@ import { ModulePage } from './pages/module-page'
 import { DevUxPage } from './pages/dev-ux'
 import { DevShortcutsPage } from './pages/dev-shortcuts'
 import { DevRefPage } from './pages/dev-ref'
+import { DevUiPage } from './pages/dev-ui'
 import { PartyListPage } from '@/modules/party/party-list-page'
 import { PartyDetailPage } from '@/modules/party/party-detail-page'
 
@@ -22,6 +23,7 @@ export function AppRoutes() {
         <Route path="_dev/shortcuts" element={<DevShortcutsPage />} />
         {/* JETABLE — copie fidèle de la maquette CRM de référence, à supprimer. */}
         <Route path="_ref" element={<DevRefPage />} />
+        <Route path="_ui" element={<DevUiPage />} />
         {/* Premier écran métier réel (V1) — les tiers en lecture. */}
         <Route path="parties" element={<PartyListPage />} />
         {/* Page dossier d'un tiers (hub 360°, scaffoldé). */}

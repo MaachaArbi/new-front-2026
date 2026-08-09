@@ -45,9 +45,10 @@
   --ring: var(--color-zinc-400);
   --radius: 0.5rem;
 
-  /* S3c — surface la plus sombre du rail/menu ; en clair, gris très pâle */
-  --sidebar: var(--color-zinc-100);
-  --sidebar-foreground: var(--color-zinc-950);
+  /* Menu BLANC, identique au contenu (layout-21 Metronic : le panneau latéral est
+     `bg-background`, c'est le fond de page gris qui crée la séparation). */
+  --sidebar: var(--background);
+  --sidebar-foreground: var(--foreground);
 
   /* S3c — états pastel (clair : fond tendre + texte foncé de la même famille).
      Consommés par badge.tsx via var(--color-*-accent / --color-*-foreground). */
@@ -88,8 +89,9 @@
   --ring: #52525b;
 
   /* Rail et menu latéral — surface la plus sombre */
-  --sidebar: #18181b;
-  --sidebar-foreground: #e4e4e7;
+  /* Sombre : le menu suit aussi le fond des panneaux (cohérence layout-21). */
+  --sidebar: var(--background);
+  --sidebar-foreground: var(--foreground);
 
   /* États pastel (sombre : fond très sourd + texte clair de la même famille) */
   --color-success-accent: #16291f;
@@ -102,6 +104,11 @@
 
 /** Theme Setup **/
 @theme inline {
+  /** Typographie — Inter (chargée dans index.html), comme le socle Metronic. **/
+  --font-sans:
+    'Inter', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto,
+    'Helvetica Neue', Arial, 'Noto Sans', sans-serif;
+
   /** Base Colors **/
   --color-background: var(--background);
   --color-foreground: var(--foreground);

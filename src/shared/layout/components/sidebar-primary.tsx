@@ -84,10 +84,14 @@ export function SidebarPrimary() {
                     variant="ghost"
                     mode="icon"
                     className={cn(
-                      'size-[34px] rounded-lg transition-all duration-300',
-                      isActive
-                        ? 'bg-primary text-primary-foreground hover:bg-primary hover:text-primary-foreground'
-                        : 'text-muted-foreground hover:bg-muted hover:text-foreground'
+                      // Carré coloré par module (layout-21) : bordure claire + ombre
+                      // qui se lève au survol. Le module actif est pleinement saturé,
+                      // les autres restent en retrait — repère sans bruit.
+                      'size-[34px] rounded-lg border-2 border-white shadow-sm transition-all duration-300',
+                      'hover:shadow-[0_4px_12px_0_rgba(37,47,74,0.35)] dark:border-transparent',
+                      module.tint,
+                      'text-white hover:text-white',
+                      isActive ? 'opacity-100' : 'opacity-55 hover:opacity-100'
                     )}
                   >
                     <Link to={module.path} aria-label={t(module.titleKey)}>

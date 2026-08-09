@@ -40,6 +40,13 @@ export interface ModuleItem {
   titleKey: string
   icon: LucideIcon
   path: string
+  /**
+   * Teinte du module dans le rail (ADR-F03 laissait « une couleur par module vs
+   * teinte unique » à trancher — tranché : UNE COULEUR PAR MODULE, comme le
+   * layout-21 Metronic). Ce sont les SEULES couleurs saturées de l'interface :
+   * elles servent de repère de navigation, pas de décoration.
+   */
+  tint: string
 }
 
 export const MODULES: ModuleItem[] = [
@@ -48,43 +55,56 @@ export const MODULES: ModuleItem[] = [
     titleKey: 'nav.module.parties',
     icon: Users,
     path: '/parties',
+    tint: 'bg-violet-500 hover:bg-violet-600',
   },
   {
     id: 'bookings',
     titleKey: 'nav.module.bookings',
     icon: Calendar,
     path: '/bookings',
+    tint: 'bg-teal-500 hover:bg-teal-600',
   },
   {
     id: 'settlements',
     titleKey: 'nav.module.settlements',
     icon: FileText,
     path: '/settlements',
+    tint: 'bg-lime-500 hover:bg-lime-600',
   },
-  { id: 'cash', titleKey: 'nav.module.cash', icon: DollarSign, path: '/cash' },
+  {
+    id: 'cash',
+    titleKey: 'nav.module.cash',
+    icon: DollarSign,
+    path: '/cash',
+    tint: 'bg-blue-500 hover:bg-blue-600',
+  },
   {
     id: 'invoicing',
     titleKey: 'nav.module.invoicing',
     icon: ShoppingCart,
     path: '/invoicing',
+    tint: 'bg-amber-500 hover:bg-amber-600',
   },
   {
     id: 'catalogue',
     titleKey: 'nav.module.catalogue',
     icon: BarChart3,
     path: '/catalogue',
+    tint: 'bg-rose-500 hover:bg-rose-600',
   },
   {
     id: 'pricing',
     titleKey: 'nav.module.pricing',
     icon: Clock,
     path: '/pricing',
+    tint: 'bg-cyan-500 hover:bg-cyan-600',
   },
   {
     id: 'settings',
     titleKey: 'nav.module.settings',
     icon: Settings,
     path: '/settings',
+    tint: 'bg-zinc-500 hover:bg-zinc-600',
   },
 ]
 
