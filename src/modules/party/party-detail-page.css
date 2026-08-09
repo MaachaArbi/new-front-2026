@@ -1,5 +1,5 @@
 /*
- * Scrollbar fine de la fiche Tiers (portée du /_ref) — sans flèches, discrète.
+ * Scrollbar fine de la fiche Tiers (portée de la maquette de référence) — sans flèches, discrète.
  * PAS de `scrollbar-width` (Chrome 121+ ignore alors `::-webkit-scrollbar`).
  * Thumb en slate translucide → lisible en clair comme en sombre.
  */

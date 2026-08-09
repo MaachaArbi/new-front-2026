@@ -167,7 +167,7 @@ export function PartyDetailPage() {
     React.useState<PartyAddress | null>(null)
   const [currencyOpen, setCurrencyOpen] = React.useState(false)
   const [interlocutorOpen, setInterlocutorOpen] = React.useState(false)
-  // Chargés de compte — gérables depuis « Contacts & équipe » (comme le /_ref) ;
+  // Chargés de compte — gérables depuis « Contacts & équipe » (comme la maquette de référence) ;
   // mêmes mutations que l'onglet Finance (source unique côté API).
   const [managerOpen, setManagerOpen] = React.useState(false)
   const [anonymizeOpen, setAnonymizeOpen] = React.useState(false)
@@ -414,7 +414,7 @@ export function PartyDetailPage() {
   const now = new Date()
   const daysUntil = (iso: string) =>
     Math.ceil((new Date(iso).getTime() - now.getTime()) / 86_400_000)
-  // Format `/_ref` : point de sévérité (rose/amber) + texte + action (CTA) qui mène là
+  // Format de la maquette de référence : point de sévérité (rose/amber) + texte + action (CTA) qui mène là
   // où on résout l'alerte. `onCta` absent = pas d'action (ex. e-mail : vérif = module Core).
   const todoAlerts: {
     key: string
@@ -516,7 +516,7 @@ export function PartyDetailPage() {
     }))
   })()
 
-  // Localisation du rail (reproduction /_ref) — l'adresse principale, sinon la 1re.
+  // Localisation du rail (reproduction de la maquette de référence) — l'adresse principale, sinon la 1re.
   const primaryAddress = addresses.find((a) => a.isPrimary) ?? addresses[0]
   const railLocation = primaryAddress
     ? [primaryAddress.line1, primaryAddress.city].filter(Boolean).join(', ')
@@ -785,7 +785,7 @@ export function PartyDetailPage() {
         )}
         rail={
           <>
-            {/* Rail reproduit du /_ref : FINANCE → COORDONNÉES → IDENTITÉ.
+            {/* Rail reproduit de la maquette de référence : FINANCE → COORDONNÉES → IDENTITÉ.
                 Valeurs à droite ; crayons d'édition portés par les titres de groupe. */}
             <div className="text-sm">
               <RailGroupTitle
@@ -1006,7 +1006,7 @@ export function PartyDetailPage() {
                 </span>
               </RailRow>
 
-              {/* Adresses — déplacées ici (hors /_ref Overview). Édition conservée. */}
+              {/* Adresses — déplacées ici (hors la maquette de référence Overview). Édition conservée. */}
               <RailGroupTitle
                 title={t('party.detail.addresses')}
                 action={
@@ -1103,7 +1103,7 @@ export function PartyDetailPage() {
         }
       >
         <TabsContent value="overview" className="flex flex-col gap-4 pt-4">
-          {/* « À traiter » (reproduction /_ref) — en-tête + compteur, puis lignes
+          {/* « À traiter » (reproduction de la maquette de référence) — en-tête + compteur, puis lignes
               point de sévérité + texte + ACTION. Alertes réelles ; masqué si rien. */}
           {todoAlerts.length > 0 ? (
             <Card>
@@ -1147,7 +1147,7 @@ export function PartyDetailPage() {
             </Card>
           ) : null}
 
-          {/* Aperçu (reproduction /_ref) : Identité (identifiants légaux) +
+          {/* Aperçu (reproduction de la maquette de référence) : Identité (identifiants légaux) +
               Rattachements (bureau · agence mère · agences filles) — données réelles. */}
           <div>
             <div className="text-foreground mb-2 flex items-center gap-2 text-sm font-semibold">
@@ -1307,7 +1307,7 @@ export function PartyDetailPage() {
             </div>
           </div>
 
-          {/* Activité récente (style /_ref) — en-tête à icône + « Voir tout », puis
+          {/* Activité récente (style maquette de référence) — en-tête à icône + « Voir tout », puis
               conteneur bordé à lignes : point + « qui · quoi » + date. */}
           <Card>
             <CardHead
@@ -1357,7 +1357,7 @@ export function PartyDetailPage() {
             </p>
           </Card>
 
-          {/* Interlocuteurs (style /_ref) — avatar + nom + fonction, conteneur bordé.
+          {/* Interlocuteurs (style maquette de référence) — avatar + nom + fonction, conteneur bordé.
               « Voir tout » → onglet Contacts & équipe. Pas de tél/e-mail (donnée absente
               sur le lien contact) : clic → fiche de l'interlocuteur. */}
           {view.nature === 'organization' && view.contacts.length > 0 ? (
@@ -1397,7 +1397,7 @@ export function PartyDetailPage() {
             </Card>
           ) : null}
 
-          {/* Chargés de compte (style /_ref) — avatar + nom + affectation + bureau. */}
+          {/* Chargés de compte (style maquette de référence) — avatar + nom + affectation + bureau. */}
           {view.managers.length > 0 ? (
             <Card>
               <CardHead
@@ -1457,7 +1457,7 @@ export function PartyDetailPage() {
         </TabsContent>
 
         <TabsContent value="team" className="pt-4">
-          {/* INTERLOCUTEURS (externes) — répertoire complet, style /_ref : en-tête à
+          {/* INTERLOCUTEURS (externes) — répertoire complet, style maquette de référence : en-tête à
               icône + compteur + bouton, puis conteneur bordé (avatar · nom · fonction).
               Pas de tél/e-mail : absents de `PartyContactRef` (demande back). */}
           {view.nature === 'organization' ? (
@@ -1599,7 +1599,7 @@ export function PartyDetailPage() {
           </section>
         </TabsContent>
 
-        {/* Notes / Tâches — placeholders (features sans back), reproduits du /_ref. */}
+        {/* Notes / Tâches — placeholders (features sans back), reproduits de la maquette de référence. */}
         <TabsContent value="notes" className="pt-4">
           <div className="border-border bg-muted/20 rounded-xl border border-dashed p-6">
             <p className="text-muted-foreground text-sm">

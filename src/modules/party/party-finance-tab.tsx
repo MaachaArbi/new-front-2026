@@ -31,7 +31,7 @@ type Translate = (
   values?: Record<string, string | number>
 ) => string
 
-// En-tête de section façon /_ref : titre (+ sous-titre) à gauche, action-lien à droite.
+// En-tête de section façon maquette de référence : titre (+ sous-titre) à gauche, action-lien à droite.
 function FinanceHead({
   title,
   subtitle,
@@ -66,7 +66,7 @@ function FinanceHead({
   )
 }
 
-// Interrupteur FONCTIONNEL (vert = actif, comme le /_ref). Le clic bascule le réglage.
+// Interrupteur FONCTIONNEL (vert = actif, comme la maquette de référence). Le clic bascule le réglage.
 function SwitchPill({
   on,
   onToggle,
@@ -202,7 +202,7 @@ export function PartyFinanceTab({
 
   return (
     <div>
-      {/* 1) PLAFONDS — cartes de portée (style /_ref) : total EFFECTIF en gros +
+      {/* 1) PLAFONDS — cartes de portée (style maquette de référence) : total EFFECTIF en gros +
           décomposition socle/rallonges (point coloré ; rallonge expirée grisée). */}
       <section className="mb-9">
         <FinanceHead
@@ -310,7 +310,7 @@ export function PartyFinanceTab({
         )}
       </section>
 
-      {/* CHARGÉS DE COMPTE — style /_ref (avatar). (À déplacer vers Contacts & équipe ?) */}
+      {/* CHARGÉS DE COMPTE — style maquette de référence (avatar). (À déplacer vers Contacts & équipe ?) */}
       <section className="mb-9">
         <FinanceHead
           title={t('party.finance.managers')}
@@ -353,7 +353,7 @@ export function PartyFinanceTab({
         )}
       </section>
 
-      {/* EXONÉRATIONS — style /_ref : « Justificatif manquant » = alerte ambre + Ajouter. */}
+      {/* EXONÉRATIONS — style maquette de référence : « Justificatif manquant » = alerte ambre + Ajouter. */}
       <section className="mb-9">
         <FinanceHead
           title={t('party.finance.taxExemptions')}
@@ -429,7 +429,7 @@ export function PartyFinanceTab({
         )}
       </section>
 
-      {/* POLITIQUE COMMERCIALE — style /_ref : une carte par société, réglages en
+      {/* POLITIQUE COMMERCIALE — style maquette de référence : une carte par société, réglages en
           INTERRUPTEURS d'état (édition via le crayon → sheet). */}
       <section className="mb-9">
         <FinanceHead
@@ -522,7 +522,7 @@ export function PartyFinanceTab({
         )}
       </section>
 
-      {/* APPROBATIONS — style /_ref : avatar + validateur + fonction ; alerte ambre
+      {/* APPROBATIONS — style maquette de référence : avatar + validateur + fonction ; alerte ambre
           si le validateur n'est plus habilité (pas de seuil de montant). */}
       <section>
         <FinanceHead

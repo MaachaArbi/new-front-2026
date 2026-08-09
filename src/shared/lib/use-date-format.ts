@@ -38,7 +38,8 @@ export function useDateFormat() {
       ['minute', 60_000],
     ]
     for (const [unit, ms] of units) {
-      if (abs >= ms) return intl.formatRelativeTime(Math.round(diffMs / ms), unit)
+      if (abs >= ms)
+        return intl.formatRelativeTime(Math.round(diffMs / ms), unit)
     }
     return intl.formatRelativeTime(0, 'minute')
   }

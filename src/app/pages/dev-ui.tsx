@@ -197,8 +197,6 @@ const inputStyle: React.CSSProperties = {
   color: 'var(--ink)',
 }
 
-
-
 /* ══════════════ VOCABULAIRE CRM — les briques qui manquaient ══════════════ */
 
 /** Bande de titre de carte (device signature Metronic). */
@@ -212,9 +210,14 @@ function CardHead({
   return (
     <div
       className="flex items-center justify-between gap-3 px-4 py-2.5"
-      style={{ borderBottom: '1px solid var(--line)', background: 'var(--strip)' }}
+      style={{
+        borderBottom: '1px solid var(--line)',
+        background: 'var(--strip)',
+      }}
     >
-      <span className="text-[16px] leading-none font-semibold tracking-tight">{title}</span>
+      <span className="text-[16px] leading-none font-semibold tracking-tight">
+        {title}
+      </span>
       {action}
     </div>
   )
@@ -230,7 +233,11 @@ function Delta({ value, up }: { value: string; up: boolean }) {
         color: up ? '#15803D' : '#B91C1C',
       }}
     >
-      {up ? <ArrowUpRight className="size-3" /> : <ArrowDownRight className="size-3" />}
+      {up ? (
+        <ArrowUpRight className="size-3" />
+      ) : (
+        <ArrowDownRight className="size-3" />
+      )}
       {value}
     </span>
   )
@@ -252,7 +259,11 @@ function Spark({ points, tint }: { points: number[]; tint: string }) {
     .join(' ')
   const id = `g${tint.replace(/[^a-z0-9]/gi, '')}`
   return (
-    <svg viewBox={`0 0 ${w} ${h}`} className="h-10 w-full" preserveAspectRatio="none">
+    <svg
+      viewBox={`0 0 ${w} ${h}`}
+      className="h-10 w-full"
+      preserveAspectRatio="none"
+    >
       <defs>
         <linearGradient id={id} x1="0" y1="0" x2="0" y2="1">
           <stop offset="0%" stopColor={tint} stopOpacity="0.28" />
@@ -260,7 +271,13 @@ function Spark({ points, tint }: { points: number[]; tint: string }) {
         </linearGradient>
       </defs>
       <path d={`${path} L${w},${h} L0,${h} Z`} fill={`url(#${id})`} />
-      <path d={path} fill="none" stroke={tint} strokeWidth="2" strokeLinejoin="round" />
+      <path
+        d={path}
+        fill="none"
+        stroke={tint}
+        strokeWidth="2"
+        strokeLinejoin="round"
+      />
     </svg>
   )
 }
@@ -320,7 +337,10 @@ function Kpi({
               {value}
             </span>
             {unit ? (
-              <span className="text-[13px] font-medium" style={{ color: 'var(--muted)' }}>
+              <span
+                className="text-[13px] font-medium"
+                style={{ color: 'var(--muted)' }}
+              >
                 {unit}
               </span>
             ) : null}
@@ -329,15 +349,25 @@ function Kpi({
         </div>
         {/* Sélecteur de période — le repère qui manquait. */}
         {ranges ? (
-          <div className="flex items-center gap-0.5 p-0.5"
-            style={{ background: 'var(--strip)', border: '1px solid var(--line)', borderRadius: 'var(--radius-sm)' }}>
+          <div
+            className="flex items-center gap-0.5 p-0.5"
+            style={{
+              background: 'var(--strip)',
+              border: '1px solid var(--line)',
+              borderRadius: 'var(--radius-sm)',
+            }}
+          >
             {ranges.map((r) => (
               <span
                 key={r}
                 className="rounded px-1.5 py-0.5 text-[11px] font-semibold"
                 style={
                   r === activeRange
-                    ? { background: 'var(--card)', color: 'var(--ink)', boxShadow: 'var(--shadow)' }
+                    ? {
+                        background: 'var(--card)',
+                        color: 'var(--ink)',
+                        boxShadow: 'var(--shadow)',
+                      }
                     : { color: 'var(--faint)' }
                 }
               >
@@ -350,11 +380,18 @@ function Kpi({
       <div className="relative">
         <Spark points={points} tint={tint} />
         {/* Point terminal — l'œil sait où « maintenant » se trouve. */}
-        <svg viewBox="0 0 150 40" className="pointer-events-none absolute inset-0 h-10 w-full" preserveAspectRatio="none">
+        <svg
+          viewBox="0 0 150 40"
+          className="pointer-events-none absolute inset-0 h-10 w-full"
+          preserveAspectRatio="none"
+        >
           <circle cx="149" cy={lastY} r="2.5" fill={tint} />
         </svg>
       </div>
-      <div className="px-4 pt-1 pb-3 text-[11px]" style={{ color: 'var(--faint)' }}>
+      <div
+        className="px-4 pt-1 pb-3 text-[11px]"
+        style={{ color: 'var(--faint)' }}
+      >
         {period}
       </div>
     </div>
@@ -379,7 +416,10 @@ function Gauge({
         <span style={{ color: 'var(--muted)' }}>{label}</span>
         <span className="font-semibold tabular-nums">{pct} %</span>
       </div>
-      <div className="h-2 w-full overflow-hidden rounded-full" style={{ background: 'var(--line)' }}>
+      <div
+        className="h-2 w-full overflow-hidden rounded-full"
+        style={{ background: 'var(--line)' }}
+      >
         <div
           className="h-full rounded-full transition-all"
           style={{ width: `${pct}%`, background: tone }}
@@ -394,7 +434,11 @@ function Segmented({ items, active }: { items: string[]; active: string }) {
   return (
     <div
       className="inline-flex items-center gap-0.5 p-0.5"
-      style={{ background: 'var(--strip)', borderRadius: 'var(--radius-sm)', border: '1px solid var(--line)' }}
+      style={{
+        background: 'var(--strip)',
+        borderRadius: 'var(--radius-sm)',
+        border: '1px solid var(--line)',
+      }}
     >
       {items.map((it) => (
         <span
@@ -402,7 +446,11 @@ function Segmented({ items, active }: { items: string[]; active: string }) {
           className="rounded-md px-2.5 py-1 text-[13px] font-medium"
           style={
             it === active
-              ? { background: 'var(--card)', color: 'var(--ink)', boxShadow: 'var(--shadow)' }
+              ? {
+                  background: 'var(--card)',
+                  color: 'var(--ink)',
+                  boxShadow: 'var(--shadow)',
+                }
               : { color: 'var(--muted)' }
           }
         >
@@ -441,13 +489,19 @@ function Screen({ skin }: { skin: Skin }) {
         </span>
         <div className="min-w-0">
           <div className="flex items-center gap-2">
-            <h1 className="text-[22px] leading-7 font-bold" style={{ letterSpacing: 'var(--track)' }}>
+            <h1
+              className="text-[22px] leading-7 font-bold"
+              style={{ letterSpacing: 'var(--track)' }}
+            >
               Groupe Sahara Voyages
             </h1>
             <Pencil className="size-4" style={{ color: 'var(--faint)' }} />
             <Chip tone="ok">● Actif</Chip>
           </div>
-          <p className="mt-1 flex flex-wrap items-center gap-x-2 text-[12.5px]" style={{ color: 'var(--muted)' }}>
+          <p
+            className="mt-1 flex flex-wrap items-center gap-x-2 text-[12.5px]"
+            style={{ color: 'var(--muted)' }}
+          >
             <span>MF 123456</span>
             <span style={{ color: 'var(--faint)' }}>·</span>
             <span>Client · Fournisseur</span>
@@ -470,7 +524,13 @@ function Screen({ skin }: { skin: Skin }) {
       {/* BARRE : segmented + toolbar */}
       <div className="mb-5 flex flex-wrap items-center justify-between gap-3">
         <Segmented
-          items={['Vue d’ensemble', 'Finance', 'Historique', 'Contacts', 'Documents']}
+          items={[
+            'Vue d’ensemble',
+            'Finance',
+            'Historique',
+            'Contacts',
+            'Documents',
+          ]}
           active="Vue d’ensemble"
         />
         <div className="flex items-center gap-2">
@@ -533,7 +593,10 @@ function Screen({ skin }: { skin: Skin }) {
               }}
             >
               <span className="flex items-center gap-2 text-[16px] leading-none font-semibold tracking-tight">
-                <AlertTriangle className="size-4" style={{ color: '#D97706' }} />
+                <AlertTriangle
+                  className="size-4"
+                  style={{ color: '#D97706' }}
+                />
                 À traiter
               </span>
               <Chip tone="warn">3</Chip>
@@ -545,16 +608,24 @@ function Screen({ skin }: { skin: Skin }) {
             ].map(([txt, cta, dot], i, arr) => (
               <div
                 key={txt}
-                className="hover:bg-[var(--strip)] flex items-center justify-between gap-3 px-4 py-3 transition-colors"
+                className="flex items-center justify-between gap-3 px-4 py-3 transition-colors hover:bg-[var(--strip)]"
                 style={{
-                  borderBottom: i < arr.length - 1 ? '1px solid var(--line)' : undefined,
+                  borderBottom:
+                    i < arr.length - 1 ? '1px solid var(--line)' : undefined,
                 }}
               >
                 <span className="flex min-w-0 items-center gap-3 text-[13px]">
-                  <span className="size-2 shrink-0 rounded-full" style={{ background: dot }} />
+                  <span
+                    className="size-2 shrink-0 rounded-full"
+                    style={{ background: dot }}
+                  />
                   {txt}
                 </span>
-                <button type="button" className="shrink-0 text-[12.5px] font-semibold" style={{ color: 'var(--accent)' }}>
+                <button
+                  type="button"
+                  className="shrink-0 text-[12.5px] font-semibold"
+                  style={{ color: 'var(--accent)' }}
+                >
                   {cta}
                 </button>
               </div>
@@ -580,7 +651,11 @@ function Screen({ skin }: { skin: Skin }) {
             />
             <div
               className="grid grid-cols-[1fr_130px_170px_90px_40px] px-4 py-2 text-[11px] font-semibold uppercase"
-              style={{ color: 'var(--faint)', letterSpacing: '.06em', borderBottom: '1px solid var(--line)' }}
+              style={{
+                color: 'var(--faint)',
+                letterSpacing: '.06em',
+                borderBottom: '1px solid var(--line)',
+              }}
             >
               <span>Nom</span>
               <span>Fonction</span>
@@ -589,17 +664,46 @@ function Screen({ skin }: { skin: Skin }) {
               <span />
             </div>
             {[
-              ['YG', 'Yasmine Gharbi', 'Gérant', '+216 22 111 222', 'il y a 2 j', '#7C3AED'],
-              ['KB', 'Karim Belhadj', 'Comptable', '+216 55 333 444', 'il y a 9 j', '#0EA5E9'],
-              ['SB', 'Sarah Ben Salah', 'Agent', '+216 98 555 666', 'il y a 1 mois', '#F43F5E'],
-              ['MT', 'Mohamed Trabelsi', 'Achats', '+216 71 222 333', '—', '#14B8A6'],
+              [
+                'YG',
+                'Yasmine Gharbi',
+                'Gérant',
+                '+216 22 111 222',
+                'il y a 2 j',
+                '#7C3AED',
+              ],
+              [
+                'KB',
+                'Karim Belhadj',
+                'Comptable',
+                '+216 55 333 444',
+                'il y a 9 j',
+                '#0EA5E9',
+              ],
+              [
+                'SB',
+                'Sarah Ben Salah',
+                'Agent',
+                '+216 98 555 666',
+                'il y a 1 mois',
+                '#F43F5E',
+              ],
+              [
+                'MT',
+                'Mohamed Trabelsi',
+                'Achats',
+                '+216 71 222 333',
+                '—',
+                '#14B8A6',
+              ],
             ].map(([ini, name, fn, tel, last, tint], i, arr) => (
               <div
                 key={name}
-                className="hover:bg-[var(--strip)] grid cursor-pointer grid-cols-[1fr_130px_170px_90px_40px] items-center px-4 text-[13px] transition-colors"
+                className="grid cursor-pointer grid-cols-[1fr_130px_170px_90px_40px] items-center px-4 text-[13px] transition-colors hover:bg-[var(--strip)]"
                 style={{
                   height: 42,
-                  borderBottom: i < arr.length - 1 ? '1px solid var(--line)' : undefined,
+                  borderBottom:
+                    i < arr.length - 1 ? '1px solid var(--line)' : undefined,
                 }}
               >
                 <span className="flex min-w-0 items-center gap-2.5">
@@ -607,9 +711,22 @@ function Screen({ skin }: { skin: Skin }) {
                   <span className="truncate font-medium">{name}</span>
                 </span>
                 <span style={{ color: 'var(--muted)' }}>{fn}</span>
-                <span className="tabular-nums" style={{ color: 'var(--muted)' }}>{tel}</span>
-                <span className="text-[12.5px]" style={{ color: 'var(--faint)' }}>{last}</span>
-                <X className="size-4 justify-self-end" style={{ color: 'var(--faint)' }} />
+                <span
+                  className="tabular-nums"
+                  style={{ color: 'var(--muted)' }}
+                >
+                  {tel}
+                </span>
+                <span
+                  className="text-[12.5px]"
+                  style={{ color: 'var(--faint)' }}
+                >
+                  {last}
+                </span>
+                <X
+                  className="size-4 justify-self-end"
+                  style={{ color: 'var(--faint)' }}
+                />
               </div>
             ))}
           </div>
@@ -629,14 +746,25 @@ function Screen({ skin }: { skin: Skin }) {
             <CardHead title="Crédit" />
             <div className="flex flex-col gap-3.5 p-4">
               <div>
-                <div className="text-[11px] font-semibold uppercase" style={{ color: 'var(--faint)', letterSpacing: '.07em' }}>
+                <div
+                  className="text-[11px] font-semibold uppercase"
+                  style={{ color: 'var(--faint)', letterSpacing: '.07em' }}
+                >
                   Plafond effectif
                 </div>
                 <div className="mt-0.5 flex items-baseline gap-1.5">
-                  <span className="text-[24px] leading-7 font-bold tabular-nums" style={{ letterSpacing: 'var(--track)' }}>
+                  <span
+                    className="text-[24px] leading-7 font-bold tabular-nums"
+                    style={{ letterSpacing: 'var(--track)' }}
+                  >
                     550 000
                   </span>
-                  <span className="text-[13px] font-medium" style={{ color: 'var(--muted)' }}>TND</span>
+                  <span
+                    className="text-[13px] font-medium"
+                    style={{ color: 'var(--muted)' }}
+                  >
+                    TND
+                  </span>
                 </div>
               </div>
               <Gauge used={412000} total={550000} label="Encours / plafond" />
@@ -657,7 +785,9 @@ function Screen({ skin }: { skin: Skin }) {
           >
             <CardHead
               title="Identité"
-              action={<Pencil className="size-4" style={{ color: 'var(--faint)' }} />}
+              action={
+                <Pencil className="size-4" style={{ color: 'var(--faint)' }} />
+              }
             />
             <dl className="flex flex-col gap-3 p-4 text-[13px]">
               {[
@@ -666,7 +796,10 @@ function Screen({ skin }: { skin: Skin }) {
                 ['Forme juridique', 'SARL'],
                 ['Pays', 'Tunisie'],
               ].map(([k, v]) => (
-                <div key={k} className="flex items-baseline justify-between gap-3">
+                <div
+                  key={k}
+                  className="flex items-baseline justify-between gap-3"
+                >
                   <dt style={{ color: 'var(--muted)' }}>{k}</dt>
                   <dd className="font-medium">{v}</dd>
                 </div>
@@ -691,11 +824,16 @@ function Screen({ skin }: { skin: Skin }) {
               ].map(([ini, name, role, tint], i, arr) => (
                 <div
                   key={name}
-                  className="hover:bg-[var(--strip)] flex items-center gap-2.5 px-4 py-2.5 text-[13px] transition-colors"
-                  style={{ borderBottom: i < arr.length - 1 ? '1px solid var(--line)' : undefined }}
+                  className="flex items-center gap-2.5 px-4 py-2.5 text-[13px] transition-colors hover:bg-[var(--strip)]"
+                  style={{
+                    borderBottom:
+                      i < arr.length - 1 ? '1px solid var(--line)' : undefined,
+                  }}
                 >
                   <Avatar initials={ini ?? ''} tint={tint ?? '#888'} />
-                  <span className="min-w-0 flex-1 truncate font-medium">{name}</span>
+                  <span className="min-w-0 flex-1 truncate font-medium">
+                    {name}
+                  </span>
                   <span style={{ color: 'var(--muted)' }}>{role}</span>
                 </div>
               ))}
@@ -706,7 +844,10 @@ function Screen({ skin }: { skin: Skin }) {
 
       {/* MODALE CRUD */}
       <div className="mt-8">
-        <div className="mb-2 text-[11px] font-semibold uppercase" style={{ color: 'var(--faint)', letterSpacing: '.08em' }}>
+        <div
+          className="mb-2 text-[11px] font-semibold uppercase"
+          style={{ color: 'var(--faint)', letterSpacing: '.08em' }}
+        >
           Modale CRUD
         </div>
         <div
@@ -720,49 +861,84 @@ function Screen({ skin }: { skin: Skin }) {
         >
           <div className="flex items-start justify-between gap-4 p-6 pb-4">
             <div>
-              <h2 className="text-[19px] leading-6 font-bold" style={{ letterSpacing: 'var(--track)' }}>
+              <h2
+                className="text-[19px] leading-6 font-bold"
+                style={{ letterSpacing: 'var(--track)' }}
+              >
                 Ajouter un plafond
               </h2>
               <p className="mt-1 text-[13px]" style={{ color: 'var(--muted)' }}>
-                Le plafond effectif = socle + rallonges actives, par bureau et produit.
+                Le plafond effectif = socle + rallonges actives, par bureau et
+                produit.
               </p>
             </div>
             <X className="size-5 shrink-0" style={{ color: 'var(--faint)' }} />
           </div>
           <div className="flex flex-col gap-4 px-6 pb-6">
             <Field label="Société">
-              <div className="flex items-center justify-between px-3 text-[14px]" style={inputStyle}>
+              <div
+                className="flex items-center justify-between px-3 text-[14px]"
+                style={inputStyle}
+              >
                 myGO Tunis-Arbi
-                <ChevronDown className="size-4" style={{ color: 'var(--faint)' }} />
+                <ChevronDown
+                  className="size-4"
+                  style={{ color: 'var(--faint)' }}
+                />
               </div>
             </Field>
             <div className="grid grid-cols-2 gap-4">
               <Field label="Type de service">
-                <div className="flex items-center justify-between px-3 text-[14px]" style={inputStyle}>
+                <div
+                  className="flex items-center justify-between px-3 text-[14px]"
+                  style={inputStyle}
+                >
                   Hébergement
-                  <ChevronDown className="size-4" style={{ color: 'var(--faint)' }} />
+                  <ChevronDown
+                    className="size-4"
+                    style={{ color: 'var(--faint)' }}
+                  />
                 </div>
               </Field>
               <Field label="Devise">
-                <div className="flex items-center justify-between px-3 text-[14px]" style={inputStyle}>
+                <div
+                  className="flex items-center justify-between px-3 text-[14px]"
+                  style={inputStyle}
+                >
                   TND
-                  <ChevronDown className="size-4" style={{ color: 'var(--faint)' }} />
+                  <ChevronDown
+                    className="size-4"
+                    style={{ color: 'var(--faint)' }}
+                  />
                 </div>
               </Field>
             </div>
             <Field label="Montant" hint="Montant du socle, hors rallonges.">
-              <div className="flex items-center gap-2 px-3 text-[14px]" style={inputStyle}>
+              <div
+                className="flex items-center gap-2 px-3 text-[14px]"
+                style={inputStyle}
+              >
                 <span style={{ color: 'var(--faint)' }}>TND</span>
                 <span className="font-medium tabular-nums">500 000,000</span>
-                <Check className="ms-auto size-4" style={{ color: 'var(--accent)' }} />
+                <Check
+                  className="ms-auto size-4"
+                  style={{ color: 'var(--accent)' }}
+                />
               </div>
             </Field>
           </div>
           <div
             className="flex items-center justify-between gap-3 px-6 py-4"
-            style={{ borderTop: '1px solid var(--line)', background: 'var(--strip)' }}
+            style={{
+              borderTop: '1px solid var(--line)',
+              background: 'var(--strip)',
+            }}
           >
-            <button type="button" className="text-[13px] font-semibold" style={{ color: '#DC2626' }}>
+            <button
+              type="button"
+              className="text-[13px] font-semibold"
+              style={{ color: '#DC2626' }}
+            >
               Supprimer
             </button>
             <div className="flex items-center gap-2">

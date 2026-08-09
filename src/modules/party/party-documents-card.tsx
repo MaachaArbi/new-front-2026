@@ -151,7 +151,7 @@ export function PartyDocumentsCard({
 
   return (
     <div>
-      {/* En-tête façon /_ref : icône + titre + compteur, bouton outline à droite. */}
+      {/* En-tête façon maquette de référence : icône + titre + compteur, bouton outline à droite. */}
       <div className="mb-3 flex items-center justify-between gap-3">
         <div className="text-foreground flex items-center gap-2 text-sm font-semibold">
           <FileText className="text-muted-foreground size-4" />
