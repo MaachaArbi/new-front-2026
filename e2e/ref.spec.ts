@@ -1,6 +1,8 @@
 import { test } from '@playwright/test'
-import { signIn, signOut } from './session'
+import { autoSignOut, signIn } from './session'
 import fs from 'node:fs'
+
+autoSignOut()
 
 const SHOTS = 'e2e/screenshots'
 
@@ -71,5 +73,4 @@ test('page jetable /_ref', async ({ page }) => {
   await page.waitForTimeout(400)
   await page.screenshot({ path: `${SHOTS}/ref-documents.png` })
 
-  await signOut(page)
 })

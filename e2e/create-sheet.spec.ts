@@ -1,5 +1,7 @@
 import { test } from '@playwright/test'
-import { signIn, signOut } from './session'
+import { autoSignOut, signIn } from './session'
+
+autoSignOut()
 
 test.use({ viewport: { width: 1440, height: 1100 } })
 
@@ -30,5 +32,4 @@ test('création tiers — radios', async ({ page }) => {
   await page.waitForTimeout(400)
   await page.screenshot({ path: 'e2e/screenshots/creation-sombre.png' })
 
-  await signOut(page)
 })

@@ -11,6 +11,7 @@ import { Input } from '@/shared/ui/input'
 import { Button } from '@/shared/ui/button'
 import { CountrySelect } from '@/shared/ui/country-select'
 import { SelectField } from '@/shared/ui/select'
+import { DateField } from '@/shared/ui/date-field'
 import { ApiError } from '@/shared/api/errors'
 import type { ReferentialItem } from '@/shared/referentials'
 import { usePartyDocumentMutations } from './queries'
@@ -125,9 +126,6 @@ export function PartyDocumentSheet({
     }
   }
 
-  const dateClass =
-    'border-input bg-background h-8.5 rounded-md border px-3 text-sm'
-
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
       <SheetContent>
@@ -184,11 +182,11 @@ export function PartyDocumentSheet({
             label={t('party.document.issueDate')}
             error={errors.issueDate}
           >
-            <input
-              type="date"
+            <DateField
+              ariaLabel={t('party.document.issueDate')}
               value={issueDate}
-              onChange={(event) => setIssueDate(event.target.value)}
-              className={dateClass}
+              onChange={setIssueDate}
+              max={expiryDate || undefined}
             />
           </LabeledField>
 
@@ -196,11 +194,11 @@ export function PartyDocumentSheet({
             label={t('party.document.expiryDate')}
             error={errors.expiryDate}
           >
-            <input
-              type="date"
+            <DateField
+              ariaLabel={t('party.document.expiryDate')}
               value={expiryDate}
-              onChange={(event) => setExpiryDate(event.target.value)}
-              className={dateClass}
+              onChange={setExpiryDate}
+              min={issueDate || undefined}
             />
           </LabeledField>
         </SheetBody>

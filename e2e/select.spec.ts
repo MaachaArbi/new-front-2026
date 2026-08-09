@@ -1,5 +1,7 @@
 import { test, expect } from '@playwright/test'
-import { signIn, signOut } from './session'
+import { autoSignOut, signIn } from './session'
+
+autoSignOut()
 
 
 /** Vérifie le Select partagé : déclencheur + menu ouvert, en clair et en sombre. */
@@ -45,5 +47,4 @@ test('select partagé — menu ouvert clair + sombre', async ({ page }) => {
   await page.waitForTimeout(400)
   await page.screenshot({ path: 'e2e/screenshots/select-formulaire.png' })
 
-  await signOut(page)
 })

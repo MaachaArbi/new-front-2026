@@ -11,6 +11,7 @@ import { Input } from '@/shared/ui/input'
 import { Button } from '@/shared/ui/button'
 import { CurrencySelect } from '@/shared/ui/currency-select'
 import { SelectField } from '@/shared/ui/select'
+import { DateField } from '@/shared/ui/date-field'
 import { ApiError } from '@/shared/api/errors'
 import { majorToMinor } from '@/shared/lib/money'
 import type { ReferentialItem } from '@/shared/referentials'
@@ -138,9 +139,6 @@ export function PartyCreditLimitSheet({
     )
   }
 
-  const selectClass =
-    'border-input bg-background h-8.5 rounded-md border px-3 text-sm'
-
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
       <SheetContent>
@@ -212,11 +210,11 @@ export function PartyCreditLimitSheet({
             label={t('party.finance.validFrom')}
             error={errors.validFrom}
           >
-            <input
-              type="date"
+            <DateField
+              ariaLabel={t('party.finance.validFrom')}
               value={validFrom}
-              onChange={(event) => setValidFrom(event.target.value)}
-              className={selectClass}
+              onChange={setValidFrom}
+              max={validTo || undefined}
             />
           </LabeledField>
 
@@ -225,11 +223,11 @@ export function PartyCreditLimitSheet({
             hint={t('party.finance.limitDatesHint')}
             error={errors.validTo}
           >
-            <input
-              type="date"
+            <DateField
+              ariaLabel={t('party.finance.validTo')}
               value={validTo}
-              onChange={(event) => setValidTo(event.target.value)}
-              className={selectClass}
+              onChange={setValidTo}
+              min={validFrom || undefined}
             />
           </LabeledField>
         </SheetBody>

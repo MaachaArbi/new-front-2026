@@ -507,5 +507,9 @@
   "party.finance.extension": "Rallonge",
   "party.finance.until": "jusqu’au {date}",
   "party.finance.fromTo": "du {from} au {to}",
-  "party.finance.limitDatesHint": "Sans date de fin : socle permanent (un seul). Avec une date de fin : rallonge qui s’ajoute au socle et expire."
+  "party.finance.limitDatesHint": "Sans date de fin : socle permanent (un seul). Avec une date de fin : rallonge qui s’ajoute au socle et expire.",
+  "calendar.previousMonth": "Mois précédent",
+  "calendar.nextMonth": "Mois suivant",
+  "common.dateField.placeholder": "Choisir une date",
+  "common.clear": "Effacer"
 }

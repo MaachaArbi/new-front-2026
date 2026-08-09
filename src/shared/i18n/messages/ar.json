@@ -507,5 +507,9 @@
   "party.finance.extension": "تمديد",
   "party.finance.until": "حتى {date}",
   "party.finance.fromTo": "من {from} إلى {to}",
-  "party.finance.limitDatesHint": "بدون تاريخ انتهاء: أساس دائم (واحد فقط). مع تاريخ انتهاء: تمديد يُضاف إلى الأساس وينتهي."
+  "party.finance.limitDatesHint": "بدون تاريخ انتهاء: أساس دائم (واحد فقط). مع تاريخ انتهاء: تمديد يُضاف إلى الأساس وينتهي.",
+  "calendar.previousMonth": "الشهر السابق",
+  "calendar.nextMonth": "الشهر التالي",
+  "common.dateField.placeholder": "اختر تاريخًا",
+  "common.clear": "مسح"
 }

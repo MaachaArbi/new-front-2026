@@ -1,5 +1,7 @@
 import { test, type Page } from '@playwright/test'
-import { signIn, signOut } from './session'
+import { autoSignOut, signIn } from './session'
+
+autoSignOut()
 
 /**
  * JEU DE DÉMO — étoffe « Groupe Sahara Voyages » via l'INTERFACE (donc en respectant
@@ -127,5 +129,4 @@ test('semer les données de démo', async ({ page }) => {
   await page.screenshot({ path: 'e2e/screenshots/seed-result.png', fullPage: true })
   log('terminé')
 
-  await signOut(page)
 })

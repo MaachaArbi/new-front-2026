@@ -1,5 +1,7 @@
 import { test } from '@playwright/test'
-import { signIn, signOut } from './session'
+import { autoSignOut, signIn } from './session'
+
+autoSignOut()
 
 /**
  * MÉDIAS DE DÉMO — pose le logo de l'agence et dépose les scans fournis par Arbi.
@@ -66,5 +68,4 @@ test('semer les médias', async ({ page }) => {
   await page.screenshot({ path: 'e2e/screenshots/medias-result.png', fullPage: true })
   log('terminé')
 
-  await signOut(page)
 })

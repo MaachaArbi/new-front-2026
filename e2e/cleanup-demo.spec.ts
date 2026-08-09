@@ -1,5 +1,7 @@
 import { test } from '@playwright/test'
-import { signIn, signOut } from './session'
+import { autoSignOut, signIn } from './session'
+
+autoSignOut()
 
 /**
  * NETTOYAGE — retire de la fiche Sahara les interlocuteurs techniques attrapés par
@@ -46,5 +48,4 @@ test('nettoyer les interlocuteurs parasites', async ({ page }) => {
   console.log('CLEAN parasites restants : ' + (BAD.test(left) ? 'OUI' : 'non'))
   await page.screenshot({ path: 'e2e/screenshots/cleanup-result.png' })
 
-  await signOut(page)
 })

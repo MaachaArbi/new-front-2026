@@ -10,6 +10,7 @@ import {
 import { Input } from '@/shared/ui/input'
 import { Button } from '@/shared/ui/button'
 import { SelectField } from '@/shared/ui/select'
+import { DateField } from '@/shared/ui/date-field'
 import { ApiError } from '@/shared/api/errors'
 import { usePartyFinanceMutations } from './queries'
 import type { OfficeChoice } from './party-credit-limit-sheet'
@@ -133,8 +134,6 @@ export function PartyTaxExemptionSheet({
     )
   }
 
-  const selectClass =
-    'border-input bg-background h-8.5 rounded-md border px-3 text-sm'
   const canSave = isCertificate || officeAccountId != null
 
   return (
@@ -197,11 +196,11 @@ export function PartyTaxExemptionSheet({
                 label={t('party.finance.validFrom')}
                 error={errors.validFrom}
               >
-                <input
-                  type="date"
+                <DateField
+                  ariaLabel={t('party.finance.validFrom')}
                   value={validFrom}
-                  onChange={(event) => setValidFrom(event.target.value)}
-                  className={selectClass}
+                  onChange={setValidFrom}
+                  max={validTo || undefined}
                 />
               </LabeledField>
 
@@ -209,11 +208,11 @@ export function PartyTaxExemptionSheet({
                 label={t('party.finance.validTo')}
                 error={errors.validTo}
               >
-                <input
-                  type="date"
+                <DateField
+                  ariaLabel={t('party.finance.validTo')}
                   value={validTo}
-                  onChange={(event) => setValidTo(event.target.value)}
-                  className={selectClass}
+                  onChange={setValidTo}
+                  min={validFrom || undefined}
                 />
               </LabeledField>
             </>

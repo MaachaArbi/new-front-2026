@@ -1,6 +1,8 @@
 import { test } from '@playwright/test'
-import { signIn, signOut } from './session'
+import { autoSignOut, signIn } from './session'
 import fs from 'node:fs'
+
+autoSignOut()
 
 /**
  * Scénario filmé : connexion (compte démo) → liste → recherche → fiche. Chaque étape est
@@ -45,5 +47,4 @@ test('connexion → liste → recherche → fiche', async ({ page }) => {
     await page.screenshot({ path: `${SHOTS}/05-fiche.png`, fullPage: true })
   }
 
-  await signOut(page)
 })

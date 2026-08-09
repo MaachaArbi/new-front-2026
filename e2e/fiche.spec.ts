@@ -1,6 +1,8 @@
 import { test } from '@playwright/test'
-import { signIn, signOut } from './session'
+import { autoSignOut, signIn } from './session'
 import fs from 'node:fs'
+
+autoSignOut()
 
 /**
  * Capture ciblée de la VRAIE fiche Tiers (report du design validé sur `/_ref`).
@@ -148,5 +150,4 @@ test('fiche Tiers — clair + sombre', async ({ page }) => {
   await page.waitForTimeout(500)
   await page.screenshot({ path: `${SHOTS}/fiche-rail-replie.png` })
 
-  await signOut(page)
 })

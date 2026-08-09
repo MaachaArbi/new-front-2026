@@ -1,4 +1,4 @@
-import type { Page } from '@playwright/test'
+import { test, type Page } from '@playwright/test'
 
 /**
  * Connexion / déconnexion pour les tests.
@@ -8,6 +8,10 @@ import type { Page } from '@playwright/test'
  * rafraîchissement — la session reste ouverte côté serveur. Sans `signOut`, quelques
  * lancements suffisent à bloquer un compte de démo, et l'échec ressemble alors à une
  * panne d'API. Chaque test doit rendre la session qu'il a prise.
+ *
+ * D'où `autoSignOut()` : un `signOut` écrit à la FIN du test n'est pas atteint quand le
+ * test échoue — et c'est précisément en mettant un test au point qu'on le relance dix
+ * fois. La déconnexion doit donc vivre dans un `afterEach`, qui, lui, tourne toujours.
  */
 
 const PASSWORD = 'Demo-2026-OsTravel'
@@ -36,4 +40,11 @@ export async function signOut(page: Page): Promise<void> {
       headers: { Origin: base },
     })
     .catch(() => undefined)
+}
+
+/** À appeler une fois en tête de spec : rend la session même si le test échoue. */
+export function autoSignOut(): void {
+  test.afterEach(async ({ page }) => {
+    await signOut(page)
+  })
 }

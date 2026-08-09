@@ -507,5 +507,9 @@
   "party.finance.extension": "Extension",
   "party.finance.until": "until {date}",
   "party.finance.fromTo": "{from} → {to}",
-  "party.finance.limitDatesHint": "No end date: permanent base (only one). With an end date: an extension that adds to the base and expires."
+  "party.finance.limitDatesHint": "No end date: permanent base (only one). With an end date: an extension that adds to the base and expires.",
+  "calendar.previousMonth": "Previous month",
+  "calendar.nextMonth": "Next month",
+  "common.dateField.placeholder": "Pick a date",
+  "common.clear": "Clear"
 }

@@ -1,6 +1,8 @@
 import { test } from '@playwright/test'
-import { signIn, signOut } from './session'
+import { autoSignOut, signIn } from './session'
 import fs from 'node:fs'
+
+autoSignOut()
 
 /** Capture des 2 directions visuelles proposées sur `/_ui` (page jetable). */
 const SHOTS = 'e2e/screenshots'
@@ -17,5 +19,4 @@ test('variantes UI', async ({ page }) => {
   await page.waitForTimeout(1200)
   await page.screenshot({ path: `${SHOTS}/ui-variante-B.png`, fullPage: true })
 
-  await signOut(page)
 })
