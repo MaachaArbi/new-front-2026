@@ -797,13 +797,21 @@ export function PartyDetailPage() {
               <Users />
               {t('party.detail.tab.team')}
             </TabsTrigger>
-            <TabsTrigger value="notes">
+            {/* Notes / Tâches — features sans back : onglets GRISÉS + repère « Soon »
+                pour ne pas les oublier (voir docs/backlog/en-attente-donnees). */}
+            <TabsTrigger value="notes" disabled>
               <StickyNote />
               {t('party.detail.tab.notes')}
+              <Badge variant="secondary" appearance="light" size="xs">
+                {t('common.soon')}
+              </Badge>
             </TabsTrigger>
-            <TabsTrigger value="tasks">
+            <TabsTrigger value="tasks" disabled>
               <ListChecks />
               {t('party.detail.tab.tasks')}
+              <Badge variant="secondary" appearance="light" size="xs">
+                {t('common.soon')}
+              </Badge>
             </TabsTrigger>
             <TabsTrigger value="documents">
               <FileText />

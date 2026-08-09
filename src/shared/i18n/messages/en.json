@@ -347,6 +347,7 @@
   "party.finance.blockInsufficient": "Block if insufficient balance",
   "party.finance.validatorLeft": "Validator has left",
   "common.copy": "Copy",
+  "common.soon": "Soon",
   "common.on": "on",
   "common.off": "off",
   "party.history.empty": "No history",
