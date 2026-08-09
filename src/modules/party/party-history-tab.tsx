@@ -4,43 +4,9 @@ import { ChevronDown, Search } from 'lucide-react'
 import { Button } from '@/shared/ui/button'
 import { SkeletonRow } from '@/shared/feedback'
 import { formatMinor } from '@/shared/lib/money'
-import { cn } from '@/shared/lib/cn'
+import { InitialsAvatar } from '@/shared/ui/initials-avatar'
 import { usePartyHistory } from './queries'
 import type { PartyHistoryEntry } from './api'
-
-// Avatar = nœud de la timeline. Initiales + couleur stable dérivée du nom (acteur inconnu =
-// neutre). Palette fixe (fonctionne en clair comme en sombre).
-const AVATAR_COLORS = [
-  'bg-blue-500',
-  'bg-emerald-500',
-  'bg-violet-500',
-  'bg-amber-500',
-  'bg-rose-500',
-  'bg-cyan-500',
-]
-function initialsOf(name: string): string {
-  const parts = name.trim().split(/\s+/)
-  return (
-    ((parts[0]?.[0] ?? '') + (parts[1]?.[0] ?? '')).toUpperCase() || '?'
-  )
-}
-function colorOf(name: string): string {
-  let hash = 0
-  for (let i = 0; i < name.length; i += 1) hash = (hash * 31 + name.charCodeAt(i)) >>> 0
-  return AVATAR_COLORS[hash % AVATAR_COLORS.length] ?? 'bg-blue-500'
-}
-function TimelineAvatar({ name, muted }: { name: string; muted: boolean }) {
-  return (
-    <span
-      className={cn(
-        'inline-flex size-6 items-center justify-center rounded-full text-[10px] font-semibold text-white',
-        muted ? 'bg-muted-foreground/50' : colorOf(name)
-      )}
-    >
-      {initialsOf(name)}
-    </span>
-  )
-}
 
 // Regroupe les entrées CONSÉCUTIVES par jour (elles arrivent déjà triées, plus récent
 // d'abord). On conserve l'index d'origine pour une clé stable.
@@ -416,8 +382,9 @@ export function PartyHistoryTab({
                   <summary className="flex list-none cursor-pointer items-start justify-between gap-3 py-2.5 [&::-webkit-details-marker]:hidden">
                     <span className="flex min-w-0 items-start gap-3">
                       <span className="ring-background relative z-10 inline-flex rounded-full ring-4">
-                        <TimelineAvatar
+                        <InitialsAvatar
                           name={actorName}
+                          size="sm"
                           muted={!entry.actor}
                         />
                       </span>

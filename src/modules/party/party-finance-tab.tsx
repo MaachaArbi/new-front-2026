@@ -1,6 +1,8 @@
 import * as React from 'react'
 import { AlertTriangle, FileCheck, Pencil, Plus, X } from 'lucide-react'
 import { Button } from '@/shared/ui/button'
+import { InitialsAvatar } from '@/shared/ui/initials-avatar'
+import { StatusChip } from '@/shared/ui/status-chip'
 import { formatMinor } from '@/shared/lib/money'
 import { cn } from '@/shared/lib/cn'
 import { codeLabel, type ReferentialItem } from '@/shared/referentials'
@@ -86,37 +88,6 @@ function SwitchPill({
     >
       <span className="size-4 rounded-full bg-white shadow-sm" />
     </button>
-  )
-}
-
-// Avatar (approbations) — initiales + couleur stable du nom. Palette ALIGNÉE sur celle
-// de la fiche (même nom → même couleur en Overview et Finance). À mutualiser (composant).
-const AVATAR_COLORS = [
-  'bg-blue-500',
-  'bg-emerald-500',
-  'bg-violet-500',
-  'bg-amber-500',
-  'bg-rose-500',
-  'bg-cyan-500',
-  'bg-sky-500',
-]
-function Avatar({ name }: { name: string }) {
-  const parts = name.trim().split(/\s+/)
-  const initials =
-    ((parts[0]?.[0] ?? '') + (parts[1]?.[0] ?? '')).toUpperCase() || '?'
-  let hash = 0
-  for (let i = 0; i < name.length; i += 1)
-    hash = (hash * 31 + name.charCodeAt(i)) >>> 0
-  const color = AVATAR_COLORS[hash % AVATAR_COLORS.length] ?? 'bg-blue-500'
-  return (
-    <span
-      className={cn(
-        'inline-flex size-8 shrink-0 items-center justify-center rounded-full text-xs font-semibold text-white',
-        color
-      )}
-    >
-      {initials}
-    </span>
   )
 }
 
@@ -344,7 +315,7 @@ export function PartyFinanceTab({
                 className="border-border/60 flex items-center justify-between gap-3 border-b px-4 py-3 last:border-0"
               >
                 <span className="flex min-w-0 flex-wrap items-center gap-3">
-                  <Avatar name={entry.managerDisplayName} />
+                  <InitialsAvatar name={entry.managerDisplayName} />
                   <span className="text-foreground font-medium">
                     {entry.managerDisplayName}
                   </span>
@@ -406,10 +377,9 @@ export function PartyFinanceTab({
                 </span>
                 <span className="flex shrink-0 items-center gap-3">
                   {!exemption.hasCertificate ? (
-                    <span className="inline-flex items-center gap-1.5 rounded-full bg-[var(--color-warning-accent,var(--color-yellow-100))] px-2.5 py-1 text-xs font-medium text-[var(--color-warning-foreground,var(--color-yellow-800))]">
-                      <AlertTriangle className="size-3.5" />
+                    <StatusChip tone="warning" icon={<AlertTriangle />}>
                       {t('party.finance.noCertificate')}
-                    </span>
+                    </StatusChip>
                   ) : exemption.certificateNumber ? (
                     <span className="text-muted-foreground text-sm">
                       {t('party.finance.certificateN', {
@@ -558,7 +528,7 @@ export function PartyFinanceTab({
                 className="border-border/60 flex items-center justify-between gap-3 border-b px-4 py-3 last:border-0"
               >
                 <span className="flex min-w-0 flex-wrap items-center gap-3">
-                  <Avatar name={rule.validatorDisplayName} />
+                  <InitialsAvatar name={rule.validatorDisplayName} />
                   <span className="text-foreground font-medium">
                     {rule.validatorDisplayName}
                   </span>
@@ -566,10 +536,9 @@ export function PartyFinanceTab({
                     {functionLabel(rule.functionCode)}
                   </span>
                   {!rule.validatorStillQualified ? (
-                    <span className="inline-flex items-center gap-1.5 rounded-full bg-[var(--color-warning-accent,var(--color-yellow-100))] px-2.5 py-1 text-xs font-medium text-[var(--color-warning-foreground,var(--color-yellow-800))]">
-                      <AlertTriangle className="size-3.5" />
+                    <StatusChip tone="warning" icon={<AlertTriangle />}>
                       {t('party.finance.validatorLeft')}
-                    </span>
+                    </StatusChip>
                   ) : null}
                 </span>
                 {editable

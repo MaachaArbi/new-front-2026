@@ -38,6 +38,7 @@ import { useReferentials, codeLabel } from '@/shared/referentials'
 import { formatMinor } from '@/shared/lib/money'
 import './party-detail-page.css'
 import { Card, CardHead, Gauge, StatValue } from './party-ui'
+import { InitialsAvatar } from '@/shared/ui/initials-avatar'
 import {
   usePartyAccount,
   usePatchPartyAccount,
@@ -149,36 +150,6 @@ function RailRow({
       </span>
       <span className="text-foreground min-w-0">{children}</span>
     </div>
-  )
-}
-
-// Avatar (nœud des listes gens, façon /_ref) — initiales + couleur stable du nom.
-const AVATAR_COLORS = [
-  'bg-blue-500',
-  'bg-emerald-500',
-  'bg-violet-500',
-  'bg-amber-500',
-  'bg-rose-500',
-  'bg-cyan-500',
-  'bg-sky-500',
-]
-function Avatar({ name }: { name: string }) {
-  const parts = name.trim().split(/\s+/)
-  const initials =
-    ((parts[0]?.[0] ?? '') + (parts[1]?.[0] ?? '')).toUpperCase() || '?'
-  let hash = 0
-  for (let i = 0; i < name.length; i += 1)
-    hash = (hash * 31 + name.charCodeAt(i)) >>> 0
-  const color = AVATAR_COLORS[hash % AVATAR_COLORS.length] ?? 'bg-blue-500'
-  return (
-    <span
-      className={cn(
-        'inline-flex size-8 shrink-0 items-center justify-center rounded-full text-xs font-semibold text-white',
-        color
-      )}
-    >
-      {initials}
-    </span>
   )
 }
 
@@ -1202,7 +1173,7 @@ export function PartyDetailPage() {
                       onClick={() => navigate(`/parties/${contact.publicId}`)}
                       className="hover:bg-accent border-border/60 flex w-full items-center gap-3 border-b px-4 py-3 text-start last:border-0"
                     >
-                      <Avatar name={contact.displayName} />
+                      <InitialsAvatar name={contact.displayName} />
                       <span className="text-foreground min-w-0 flex-1 truncate text-sm font-medium">
                         {contact.displayName}
                       </span>
@@ -1229,7 +1200,7 @@ export function PartyDetailPage() {
                       key={m.publicId}
                       className="border-border/60 flex items-center gap-3 border-b px-4 py-3 text-sm last:border-0"
                     >
-                      <Avatar name={m.managerDisplayName} />
+                      <InitialsAvatar name={m.managerDisplayName} />
                       <span className="text-foreground min-w-0 flex-1 truncate font-medium">
                         {m.managerDisplayName}
                       </span>
@@ -1315,7 +1286,7 @@ export function PartyDetailPage() {
                           }
                           className="flex min-w-0 items-center gap-3 text-start"
                         >
-                          <Avatar name={contact.displayName} />
+                          <InitialsAvatar name={contact.displayName} />
                           <span className="text-foreground truncate font-medium">
                             {contact.displayName}
                           </span>
@@ -1384,7 +1355,7 @@ export function PartyDetailPage() {
                       className="border-border/60 flex items-center justify-between gap-3 border-b px-4 py-3 last:border-0"
                     >
                       <span className="flex min-w-0 items-center gap-3">
-                        <Avatar name={m.managerDisplayName} />
+                        <InitialsAvatar name={m.managerDisplayName} />
                         <span className="text-foreground truncate font-medium">
                           {m.managerDisplayName}
                         </span>

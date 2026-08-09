@@ -9,6 +9,7 @@ import {
   Upload,
 } from 'lucide-react'
 import { Button } from '@/shared/ui/button'
+import { StatusChip, type StatusTone } from '@/shared/ui/status-chip'
 import { CountryDisplay } from '@/shared/ui/country-display'
 import {
   DropdownMenu,
@@ -64,12 +65,10 @@ function expiryStatus(
   return 'valid'
 }
 
-const STATUS_CLASS: Record<'valid' | 'expiringSoon' | 'expired', string> = {
-  valid:
-    'bg-[var(--color-success-accent,var(--color-green-100))] text-[var(--color-success-foreground,var(--color-green-800))]',
-  expiringSoon:
-    'bg-[var(--color-warning-accent,var(--color-yellow-100))] text-[var(--color-warning-foreground,var(--color-yellow-800))]',
-  expired: 'bg-destructive/10 text-destructive',
+const STATUS_TONE: Record<'valid' | 'expiringSoon' | 'expired', StatusTone> = {
+  valid: 'success',
+  expiringSoon: 'warning',
+  expired: 'danger',
 }
 
 /**
@@ -212,11 +211,9 @@ export function PartyDocumentsCard({
                     </span>
                   ) : null}
                   {status ? (
-                    <span
-                      className={`shrink-0 rounded-full px-2 py-0.5 text-xs font-medium ${STATUS_CLASS[status]}`}
-                    >
+                    <StatusChip tone={STATUS_TONE[status]}>
                       {t(`party.document.status.${status}`)}
-                    </span>
+                    </StatusChip>
                   ) : null}
 
                   {/* Scan : « Voir » si présent, sinon alerte « Sans scan » + Déposer. */}
@@ -230,9 +227,9 @@ export function PartyDocumentsCard({
                     </button>
                   ) : (
                     <span className="inline-flex items-center gap-2">
-                      <span className="shrink-0 rounded-full bg-[var(--color-warning-accent,var(--color-yellow-100))] px-2 py-0.5 text-xs font-medium text-[var(--color-warning-foreground,var(--color-yellow-800))]">
+                      <StatusChip tone="warning">
                         {t('party.document.noScan')}
-                      </span>
+                      </StatusChip>
                       {editable ? (
                         <button
                           type="button"
