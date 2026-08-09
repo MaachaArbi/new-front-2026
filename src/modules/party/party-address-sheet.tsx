@@ -11,6 +11,7 @@ import { Input } from '@/shared/ui/input'
 import { Button } from '@/shared/ui/button'
 import { SelectField } from '@/shared/ui/select'
 import { CountrySelect } from '@/shared/ui/country-select'
+import { CheckboxField } from '@/shared/ui/checkbox'
 import type { ReferentialItem } from '@/shared/referentials'
 import { usePartyAddressMutations } from './queries'
 import type { PartyAddress } from './api'
@@ -159,17 +160,11 @@ export function PartyAddressSheet({
               t={t}
             />
           </label>
-          <label className="flex items-center gap-2">
-            <input
-              type="checkbox"
-              checked={isPrimary}
-              onChange={(event) => setIsPrimary(event.target.checked)}
-              className="size-4"
-            />
-            <span className="text-foreground text-sm">
-              {t('party.address.primary')}
-            </span>
-          </label>
+          <CheckboxField
+            label={t('party.address.primary')}
+            checked={isPrimary}
+            onChange={setIsPrimary}
+          />
         </SheetBody>
         <SheetFooter>
           <Button variant="outline" onClick={() => onOpenChange(false)}>

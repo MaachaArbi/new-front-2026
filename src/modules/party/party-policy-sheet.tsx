@@ -10,6 +10,7 @@ import {
 } from '@/shared/ui/sheet'
 import { Button } from '@/shared/ui/button'
 import { SelectField } from '@/shared/ui/select'
+import { CheckboxField } from '@/shared/ui/checkbox'
 import { ApiError } from '@/shared/api/errors'
 import { usePartyFinanceMutations } from './queries'
 import type { OfficeChoice } from './party-credit-limit-sheet'
@@ -97,29 +98,17 @@ export function PartyPolicySheet({
             }))}
           />
 
-          <label className="flex items-center gap-2">
-            <input
-              type="checkbox"
-              className="size-4"
-              checked={forceOnRequest}
-              onChange={(event) => setForceOnRequest(event.target.checked)}
-            />
-            <span className="text-foreground text-sm">
-              {t('party.finance.forceOnRequest')}
-            </span>
-          </label>
+          <CheckboxField
+            label={t('party.finance.forceOnRequest')}
+            checked={forceOnRequest}
+            onChange={setForceOnRequest}
+          />
 
-          <label className="flex items-center gap-2">
-            <input
-              type="checkbox"
-              className="size-4"
-              checked={blockInsufficient}
-              onChange={(event) => setBlockInsufficient(event.target.checked)}
-            />
-            <span className="text-foreground text-sm">
-              {t('party.finance.blockInsufficient')}
-            </span>
-          </label>
+          <CheckboxField
+            label={t('party.finance.blockInsufficient')}
+            checked={blockInsufficient}
+            onChange={setBlockInsufficient}
+          />
         </SheetBody>
         <SheetFooter>
           <Button variant="outline" onClick={() => onOpenChange(false)}>

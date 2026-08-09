@@ -13,7 +13,9 @@ import { Input } from '@/shared/ui/input'
 import { PhoneInput } from '@/shared/ui/phone-input'
 import { CountrySelect } from '@/shared/ui/country-select'
 import { Button } from '@/shared/ui/button'
-import { SelectField } from '@/shared/ui/select'
+import { RadioField } from '@/shared/ui/radio-group'
+import { Segmented } from '@/shared/ui/segmented'
+import { CheckboxField } from '@/shared/ui/checkbox'
 import { ApiError } from '@/shared/api/errors'
 import { useAuth } from '@/app/providers/auth-provider'
 import { officesOf, officeCountryOf } from '@/shared/auth/me'
@@ -156,25 +158,15 @@ export function PartyCreateSheet({
           <SheetDescription>{t('party.create.hint')}</SheetDescription>
         </SheetHeader>
         <SheetBody className="flex flex-col gap-4">
-          {/* Nature */}
-          <div className="flex flex-col gap-1">
-            <span className="text-muted-foreground text-sm">
-              {t('party.column.nature')}
-            </span>
-            <div className="flex gap-1">
-              {(['person', 'organization'] as const).map((value) => (
-                <Button
-                  key={value}
-                  type="button"
-                  size="sm"
-                  variant={nature === value ? 'primary' : 'outline'}
-                  onClick={() => setNature(value)}
-                >
-                  {t(`party.nature.${value}`)}
-                </Button>
-              ))}
-            </div>
-          </div>
+          <Segmented
+            label={t('party.column.nature')}
+            value={nature}
+            onChange={(next) => setNature(next as PartyNature)}
+            options={(['person', 'organization'] as const).map((value) => ({
+              code: value,
+              label: t(`party.nature.${value}`),
+            }))}
+          />
 
           <LabeledField
             label={t('party.create.displayName')}
@@ -223,25 +215,17 @@ export function PartyCreateSheet({
             />
           </LabeledField>
 
-          {/* Portée bureau */}
-          <div className="flex flex-col gap-1">
-            <span className="text-muted-foreground text-sm">
-              {t('party.create.scope')}
-            </span>
-            <div className="flex gap-1">
-              {(['all_offices', 'restricted'] as const).map((value) => (
-                <Button
-                  key={value}
-                  type="button"
-                  size="sm"
-                  variant={officeScope === value ? 'primary' : 'outline'}
-                  onClick={() => setOfficeScope(value)}
-                >
-                  {t(`party.create.scope.${value}`)}
-                </Button>
-              ))}
-            </div>
-          </div>
+          <Segmented
+            label={t('party.create.scope')}
+            value={officeScope}
+            onChange={(next) =>
+              setOfficeScope(next as 'all_offices' | 'restricted')
+            }
+            options={(['all_offices', 'restricted'] as const).map((value) => ({
+              code: value,
+              label: t(`party.create.scope.${value}`),
+            }))}
+          />
 
           {officeScope === 'restricted' ? (
             officeOptions.length > 0 ? (
@@ -257,22 +241,14 @@ export function PartyCreateSheet({
                   ) : null}
                   <div className="flex flex-col gap-1">
                     {officeOptions.map((office) => (
-                      <label
+                      <CheckboxField
                         key={office.value}
-                        className="flex items-center gap-2"
-                      >
-                        <input
-                          type="checkbox"
-                          className="size-4"
-                          checked={offices.includes(office.value)}
-                          onChange={(event) =>
-                            toggleOffice(office.value, event.target.checked)
-                          }
-                        />
-                        <span className="text-foreground text-sm">
-                          {office.label}
-                        </span>
-                      </label>
+                        label={office.label}
+                        checked={offices.includes(office.value)}
+                        onChange={(checked) =>
+                          toggleOffice(office.value, checked)
+                        }
+                      />
                     ))}
                   </div>
                 </div>
@@ -280,8 +256,8 @@ export function PartyCreateSheet({
                   label={t('party.create.relationType')}
                   error={errors.relationType}
                 >
-                  <SelectField
-                    ariaLabel={t('party.create.relationType')}
+                  <RadioField
+                    orientation="horizontal"
                     value={relationType}
                     onChange={(next) =>
                       setRelationType(next as 'customer' | 'supplier')
