@@ -511,5 +511,15 @@
   "calendar.previousMonth": "الشهر السابق",
   "calendar.nextMonth": "الشهر التالي",
   "common.dateField.placeholder": "اختر تاريخًا",
-  "common.clear": "مسح"
+  "common.clear": "مسح",
+  "party.detail.field.accountingAccount": "الحساب المحاسبي",
+  "party.detail.field.thirdPartyAccount": "حساب الطرف",
+  "party.detail.field.accountingHint": "يُحدَّد في التصدير المحاسبي",
+  "party.detail.section.technical": "تقني",
+  "party.detail.field.reference": "المرجع",
+  "party.detail.field.accountNumber": "رقم الحساب",
+  "party.finance.fromOnly": "ابتداءً من {from}",
+  "party.finance.notYetActive": "لم تبدأ بعد",
+  "party.document.issuedExpires": "صدر في {issued} · ينتهي في {expiry}",
+  "party.document.issuedExpired": "صدر في {issued} · انتهى في {expiry}"
 }

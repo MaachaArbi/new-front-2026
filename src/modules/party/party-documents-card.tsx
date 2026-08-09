@@ -198,21 +198,31 @@ export function PartyDocumentsCard({
                 </span>
 
                 <span className="flex shrink-0 items-center gap-3 text-sm">
-                  {/* Échéance en clair + statut calculé (valide / bientôt / expiré). */}
-                  {doc.expiryDate ? (
+                  {/* Les DEUX dates + statut calculé. L'émission disparaissait dès
+                      qu'une expiration existait, alors qu'elle est saisissable et sert
+                      à vérifier l'authenticité d'une pièce. */}
+                  {doc.issueDate || doc.expiryDate ? (
                     <span className="text-muted-foreground tabular-nums">
-                      {t(
-                        status === 'expired'
-                          ? 'party.document.expiredOn'
-                          : 'party.document.expiresOn',
-                        { date: date.day(doc.expiryDate) }
-                      )}
-                    </span>
-                  ) : doc.issueDate ? (
-                    <span className="text-muted-foreground tabular-nums">
-                      {t('party.document.issuedOn', {
-                        date: date.day(doc.issueDate),
-                      })}
+                      {doc.issueDate && doc.expiryDate
+                        ? t(
+                            status === 'expired'
+                              ? 'party.document.issuedExpired'
+                              : 'party.document.issuedExpires',
+                            {
+                              issued: date.day(doc.issueDate),
+                              expiry: date.day(doc.expiryDate),
+                            }
+                          )
+                        : doc.expiryDate
+                          ? t(
+                              status === 'expired'
+                                ? 'party.document.expiredOn'
+                                : 'party.document.expiresOn',
+                              { date: date.day(doc.expiryDate) }
+                            )
+                          : t('party.document.issuedOn', {
+                              date: date.day(doc.issueDate),
+                            })}
                     </span>
                   ) : null}
                   {status ? (

@@ -511,5 +511,15 @@
   "calendar.previousMonth": "Previous month",
   "calendar.nextMonth": "Next month",
   "common.dateField.placeholder": "Pick a date",
-  "common.clear": "Clear"
+  "common.clear": "Clear",
+  "party.detail.field.accountingAccount": "Accounting account",
+  "party.detail.field.thirdPartyAccount": "Third-party account",
+  "party.detail.field.accountingHint": "Set in the accounting export",
+  "party.detail.section.technical": "Technical",
+  "party.detail.field.reference": "Reference",
+  "party.detail.field.accountNumber": "Account no.",
+  "party.finance.fromOnly": "From {from}",
+  "party.finance.notYetActive": "Not yet active",
+  "party.document.issuedExpires": "Issued {issued} · expires {expiry}",
+  "party.document.issuedExpired": "Issued {issued} · expired {expiry}"
 }

@@ -140,6 +140,21 @@ test('fiche Tiers — clair + sombre', async ({ page }) => {
   await page.waitForTimeout(2500)
   await page.screenshot({ path: `${SHOTS}/fiche-mobile.png`, fullPage: true })
 
+  // Bas du rail — adresses + groupe « Technique » (identifiants exposés par l'API).
+  // La section précédente laisse la fenêtre en largeur mobile : on la rétablit.
+  await page.setViewportSize({ width: 1600, height: 1180 })
+  await page.evaluate(() => localStorage.setItem('ostravel-theme', 'light'))
+  await page.reload()
+  await page.waitForTimeout(2000)
+  await page.getByRole('tab', { name: /vue d'ensemble/i }).click()
+  await page.waitForTimeout(600)
+  // Deux <aside> dans la page : le menu de gauche et le rail de la fiche.
+  await page.locator('aside.fiche-scroll').evaluate((el) => {
+    el.scrollTop = el.scrollHeight
+  })
+  await page.waitForTimeout(500)
+  await page.screenshot({ path: `${SHOTS}/fiche-rail-bas.png` })
+
   // Repli du rail — son état vit maintenant dans la coquille partagée : on vérifie
   // qu'il répond toujours, et que la colonne de gauche prend la place.
   await page.setViewportSize({ width: 1600, height: 1180 })

@@ -4,6 +4,12 @@ import { Button } from '@/shared/ui/button'
 import { EmptyState } from '@/shared/ui/empty-state'
 import { InitialsAvatar } from '@/shared/ui/initials-avatar'
 import { StatusChip } from '@/shared/ui/status-chip'
+import {
+  groupCreditLimits,
+  isExtensionExpired,
+  isExtensionPending,
+  todayIso,
+} from './credit'
 import { formatMinor } from '@/shared/lib/money'
 import { MoneyText } from '@/shared/ui/money-text'
 import { useDateFormat } from '@/shared/lib/use-date-format'
@@ -145,46 +151,12 @@ export function PartyFinanceTab({
     React.useState<PartyCommercialPolicy | null>(null)
   const [approvalOpen, setApprovalOpen] = React.useState(false)
 
-  // Plafond EFFECTIF par portée (société · devise · service) = socle + Σ rallonges ACTIVES
-  // (validTo ≥ aujourd'hui). amountMinor est une CHAÎNE → somme en BigInt, jamais en Number
-  // (précision monétaire). Une rallonge expirée est listée grisée mais ne compte plus.
-  const todayIso = new Date().toISOString().slice(0, 10)
-  const creditGroups = React.useMemo(() => {
-    const map = new Map<
-      string,
-      {
-        officeAccountId: number
-        currencyCode: string | null
-        serviceTypeCode: string | null
-        socle: PartyCreditLimit | null
-        extensions: PartyCreditLimit[]
-      }
-    >()
-    for (const limit of creditLimits) {
-      const key = `${limit.officeAccountId}|${limit.currencyCode ?? ''}|${limit.serviceTypeCode ?? ''}`
-      let g = map.get(key)
-      if (!g) {
-        g = {
-          officeAccountId: limit.officeAccountId,
-          currencyCode: limit.currencyCode,
-          serviceTypeCode: limit.serviceTypeCode,
-          socle: null,
-          extensions: [],
-        }
-        map.set(key, g)
-      }
-      if (limit.isExtension) g.extensions.push(limit)
-      else g.socle = limit
-    }
-    return Array.from(map.values()).map((g) => {
-      let effective = g.socle ? BigInt(g.socle.amountMinor) : 0n
-      for (const e of g.extensions) {
-        if (!e.validTo || e.validTo >= todayIso)
-          effective += BigInt(e.amountMinor)
-      }
-      return { ...g, effectiveMinor: effective.toString() }
-    })
-  }, [creditLimits, todayIso])
+  // Plafond effectif : une seule définition, dans `./credit`.
+  const today = todayIso()
+  const creditGroups = React.useMemo(
+    () => groupCreditLimits(creditLimits, today),
+    [creditLimits, today]
+  )
 
   const removeBtn = (label: string, onClick: () => void, busy: boolean) => (
     <Button
@@ -257,30 +229,55 @@ export function PartyFinanceTab({
                       </div>
                     ) : null}
                     {g.extensions.map((e) => {
-                      const expired = !!e.validTo && e.validTo < todayIso
+                      const expired = isExtensionExpired(e, today)
+                      // `validFrom` n'était pas affichée : une rallonge qui COMMENCE
+                      // plus tard se présentait comme une rallonge déjà active. On
+                      // montre la période entière, et on marque celles à venir.
+                      const notYet = isExtensionPending(e, today)
+                      const period = expired
+                        ? t('party.finance.expired')
+                        : e.validFrom && e.validTo
+                          ? t('party.finance.fromTo', {
+                              from: date.day(e.validFrom),
+                              to: date.day(e.validTo),
+                            })
+                          : e.validFrom
+                            ? t('party.finance.fromOnly', {
+                                from: date.day(e.validFrom),
+                              })
+                            : e.validTo
+                              ? t('party.finance.until', {
+                                  date: date.day(e.validTo),
+                                })
+                              : null
                       return (
                         <div
                           key={e.publicId}
                           className={cn(
-                            'flex items-center justify-between gap-2',
+                            'flex items-start justify-between gap-2',
                             expired && 'opacity-50'
                           )}
                         >
-                          <span className="text-foreground/80 inline-flex items-center gap-2">
-                            <span className="size-2 rounded-full bg-amber-500" />
-                            {t('party.finance.extension')}
-                            {e.validTo ? (
-                              <span className="text-muted-foreground">
-                                ·{' '}
-                                {expired
-                                  ? t('party.finance.expired')
-                                  : t('party.finance.until', {
-                                      date: date.day(e.validTo),
-                                    })}
+                          {/* Période sur SA ligne : « du 10 août 2026 au 11 août 2026 »
+                              ne tient pas à côté du libellé dans une carte étroite, et
+                              se brisait mot à mot. */}
+                          <span className="text-foreground/80 flex min-w-0 flex-col gap-0.5">
+                            <span className="inline-flex items-center gap-2">
+                              <span className="size-2 shrink-0 rounded-full bg-amber-500" />
+                              {t('party.finance.extension')}
+                              {notYet && !expired ? (
+                                <StatusChip tone="warning">
+                                  {t('party.finance.notYetActive')}
+                                </StatusChip>
+                              ) : null}
+                            </span>
+                            {period ? (
+                              <span className="text-muted-foreground ps-4 text-xs">
+                                {period}
                               </span>
                             ) : null}
                           </span>
-                          <span className="flex items-center gap-1">
+                          <span className="flex shrink-0 items-center gap-1">
                             <MoneyText
                               minor={e.amountMinor}
                               currency={cur}

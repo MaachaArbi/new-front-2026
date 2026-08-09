@@ -10,8 +10,10 @@ import {
   Copy,
   DollarSign,
   FileText,
+  Earth,
   Globe,
   Handshake,
+  Hash,
   History,
   LayoutGrid,
   ListChecks,
@@ -103,6 +105,7 @@ import { PartyIdentitySheet } from './party-identity-sheet'
 import { PartyAddressSheet } from './party-address-sheet'
 import { PartyContactSheet } from './party-contact-sheet'
 import { PartyParentSheet } from './party-parent-sheet'
+import { groupCreditLimits, todayIso } from './credit'
 
 const STATE_BADGE: Record<
   Exclude<PartyState, 'active'>,
@@ -116,7 +119,12 @@ const ROLE_VARIANT: Record<string, 'info' | 'warning'> = {
   supplier: 'warning',
 }
 
-type FieldItem = { label: string; value: React.ReactNode }
+type FieldItem = {
+  label: string
+  value: React.ReactNode
+  /** Précision sous le libellé — d'où vient la valeur, qui la modifie. */
+  hint?: string
+}
 
 /** Conserve les champs réellement renseignés (le vide n'est jamais affiché). */
 function filled(items: FieldItem[]): FieldItem[] {
@@ -374,8 +382,9 @@ export function PartyDetailPage() {
           },
         ]
       : [
-          // Le matricule fiscal vit désormais dans la LIGNE MÉTA de l'en-tête :
-          // on ne le répète pas ici (règle anti-doublon posée par Arbi).
+          // Le matricule fiscal est AUSSI dans la ligne méta de l'en-tête — mais un
+          // résumé n'est pas un domicile : il doit exister là où on le modifie.
+          { label: t('party.detail.field.taxId'), value: organization?.taxId },
           {
             label: t('party.detail.field.tradeRegister'),
             value: organization?.tradeRegister,
@@ -385,6 +394,19 @@ export function PartyDetailPage() {
             value: organization?.legalFormCode
               ? legalFormLabel(organization.legalFormCode)
               : null,
+          },
+          // Codes comptables : renvoyés par l'API, définis dans l'export comptable et
+          // non modifiables ici. Affichés pour que rien de ce que l'API expose ne reste
+          // invisible ; le sous-titre dit d'où ils viennent.
+          {
+            label: t('party.detail.field.accountingAccount'),
+            value: organization?.accountingAccountCode,
+            hint: t('party.detail.field.accountingHint'),
+          },
+          {
+            label: t('party.detail.field.thirdPartyAccount'),
+            value: organization?.thirdPartyAccountCode,
+            hint: t('party.detail.field.accountingHint'),
           },
         ]
   )
@@ -473,48 +495,10 @@ export function PartyDetailPage() {
       })
     )
 
-  // Plafond effectif par portée (pour le rail Finance) — même calcul que l'onglet Finance :
-  // socle + Σ rallonges actives, BigInt sur `amountMinor` (chaîne). Groupé société·devise·service.
+  // Plafond effectif du rail : MÊME fonction que l'onglet Finance. Le calcul vivait en
+  // double ; les deux se sont contredits à l'écran dès qu'on a corrigé un seul côté.
   const railServiceLabel = codeLabel(referentials?.serviceTypes)
-  const todayIso = now.toISOString().slice(0, 10)
-  const creditGroups = (() => {
-    const map = new Map<
-      string,
-      {
-        officeAccountId: number
-        currencyCode: string | null
-        serviceTypeCode: string | null
-        socleMinor: bigint
-        activeMinor: bigint
-      }
-    >()
-    for (const limit of view.creditLimits) {
-      const key = `${limit.officeAccountId}|${limit.currencyCode ?? ''}|${limit.serviceTypeCode ?? ''}`
-      let g = map.get(key)
-      if (!g) {
-        g = {
-          officeAccountId: limit.officeAccountId,
-          currencyCode: limit.currencyCode,
-          serviceTypeCode: limit.serviceTypeCode,
-          socleMinor: 0n,
-          activeMinor: 0n,
-        }
-        map.set(key, g)
-      }
-      if (limit.isExtension) {
-        if (!limit.validTo || limit.validTo >= todayIso)
-          g.activeMinor += BigInt(limit.amountMinor)
-      } else {
-        g.socleMinor += BigInt(limit.amountMinor)
-      }
-    }
-    return Array.from(map.values()).map((g) => ({
-      key: `${g.officeAccountId}|${g.currencyCode ?? ''}|${g.serviceTypeCode ?? ''}`,
-      currencyCode: g.currencyCode ?? '',
-      serviceTypeCode: g.serviceTypeCode,
-      effectiveMinor: (g.socleMinor + g.activeMinor).toString(),
-    }))
-  })()
+  const creditGroups = groupCreditLimits(view.creditLimits, todayIso())
 
   // Localisation du rail (reproduction de la maquette de référence) — l'adresse principale, sinon la 1re.
   const primaryAddress = addresses.find((a) => a.isPrimary) ?? addresses[0]
@@ -825,7 +809,10 @@ export function PartyDetailPage() {
                             : t('party.finance.allServices')}
                         </div>
                         <StatValue
-                          value={formatMinor(g.effectiveMinor, g.currencyCode)}
+                          value={formatMinor(
+                            g.effectiveMinor,
+                            g.currencyCode ?? ''
+                          )}
                           unit={g.currencyCode ?? undefined}
                         />
                       </div>
@@ -944,7 +931,15 @@ export function PartyDetailPage() {
               <RailRow icon={<MapPin />} label={t('party.detail.location')}>
                 {railLocation ? (
                   <span className="text-foreground">{railLocation}</span>
-                ) : view.country ? (
+                ) : (
+                  <span className="text-muted-foreground">—</span>
+                )}
+              </RailRow>
+              {/* Le pays du TIERS est un champ à lui, modifiable depuis Coordonnées.
+                  Il servait de repli à « Localisation » : dès qu'une adresse existait,
+                  on le modifiait sans jamais le revoir. Ligne propre désormais. */}
+              <RailRow icon={<Earth />} label={t('party.column.country')}>
+                {view.country ? (
                   <CountryDisplay code={view.country} />
                 ) : (
                   <span className="text-muted-foreground">—</span>
@@ -1082,6 +1077,39 @@ export function PartyDetailPage() {
                 </EmptyState>
               )}
             </div>
+
+            {/* TECHNIQUE — identifiants renvoyés par l'API, en lecture seule.
+                Ils ne servent pas au travail quotidien, mais ils rendent une fiche
+                identifiable au téléphone avec le support, et le numéro de compte
+                explique les « #119751 » qui apparaissent en Finance quand un bureau
+                sort du périmètre de l'utilisateur connecté. */}
+            <div className="mt-5 text-sm">
+              <RailGroupTitle title={t('party.detail.section.technical')} />
+              <RailRow
+                icon={<Hash />}
+                label={t('party.detail.field.reference')}
+              >
+                <button
+                  type="button"
+                  onClick={() => copyText(id)}
+                  className="text-muted-foreground hover:text-foreground inline-flex items-start gap-1.5 text-end font-mono text-[11px] break-all"
+                  aria-label={t('common.copy')}
+                >
+                  {id}
+                  <Copy className="mt-0.5 size-3 shrink-0" />
+                </button>
+              </RailRow>
+              {view.accountId != null ? (
+                <RailRow
+                  icon={<Hash />}
+                  label={t('party.detail.field.accountNumber')}
+                >
+                  <span className="text-muted-foreground font-mono text-xs tabular-nums">
+                    #{view.accountId}
+                  </span>
+                </RailRow>
+              ) : null}
+            </div>
           </>
         }
         footer={
@@ -1180,8 +1208,13 @@ export function PartyDetailPage() {
                         key={i}
                         className="flex items-center justify-between gap-2"
                       >
-                        <span className="text-muted-foreground">
+                        <span className="text-muted-foreground flex flex-col">
                           {it.label}
+                          {it.hint ? (
+                            <span className="text-muted-foreground/70 text-xs">
+                              {it.hint}
+                            </span>
+                          ) : null}
                         </span>
                         <span className="text-foreground text-end font-medium">
                           {it.value}
