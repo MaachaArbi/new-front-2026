@@ -1,6 +1,6 @@
 import * as React from 'react'
 import {
-  ExternalLink,
+  FileText,
   FileX,
   MoreVertical,
   Pencil,
@@ -8,7 +8,6 @@ import {
   Trash2,
   Upload,
 } from 'lucide-react'
-import { Badge } from '@/shared/ui/badge'
 import { Button } from '@/shared/ui/button'
 import { CountryDisplay } from '@/shared/ui/country-display'
 import {
@@ -48,6 +47,30 @@ const KNOWN_TYPES = new Set([
   'contract',
   'other',
 ])
+
+/** Seuil « expire bientôt » — 90 jours avant l'échéance. */
+const EXPIRY_SOON_DAYS = 90
+
+/** Statut d'expiration calculé depuis `expiryDate` (null = pièce sans échéance). */
+function expiryStatus(
+  expiryDate: string | null
+): 'valid' | 'expiringSoon' | 'expired' | null {
+  if (!expiryDate) return null
+  const days = Math.ceil(
+    (new Date(expiryDate).getTime() - Date.now()) / 86_400_000
+  )
+  if (days < 0) return 'expired'
+  if (days <= EXPIRY_SOON_DAYS) return 'expiringSoon'
+  return 'valid'
+}
+
+const STATUS_CLASS: Record<'valid' | 'expiringSoon' | 'expired', string> = {
+  valid:
+    'bg-[var(--color-success-accent,var(--color-green-100))] text-[var(--color-success-foreground,var(--color-green-800))]',
+  expiringSoon:
+    'bg-[var(--color-warning-accent,var(--color-yellow-100))] text-[var(--color-warning-foreground,var(--color-yellow-800))]',
+  expired: 'bg-destructive/10 text-destructive',
+}
 
 /**
  * Carte **Documents** — gestion complète. `hasFile` distingue les pièces **avec / sans scan**
@@ -125,13 +148,23 @@ export function PartyDocumentsCard({
   }
 
   return (
-    <div className="border-border rounded-xl border p-4">
-      <div className="mb-3 flex items-center justify-between gap-2">
-        <h3 className="text-foreground text-sm font-semibold">
+    <div>
+      {/* En-tête façon /_ref : icône + titre + compteur, bouton outline à droite. */}
+      <div className="mb-3 flex items-center justify-between gap-3">
+        <div className="text-foreground flex items-center gap-2 text-sm font-semibold">
+          <FileText className="text-muted-foreground size-4" />
           {t('party.detail.section.documents')}
-        </h3>
+          <span className="text-muted-foreground text-xs font-normal">
+            · {documents.length}
+          </span>
+        </div>
         {editable ? (
-          <Button size="sm" variant="outline" onClick={openCreate}>
+          <Button
+            size="sm"
+            variant="outline"
+            className="shrink-0"
+            onClick={openCreate}
+          >
             <Plus />
             {t('party.document.add')}
           </Button>
@@ -139,66 +172,79 @@ export function PartyDocumentsCard({
       </div>
 
       {documents.length > 0 ? (
-        <ul className="flex flex-col gap-3">
-          {documents.map((doc) => (
-            <li
-              key={doc.publicId}
-              className="border-border/60 flex items-start justify-between gap-3 border-b pb-3 last:border-0 last:pb-0"
-            >
-              <div className="flex min-w-0 flex-col gap-0.5">
-                <div className="flex flex-wrap items-center gap-2">
-                  <span className="text-foreground text-sm font-medium">
+        <div className="border-border rounded-xl border">
+          {documents.map((doc) => {
+            const status = expiryStatus(doc.expiryDate)
+            return (
+              <div
+                key={doc.publicId}
+                className="border-border/60 flex items-center justify-between gap-3 border-b px-4 py-3 last:border-0"
+              >
+                <span className="flex min-w-0 items-center gap-3">
+                  <FileText className="text-muted-foreground size-4 shrink-0" />
+                  <span className="text-foreground truncate font-medium">
                     {typeLabel(doc.documentType)}
                   </span>
                   {doc.documentNumber ? (
-                    <span className="text-muted-foreground text-sm tabular-nums">
-                      {doc.documentNumber}
+                    <span className="text-muted-foreground shrink-0 text-sm tabular-nums">
+                      · n° {doc.documentNumber}
                     </span>
                   ) : null}
                   {doc.issuingCountry ? (
                     <CountryDisplay code={doc.issuingCountry} />
                   ) : null}
-                  {doc.hasFile ? (
-                    <Badge variant="success" size="sm">
-                      {t('party.document.withScan')}
-                    </Badge>
-                  ) : (
-                    <Badge variant="outline" size="sm">
-                      {t('party.document.noScan')}
-                    </Badge>
-                  )}
-                </div>
-                {doc.issueDate || doc.expiryDate ? (
-                  <span className="text-muted-foreground text-xs tabular-nums">
-                    {t('party.document.dates', {
-                      from: doc.issueDate ?? '…',
-                      to: doc.expiryDate ?? '…',
-                    })}
-                  </span>
-                ) : null}
-              </div>
+                </span>
 
-              <div className="flex shrink-0 items-center gap-1">
-                {doc.hasFile ? (
-                  <Button
-                    size="sm"
-                    variant="outline"
-                    onClick={() => openFile(doc)}
-                  >
-                    <ExternalLink />
-                    {t('party.document.open')}
-                  </Button>
-                ) : editable ? (
-                  <Button
-                    size="sm"
-                    variant="outline"
-                    onClick={() => pickFile(doc)}
-                    disabled={setFile.isPending}
-                  >
-                    <Upload />
-                    {t('party.document.deposit')}
-                  </Button>
-                ) : null}
+                <span className="flex shrink-0 items-center gap-3 text-sm">
+                  {/* Échéance en clair + statut calculé (valide / bientôt / expiré). */}
+                  {doc.expiryDate ? (
+                    <span className="text-muted-foreground tabular-nums">
+                      {t(
+                        status === 'expired'
+                          ? 'party.document.expiredOn'
+                          : 'party.document.expiresOn',
+                        { date: doc.expiryDate }
+                      )}
+                    </span>
+                  ) : doc.issueDate ? (
+                    <span className="text-muted-foreground tabular-nums">
+                      {t('party.document.issuedOn', { date: doc.issueDate })}
+                    </span>
+                  ) : null}
+                  {status ? (
+                    <span
+                      className={`shrink-0 rounded-full px-2 py-0.5 text-xs font-medium ${STATUS_CLASS[status]}`}
+                    >
+                      {t(`party.document.status.${status}`)}
+                    </span>
+                  ) : null}
+
+                  {/* Scan : « Voir » si présent, sinon alerte « Sans scan » + Déposer. */}
+                  {doc.hasFile ? (
+                    <button
+                      type="button"
+                      onClick={() => openFile(doc)}
+                      className="text-primary font-medium hover:underline"
+                    >
+                      {t('party.document.open')}
+                    </button>
+                  ) : (
+                    <span className="inline-flex items-center gap-2">
+                      <span className="shrink-0 rounded-full bg-[var(--color-warning-accent,var(--color-yellow-100))] px-2 py-0.5 text-xs font-medium text-[var(--color-warning-foreground,var(--color-yellow-800))]">
+                        {t('party.document.noScan')}
+                      </span>
+                      {editable ? (
+                        <button
+                          type="button"
+                          onClick={() => pickFile(doc)}
+                          disabled={setFile.isPending}
+                          className="text-primary font-medium hover:underline"
+                        >
+                          {t('party.document.deposit')}
+                        </button>
+                      ) : null}
+                    </span>
+                  )}
                 {editable ? (
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
@@ -242,10 +288,11 @@ export function PartyDocumentsCard({
                     </DropdownMenuContent>
                   </DropdownMenu>
                 ) : null}
+                </span>
               </div>
-            </li>
-          ))}
-        </ul>
+            )
+          })}
+        </div>
       ) : (
         <p className="text-muted-foreground py-1 text-sm">
           {t('party.document.empty')}

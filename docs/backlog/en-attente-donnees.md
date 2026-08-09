@@ -44,8 +44,9 @@ Convention : `élément d'UI` · où · **statut** · débloqué par.
 - **Réservations / Paiements / Factures** — onglets **retirés** de la fiche (ils débordaient
   sur le rail à 5+ onglets réels). À **rétablir** quand les modules existeront.
 
-- **Documents** (ex-Files) — **RÉEL** (`PartyDocument` : type, n°, dates, expiration,
-  `hasFile`). À brancher : le calcul du statut d'expiration (valide/expire bientôt/expiré).
+- **Documents** (ex-Files) — **RÉEL et COMPLET** (`PartyDocument` : type, n°, dates,
+  expiration, `hasFile`). Statut d'expiration **calculé** (valide / expire bientôt à 90 j /
+  expiré) + alerte « Sans scan ». ✅ Fait le 09/08/2026.
 - **Notes** — **PLACEHOLDER** (aucune notion de notes côté back). Feature à créer si utile :
   annotations internes sur le client (auteur · date · texte).
 - **Tâches** — **PLACEHOLDER** (aucune notion de tâches côté back). Feature à créer si utile :

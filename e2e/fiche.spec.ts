@@ -81,6 +81,22 @@ test('fiche Tiers — clair + sombre', async ({ page }) => {
   await page.screenshot({ path: `${SHOTS}/fiche-team.png` })
   await page.getByRole('tab', { name: /^documents$/i }).click()
   await page.waitForTimeout(800)
+
+  // Crée 2 pièces pour VÉRIFIER les statuts d'expiration calculés (expire bientôt /
+  // expiré) et l'état « Sans scan ». Sans données, le rendu des lignes est invérifiable.
+  const addDoc = async (expiry: string, num: string) => {
+    await page.getByRole('button', { name: /ajouter un document/i }).click()
+    await page.waitForTimeout(600)
+    await page.getByLabel(/^numéro$/i).fill(num)
+    await page.locator('input[type="date"]').last().fill(expiry)
+    await page.getByRole('button', { name: /^enregistrer$/i }).click()
+    await page.waitForTimeout(1200)
+  }
+  if ((await page.getByText(/aucun document/i).count()) > 0) {
+    await addDoc('2026-09-30', 'A1234567') // dans ~50 j → « Expire bientôt »
+    await addDoc('2025-06-30', 'RC 123456') // passé → « Expiré »
+  }
+  await page.waitForTimeout(500)
   await page.screenshot({ path: `${SHOTS}/fiche-documents.png` })
 
   await page.getByRole('tab', { name: /vue d'ensemble/i }).click()
