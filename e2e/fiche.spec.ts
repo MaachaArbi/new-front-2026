@@ -6,7 +6,7 @@ import fs from 'node:fs'
  * Clair + sombre — pour valider que les tokens tiennent dans les deux thèmes.
  */
 const SHOTS = 'e2e/screenshots'
-const EMAIL = 'karim.belhadj@demo.ostravel.tn'
+const EMAIL = 'salma.ben.amor@demo.ostravel.tn'
 const PASSWORD = 'Demo-2026-OsTravel'
 
 test.use({ viewport: { width: 1600, height: 1180 } })
@@ -64,11 +64,28 @@ test('fiche Tiers — clair + sombre', async ({ page }) => {
     .locator('details')
     .filter({ hasText: 'Adresse · ajouté' })
     .first()
-  await addressEntry.locator('summary').click()
-  await page.waitForTimeout(400)
-  await addressEntry.scrollIntoViewIfNeeded()
-  await page.waitForTimeout(300)
-  await page.screenshot({ path: `${SHOTS}/fiche-hist-detail.png` })
+  if ((await addressEntry.count()) > 0) {
+    await addressEntry.locator('summary').click()
+    await page.waitForTimeout(400)
+    await addressEntry.scrollIntoViewIfNeeded()
+    await page.waitForTimeout(300)
+    await page.screenshot({ path: `${SHOTS}/fiche-hist-detail.png` })
+  }
+
+  // « Charger plus » : la liste doit GRANDIR (chargement par tranches, pas tout d'un coup).
+  const rows = () => page.locator('details').count()
+  const before = await rows()
+  const loadMore = page.getByRole('button', { name: /charger plus/i })
+  if ((await loadMore.count()) > 0) {
+    await loadMore.scrollIntoViewIfNeeded()
+    await loadMore.click()
+    await page.waitForTimeout(1500)
+    const after = await rows()
+    console.log(`LOADMORE ${before} -> ${after}`)
+    await page.screenshot({ path: `${SHOTS}/fiche-hist-loadmore.png` })
+  } else {
+    console.log(`LOADMORE absent (${before} entrées, pas de tranche pleine)`)
+  }
 
   // Onglet Finance — plafond effectif groupé par portée (socle + rallonges).
   await page.getByRole('tab', { name: /^finance$/i }).click()

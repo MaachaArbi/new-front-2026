@@ -52,6 +52,18 @@ Convention : `élément d'UI` · où · **statut** · débloqué par.
 - **Tâches** — **PLACEHOLDER** (aucune notion de tâches côté back). Feature à créer si utile :
   rappels/todos (titre · échéance · assigné · statut), distincts des alertes système d'Overview.
 
+### Historique — demandes back
+- **`meta.hasMore` (ou le total)** : aujourd'hui `meta` ne porte ni total ni indicateur de
+  fin, **et l'API renvoie une ligne de moins que le `limit` demandé** (mesuré : 5→4, 10→9,
+  20→18). Le front compense par une heuristique + « un chargement sans nouvelle entrée = fin ».
+  À remplacer par un vrai `hasMore`.
+- **Référentiel des sujets d'audit** : la liste des types du filtre est **recopiée en dur**
+  dans le front (`KNOWN_SUBJECTS`, 18 codes de la doc §1.3). Aucun référentiel côté API →
+  risque de dérive silencieuse si le back ajoute un sujet.
+- **Filtre serveur** (type / action / auteur / période / recherche) : le filtrage est
+  **client**, donc limité aux entrées chargées. Indispensable sur un gros historique.
+- **Nom du validateur** : l'audit expose `validator` en UUID brut → afficher un nom.
+
 ---
 _À compléter au fil des briques. Toute valeur en dur / « en attente » posée dans l'UI
 doit atterrir ici le jour où on la crée._

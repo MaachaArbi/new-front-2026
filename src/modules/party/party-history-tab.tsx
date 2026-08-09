@@ -1,6 +1,6 @@
 import * as React from 'react'
 import { useIntl } from 'react-intl'
-import { ChevronDown, ChevronLeft, ChevronRight, Search } from 'lucide-react'
+import { ChevronDown, Search } from 'lucide-react'
 import { Button } from '@/shared/ui/button'
 import { SkeletonRow } from '@/shared/feedback'
 import { formatMinor } from '@/shared/lib/money'
@@ -150,7 +150,7 @@ const DATE_FIELDS = new Set(['validFrom', 'validTo'])
  * Onglet **Historique** d'un tiers. Respecte les quatre gardes du back : `actor: null` →
  * « trace antérieure au {satellitesSince} » (jamais « système ») ; note « tenu depuis le … »
  * pour les éléments liés ; `changes: []` possible ; `logo`/`file` = référence, pas adresse.
- * `meta` ne porte pas de total → pagination « précédent / suivant » (suivant = page pleine).
+ * Chargement par tranches (« Charger plus ») : on ne ramène jamais tout l'historique.
  */
 export function PartyHistoryTab({
   publicId,
@@ -166,8 +166,11 @@ export function PartyHistoryTab({
   t: Translate
 }) {
   const intl = useIntl()
-  const [page, setPage] = React.useState(1)
-  const query = usePartyHistory(publicId, page, HISTORY_LIMIT)
+  // « Charger plus » : on ne ramène PAS tout — on charge par tranches de HISTORY_LIMIT
+  // (20, 40, 60…). `keepPreviousData` évite le clignotement pendant l'agrandissement.
+  const [loaded, setLoaded] = React.useState(HISTORY_LIMIT)
+  const [end, setEnd] = React.useState(false)
+  const query = usePartyHistory(publicId, 1, loaded)
   // Filtres — appliqués EN CLIENT sur la page chargée (l'API pagine sans filtre serveur ;
   // vrai filtre = demande back). '' = pas de filtre.
   const [search, setSearch] = React.useState('')
@@ -212,6 +215,28 @@ export function PartyHistoryTab({
     return value
   }
 
+  const entries = query.data?.data ?? []
+  const since = query.data?.meta.satellitesSince ?? null
+
+  // Fin de liste : `meta` ne porte NI total NI `hasMore`, et l'API renvoie parfois moins
+  // de lignes que le `limit` demandé (mesuré : 5→4, 10→9, 20→18). On ne peut donc pas
+  // déduire la fin d'une « tranche non pleine » — sinon le bouton disparaît à tort.
+  // Règle robuste : un « Charger plus » qui n'apporte AUCUNE nouvelle entrée = fin.
+  // → demande back : exposer `hasMore` (ou le total) dans `meta`.
+  const lastCountRef = React.useRef<number | null>(null)
+  React.useEffect(() => {
+    if (query.isFetching) return
+    const count = entries.length
+    if (
+      lastCountRef.current !== null &&
+      count === lastCountRef.current &&
+      loaded > HISTORY_LIMIT
+    ) {
+      setEnd(true)
+    }
+    lastCountRef.current = count
+  }, [entries.length, query.isFetching, loaded])
+
   if (query.isLoading) {
     return (
       <div className="flex flex-col gap-2 pt-2">
@@ -230,13 +255,15 @@ export function PartyHistoryTab({
     )
   }
 
-  const entries = query.data?.data ?? []
-  const since = query.data?.meta.satellitesSince ?? null
-  const hasPrev = page > 1
-  const hasNext = entries.length === HISTORY_LIMIT
+  const hasMore = !end && entries.length >= loaded - 1
 
-  // Options distinctes (sur la page chargée) + application des filtres client.
-  const distinctTypes = Array.from(new Set(entries.map((e) => e.subject)))
+  // Types : liste COMPLÈTE des sujets d'audit connus (pas seulement ceux présents sur
+  // la page — sinon le filtre ment sur ce qu'on peut chercher). Triée par libellé.
+  // ⚠️ `KNOWN_SUBJECTS` est recopié de la doc back : il n'existe pas de référentiel
+  // `historySubjects` côté API → demande back (voir docs/backlog).
+  const distinctTypes = Array.from(KNOWN_SUBJECTS).sort((a, b) =>
+    subjectLabel(a).localeCompare(subjectLabel(b))
+  )
   const distinctAuthors = Array.from(
     new Set(
       entries
@@ -276,7 +303,7 @@ export function PartyHistoryTab({
   const selectCls =
     'border-border bg-background text-foreground rounded-md border px-2 py-1.5 text-sm'
 
-  if (entries.length === 0 && page === 1) {
+  if (entries.length === 0) {
     return (
       <p className="text-muted-foreground py-6 text-sm">
         {t('party.history.empty')}
@@ -436,30 +463,25 @@ export function PartyHistoryTab({
         </div>
       ))}
 
-      {hasPrev || hasNext ? (
-        <div className="flex items-center justify-between">
+      {hasMore ? (
+        <div className="flex flex-col items-center gap-1 pt-2">
           <Button
             variant="outline"
             size="sm"
-            disabled={!hasPrev}
-            onClick={() => setPage((current) => Math.max(1, current - 1))}
+            disabled={query.isFetching}
+            onClick={() => setLoaded((n) => n + HISTORY_LIMIT)}
           >
-            <ChevronLeft />
-            {t('party.history.prev')}
+            <ChevronDown />
+            {t('party.history.loadMore')}
           </Button>
           <span className="text-muted-foreground text-xs">
-            {t('party.history.page', { page })}
+            {t('party.history.loadedCount', { count: entries.length })}
           </span>
-          <Button
-            variant="outline"
-            size="sm"
-            disabled={!hasNext}
-            onClick={() => setPage((current) => current + 1)}
-          >
-            {t('party.history.next')}
-            <ChevronRight />
-          </Button>
         </div>
+      ) : entries.length > HISTORY_LIMIT ? (
+        <p className="text-muted-foreground pt-2 text-center text-xs">
+          {t('party.history.loadedAll', { count: entries.length })}
+        </p>
       ) : null}
     </div>
   )
