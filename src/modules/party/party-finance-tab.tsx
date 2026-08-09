@@ -4,6 +4,8 @@ import { Button } from '@/shared/ui/button'
 import { InitialsAvatar } from '@/shared/ui/initials-avatar'
 import { StatusChip } from '@/shared/ui/status-chip'
 import { formatMinor } from '@/shared/lib/money'
+import { MoneyText } from '@/shared/ui/money-text'
+import { useDateFormat } from '@/shared/lib/use-date-format'
 import { cn } from '@/shared/lib/cn'
 import { codeLabel, type ReferentialItem } from '@/shared/referentials'
 import { usePartyFinanceMutations } from './queries'
@@ -131,6 +133,7 @@ export function PartyFinanceTab({
   const { creditLimit, manager, taxExemption, policy, approvalRule } =
     usePartyFinanceMutations(publicId)
   const serviceTypeLabel = codeLabel(serviceTypes)
+  const date = useDateFormat()
   const [creditOpen, setCreditOpen] = React.useState(false)
   const [managerOpen, setManagerOpen] = React.useState(false)
   const [exemptionOpen, setExemptionOpen] = React.useState(false)
@@ -236,9 +239,11 @@ export function PartyFinanceTab({
                           {t('party.finance.base')}
                         </span>
                         <span className="flex items-center gap-1">
-                          <span className="text-muted-foreground tabular-nums">
-                            {formatMinor(socle.amountMinor, cur)} {cur}
-                          </span>
+                          <MoneyText
+                            minor={socle.amountMinor}
+                            currency={cur}
+                            className="text-muted-foreground"
+                          />
                           {editable
                             ? removeBtn(
                                 t('party.finance.remove'),
@@ -268,15 +273,18 @@ export function PartyFinanceTab({
                                 {expired
                                   ? t('party.finance.expired')
                                   : t('party.finance.until', {
-                                      date: e.validTo,
+                                      date: date.day(e.validTo),
                                     })}
                               </span>
                             ) : null}
                           </span>
                           <span className="flex items-center gap-1">
-                            <span className="tabular-nums text-emerald-600">
-                              +{formatMinor(e.amountMinor, cur)} {cur}
-                            </span>
+                            <MoneyText
+                              minor={e.amountMinor}
+                              currency={cur}
+                              signed
+                              className="text-emerald-600"
+                            />
                             {editable
                               ? removeBtn(
                                   t('party.finance.remove'),
@@ -371,7 +379,8 @@ export function PartyFinanceTab({
                   </span>
                   {exemption.validFrom || exemption.validTo ? (
                     <span className="text-muted-foreground text-sm tabular-nums">
-                      {exemption.validFrom ?? '…'} → {exemption.validTo ?? '…'}
+                      {date.day(exemption.validFrom) || '…'} →{' '}
+                      {date.day(exemption.validTo) || '…'}
                     </span>
                   ) : null}
                 </span>

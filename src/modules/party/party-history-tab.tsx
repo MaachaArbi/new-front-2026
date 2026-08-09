@@ -1,9 +1,9 @@
 import * as React from 'react'
-import { useIntl } from 'react-intl'
 import { ChevronDown, Search } from 'lucide-react'
 import { Button } from '@/shared/ui/button'
 import { SkeletonRow } from '@/shared/feedback'
 import { formatMinor } from '@/shared/lib/money'
+import { useDateFormat } from '@/shared/lib/use-date-format'
 import { InitialsAvatar } from '@/shared/ui/initials-avatar'
 import { usePartyHistory } from './queries'
 import type { PartyHistoryEntry } from './api'
@@ -131,7 +131,6 @@ export function PartyHistoryTab({
   serviceTypeLabel: (code: string) => string
   t: Translate
 }) {
-  const intl = useIntl()
   // « Charger plus » : on ne ramène PAS tout — on charge par tranches de HISTORY_LIMIT
   // (20, 40, 60…). `keepPreviousData` évite le clignotement pendant l'agrandissement.
   const [loaded, setLoaded] = React.useState(HISTORY_LIMIT)
@@ -144,10 +143,7 @@ export function PartyHistoryTab({
   const [actionFilter, setActionFilter] = React.useState('')
   const [authorFilter, setAuthorFilter] = React.useState('')
 
-  const fmtDay = (iso: string) =>
-    intl.formatDate(iso, { day: 'numeric', month: 'long', year: 'numeric' })
-  const fmtTime = (iso: string) =>
-    intl.formatDate(iso, { hour: '2-digit', minute: '2-digit' })
+  const { day: fmtDay, time: fmtTime } = useDateFormat()
 
   const subjectLabel = (subject: string) =>
     KNOWN_SUBJECTS.has(subject)

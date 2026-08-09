@@ -1,5 +1,4 @@
 import * as React from 'react'
-import { useIntl } from 'react-intl'
 import { useLocation, useNavigate, useParams } from 'react-router-dom'
 import {
   Activity,
@@ -39,6 +38,7 @@ import { formatMinor } from '@/shared/lib/money'
 import './party-detail-page.css'
 import { Card, CardHead, Gauge, StatValue } from '@/shared/ui/panel'
 import { RowActions } from '@/shared/ui/row-actions'
+import { useDateFormat } from '@/shared/lib/use-date-format'
 import { InitialsAvatar } from '@/shared/ui/initials-avatar'
 import {
   usePartyAccount,
@@ -208,11 +208,8 @@ export function PartyDetailPage() {
   const functionMutations = usePartyFunctionMutations(id)
   const { manager: managerMutations } = usePartyFinanceMutations(id)
   const anonymize = useAnonymizePartyAccount(id)
-  const intl = useIntl()
-  const fmtDate = (iso: string | null): string | null =>
-    iso
-      ? intl.formatDate(iso, { day: 'numeric', month: 'long', year: 'numeric' })
-      : null
+  const date = useDateFormat()
+  const fmtDate = (iso: string | null) => (iso ? date.day(iso) : null)
 
   const summary = (location.state as { summary?: PartyAccountListItem } | null)
     ?.summary
@@ -565,22 +562,6 @@ export function PartyDetailPage() {
   const recentEntries = recentHistory.data?.data ?? []
 
   // Ligne méta de l'en-tête — uniquement des données réelles déjà chargées.
-  // « il y a 2 h » : Intl.RelativeTimeFormat via react-intl, jamais une date brute.
-  const fmtRelative = (iso: string): string => {
-    const diffMs = new Date(iso).getTime() - Date.now()
-    const abs = Math.abs(diffMs)
-    const units: [Intl.RelativeTimeFormatUnit, number][] = [
-      ['year', 31_536_000_000],
-      ['month', 2_592_000_000],
-      ['day', 86_400_000],
-      ['hour', 3_600_000],
-      ['minute', 60_000],
-    ]
-    for (const [unit, ms] of units) {
-      if (abs >= ms) return intl.formatRelativeTime(Math.round(diffMs / ms), unit)
-    }
-    return intl.formatRelativeTime(0, 'minute')
-  }
   const headerMeta: string[] = []
   if (organization?.taxId) headerMeta.push(organization.taxId)
   if (view.roles.length > 0)
@@ -596,16 +577,15 @@ export function PartyDetailPage() {
     headerMeta.push(
       who
         ? t('party.detail.modifiedByRel', {
-            when: fmtRelative(view.updatedAt),
+            when: date.relative(view.updatedAt),
             who,
           })
-        : t('party.detail.modifiedRel', { when: fmtRelative(view.updatedAt) })
+        : t('party.detail.modifiedRel', { when: date.relative(view.updatedAt) })
     )
   }
   const subjectLabel = (subject: string) =>
     KNOWN_SUBJECTS.has(subject) ? t(`party.history.subject.${subject}`) : subject
-  const fmtActivity = (iso: string) =>
-    intl.formatDate(iso, { day: 'numeric', month: 'short' })
+  const fmtActivity = date.short
 
   const anonymizeError =
     anonymize.error instanceof ApiError
@@ -1470,7 +1450,7 @@ export function PartyDetailPage() {
                             </div>
                             <StatValue
                               value={formatMinor(g.effectiveMinor, g.currencyCode)}
-                              unit={g.currencyCode}
+                              unit={g.currencyCode ?? undefined}
                             />
                           </div>
                         ))

@@ -9,6 +9,7 @@ import {
   Upload,
 } from 'lucide-react'
 import { Button } from '@/shared/ui/button'
+import { useDateFormat } from '@/shared/lib/use-date-format'
 import { StatusChip, type StatusTone } from '@/shared/ui/status-chip'
 import { CountryDisplay } from '@/shared/ui/country-display'
 import {
@@ -90,6 +91,7 @@ export function PartyDocumentsCard({
   t: Translate
 }) {
   const { remove, setFile, removeFile } = usePartyDocumentMutations(publicId)
+  const date = useDateFormat()
   const inputRef = React.useRef<HTMLInputElement>(null)
   const pendingDocId = React.useRef<string | null>(null)
   const [sheetOpen, setSheetOpen] = React.useState(false)
@@ -202,12 +204,12 @@ export function PartyDocumentsCard({
                         status === 'expired'
                           ? 'party.document.expiredOn'
                           : 'party.document.expiresOn',
-                        { date: doc.expiryDate }
+                        { date: date.day(doc.expiryDate) }
                       )}
                     </span>
                   ) : doc.issueDate ? (
                     <span className="text-muted-foreground tabular-nums">
-                      {t('party.document.issuedOn', { date: doc.issueDate })}
+                      {t('party.document.issuedOn', { date: date.day(doc.issueDate) })}
                     </span>
                   ) : null}
                   {status ? (
