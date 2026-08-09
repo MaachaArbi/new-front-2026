@@ -82,6 +82,7 @@ import { PartyFinanceTab } from './party-finance-tab'
 import { PartyDocumentsCard } from './party-documents-card'
 import { SkeletonRow } from '@/shared/feedback'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/shared/ui/tabs'
+import { EventPhrase } from '@/shared/ui/timeline'
 import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
@@ -1071,17 +1072,14 @@ export function PartyDetailPage() {
                     >
                       <span className="flex min-w-0 items-center gap-3">
                         <span className="bg-muted-foreground/40 size-2 shrink-0 rounded-full" />
-                        <span className="truncate">
-                          <span className="text-foreground font-medium">
-                            {entry.actor?.displayName ?? '—'}
-                          </span>
-                          <span className="text-muted-foreground">
-                            {' · '}
-                            {subjectLabel(entry.subject)}
-                            {' · '}
-                            {t(`party.history.op.${entry.operation}`)}
-                          </span>
-                        </span>
+                        <EventPhrase
+                          className="truncate"
+                          actor={entry.actor?.displayName ?? '—'}
+                          parts={[
+                            subjectLabel(entry.subject),
+                            t(`party.history.op.${entry.operation}`),
+                          ]}
+                        />
                       </span>
                       <span className="text-muted-foreground shrink-0 text-xs">
                         {fmtActivity(entry.at)}

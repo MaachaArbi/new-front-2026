@@ -6,6 +6,7 @@ import { formatMinor } from '@/shared/lib/money'
 import { useDateFormat } from '@/shared/lib/use-date-format'
 import { InitialsAvatar } from '@/shared/ui/initials-avatar'
 import { SelectField } from '@/shared/ui/select'
+import { EventPhrase, TimelineDay, TimelineNode } from '@/shared/ui/timeline'
 import { usePartyHistory } from './queries'
 import type { PartyHistoryEntry } from './api'
 
@@ -341,79 +342,67 @@ export function PartyHistoryTab({
       {/* Timeline SANS cards : un trait vertical, l'avatar = nœud, groupé par jour.
           Ligne « qui · quoi · quand » ; le détail (avant → après) se déplie. */}
       {groupByDay(filtered, fmtDay).map((group) => (
-        <div key={group.day}>
-          <div className="text-muted-foreground mt-2 mb-1 text-[11px] font-semibold tracking-wider uppercase">
-            {group.day}
-          </div>
-          <div className="relative">
-            <span
-              aria-hidden
-              className="bg-border absolute start-3 top-3 bottom-3 w-px"
-            />
-            {group.rows.map(({ entry, index }) => {
-              const currencyInEntry =
-                entry.changes.find((change) => change.field === 'currencyCode')
-                  ?.after ?? null
-              const actorName = entry.actor
-                ? entry.actor.displayName
-                : t('party.history.priorTrace', {
-                    date: since ? fmtDay(since) : '',
-                  })
-              const hasChanges = entry.changes.length > 0
-              return (
-                <details
-                  key={`${entry.at}-${entry.subject}-${index}`}
-                  className="group"
-                >
-                  <summary className="flex cursor-pointer list-none items-start justify-between gap-3 py-2.5 [&::-webkit-details-marker]:hidden">
-                    <span className="flex min-w-0 items-start gap-3">
-                      <span className="ring-background relative z-10 inline-flex rounded-full ring-4">
-                        <InitialsAvatar
-                          name={actorName}
-                          size="sm"
-                          muted={!entry.actor}
-                        />
-                      </span>
-                      <span className="min-w-0 pt-0.5 text-sm">
-                        <span className="text-foreground font-medium">
-                          {actorName}
-                        </span>
+        <TimelineDay key={group.day} label={group.day}>
+          {group.rows.map(({ entry, index }) => {
+            const currencyInEntry =
+              entry.changes.find((change) => change.field === 'currencyCode')
+                ?.after ?? null
+            const actorName = entry.actor
+              ? entry.actor.displayName
+              : t('party.history.priorTrace', {
+                  date: since ? fmtDay(since) : '',
+                })
+            const hasChanges = entry.changes.length > 0
+            return (
+              <details
+                key={`${entry.at}-${entry.subject}-${index}`}
+                className="group"
+              >
+                <summary className="flex cursor-pointer list-none items-start justify-between gap-3 py-2.5 [&::-webkit-details-marker]:hidden">
+                  <span className="flex min-w-0 items-start gap-3">
+                    <TimelineNode>
+                      <InitialsAvatar
+                        name={actorName}
+                        size="sm"
+                        muted={!entry.actor}
+                      />
+                    </TimelineNode>
+                    <EventPhrase
+                      className="pt-0.5 text-sm"
+                      actor={actorName}
+                      parts={[
+                        subjectLabel(entry.subject),
+                        t(`party.history.op.${entry.operation}`),
+                      ]}
+                    />
+                  </span>
+                  <span className="text-muted-foreground flex shrink-0 items-center gap-2 pt-0.5 text-xs">
+                    {fmtTime(entry.at)}
+                    {hasChanges ? (
+                      <ChevronDown className="size-4 transition-transform group-open:rotate-180" />
+                    ) : null}
+                  </span>
+                </summary>
+                {hasChanges ? (
+                  <div className="ms-9 grid grid-cols-[minmax(0,10rem)_1fr] gap-x-3 gap-y-1 pb-3 text-sm">
+                    {entry.changes.map((change, changeIndex) => (
+                      <React.Fragment key={changeIndex}>
                         <span className="text-muted-foreground">
-                          {' · '}
-                          {subjectLabel(entry.subject)}
-                          {' · '}
-                          {t(`party.history.op.${entry.operation}`)}
+                          {fieldLabel(change.field)}
                         </span>
-                      </span>
-                    </span>
-                    <span className="text-muted-foreground flex shrink-0 items-center gap-2 pt-0.5 text-xs">
-                      {fmtTime(entry.at)}
-                      {hasChanges ? (
-                        <ChevronDown className="size-4 transition-transform group-open:rotate-180" />
-                      ) : null}
-                    </span>
-                  </summary>
-                  {hasChanges ? (
-                    <div className="ms-9 grid grid-cols-[minmax(0,10rem)_1fr] gap-x-3 gap-y-1 pb-3 text-sm">
-                      {entry.changes.map((change, changeIndex) => (
-                        <React.Fragment key={changeIndex}>
-                          <span className="text-muted-foreground">
-                            {fieldLabel(change.field)}
-                          </span>
-                          <span className="text-foreground">
-                            {FILE_FIELDS.has(change.field)
-                              ? t('party.history.fileChanged')
-                              : `${formatValue(change.field, change.before, currencyInEntry)} → ${formatValue(change.field, change.after, currencyInEntry)}`}
-                          </span>
-                        </React.Fragment>
-                      ))}
-                    </div>
-                  ) : null}
-                </details>
-              )
-            })}
-          </div>
-        </div>
+                        <span className="text-foreground">
+                          {FILE_FIELDS.has(change.field)
+                            ? t('party.history.fileChanged')
+                            : `${formatValue(change.field, change.before, currencyInEntry)} → ${formatValue(change.field, change.after, currencyInEntry)}`}
+                        </span>
+                      </React.Fragment>
+                    ))}
+                  </div>
+                ) : null}
+              </details>
+            )
+          })}
+        </TimelineDay>
       ))}
 
       {hasMore ? (
