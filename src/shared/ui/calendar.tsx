@@ -35,25 +35,19 @@ function todayIso(): string {
 }
 
 /**
- * Premier jour de la semaine selon la langue : lundi en français, dimanche en anglais
- * américain. `weekInfo` n'existe pas dans tous les navigateurs — à défaut, lundi, qui
- * est la convention en Tunisie comme en France.
+ * Premier jour de la semaine.
+ *
+ * Ce n'est PAS une affaire de langue mais de PAYS : un Tunisien qui met l'interface en
+ * arabe travaille toujours du lundi au vendredi. Se fier à la langue donnerait samedi à
+ * tout arabophone — or nous n'avons qu'un seul « arabe », donc l'erreur serait
+ * systématique à Tunis comme à Alger.
+ *
+ * Lundi par défaut : c'est la convention des trois pays où l'agence opère — Tunisie,
+ * Algérie, France. Le jour où l'API exposera le pays du bureau (`/me`, même manque que
+ * pour l'indicatif téléphonique par défaut), on le lira ici : la norme le donne pour
+ * chaque pays, et le Golfe basculerait alors sur samedi tout seul.
  */
-function firstDayOfWeek(locale: string): number {
-  try {
-    const info = new Intl.Locale(locale) as Intl.Locale & {
-      weekInfo?: { firstDay?: number }
-      getWeekInfo?: () => { firstDay?: number }
-    }
-    const week = info.getWeekInfo?.() ?? info.weekInfo
-    const first = week?.firstDay
-    // La norme numérote lundi = 1 … dimanche = 7 ; `getDay()` numérote dimanche = 0.
-    if (typeof first === 'number') return first === 7 ? 0 : first
-  } catch {
-    /* langue exotique : on garde le défaut */
-  }
-  return 1
-}
+const FIRST_DAY_OF_WEEK = 1 // lundi (dimanche = 0, comme `Date.getDay()`)
 
 export function Calendar({
   /** Jour sélectionné, en ISO. Chaîne vide = aucun. */
@@ -89,8 +83,6 @@ export function Calendar({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [value])
 
-  const first = firstDayOfWeek(intl.locale)
-
   const monthLabel = intl.formatDate(new Date(cursor.y, cursor.m, 1), {
     month: 'long',
     year: 'numeric',
@@ -101,16 +93,16 @@ export function Calendar({
     const format = new Intl.DateTimeFormat(intl.locale, { weekday: 'short' })
     return Array.from({ length: 7 }, (_, i) => {
       // 2024-01-07 est un dimanche : point de départ connu, hors de tout fuseau utile.
-      const day = new Date(2024, 0, 7 + ((first + i) % 7))
+      const day = new Date(2024, 0, 7 + ((FIRST_DAY_OF_WEEK + i) % 7))
       return format.format(day)
     })
-  }, [intl.locale, first])
+  }, [intl.locale])
 
   // Grille : on remonte au premier jour de semaine précédant le 1er du mois, puis on
   // avance de 42 cases — six semaines, la seule taille qui ne saute jamais.
   const cells = React.useMemo(() => {
     const firstOfMonth = new Date(cursor.y, cursor.m, 1)
-    const shift = (firstOfMonth.getDay() - first + 7) % 7
+    const shift = (firstOfMonth.getDay() - FIRST_DAY_OF_WEEK + 7) % 7
     return Array.from({ length: 42 }, (_, i) => {
       const day = new Date(cursor.y, cursor.m, 1 - shift + i)
       return {
@@ -119,7 +111,7 @@ export function Calendar({
         outside: day.getMonth() !== cursor.m,
       }
     })
-  }, [cursor, first])
+  }, [cursor])
 
   const move = (delta: number) =>
     setCursor((c) => {
