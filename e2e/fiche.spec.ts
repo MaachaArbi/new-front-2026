@@ -1,4 +1,5 @@
 import { test } from '@playwright/test'
+import { signIn, signOut } from './session'
 import fs from 'node:fs'
 
 /**
@@ -6,20 +7,13 @@ import fs from 'node:fs'
  * Clair + sombre — pour valider que les tokens tiennent dans les deux thèmes.
  */
 const SHOTS = 'e2e/screenshots'
-const EMAIL = process.env.E2E_USER ?? 'salma.ben.amor@demo.ostravel.tn'
-const PASSWORD = 'Demo-2026-OsTravel'
 
 test.use({ viewport: { width: 1600, height: 1180 } })
 test.beforeAll(() => fs.mkdirSync(SHOTS, { recursive: true }))
 
 test('fiche Tiers — clair + sombre', async ({ page }) => {
   test.setTimeout(90_000)
-  await page.goto('/')
-  await page.fill('#login-email', EMAIL)
-  await page.fill('#login-password', PASSWORD)
-  await page.getByRole('button', { name: /se connecter/i }).click()
-  await page.waitForURL((u) => !u.pathname.match(/login|^\/$/), { timeout: 20000 })
-  await page.waitForTimeout(1500)
+  await signIn(page)
 
   await page.goto('/parties')
   await page.waitForTimeout(1500)
@@ -51,12 +45,15 @@ test('fiche Tiers — clair + sombre', async ({ page }) => {
   await page.screenshot({ path: `${SHOTS}/fiche-voirtout.png` })
 
   // Filtre Action = « modifié » → ne reste que les UPDATE (vérifie le filtrage client).
-  await page
-    .getByLabel(/filtrer par action/i)
-    .selectOption({ label: 'modifié' })
+  const actionFilter = page.getByRole('combobox', {
+    name: /filtrer par action/i,
+  })
+  await actionFilter.click()
+  await page.getByRole('option', { name: 'modifié' }).click()
   await page.waitForTimeout(600)
   await page.screenshot({ path: `${SHOTS}/fiche-hist-filtre.png` })
-  await page.getByLabel(/filtrer par action/i).selectOption('')
+  await actionFilter.click()
+  await page.getByRole('option', { name: /toutes les actions/i }).click()
   await page.waitForTimeout(300)
 
   // Déplie une entrée « Adresse » → vérifie l'humanisation du détail (libellés + Oui/Non).
@@ -140,4 +137,6 @@ test('fiche Tiers — clair + sombre', async ({ page }) => {
   await page.reload()
   await page.waitForTimeout(2500)
   await page.screenshot({ path: `${SHOTS}/fiche-mobile.png`, fullPage: true })
+
+  await signOut(page)
 })

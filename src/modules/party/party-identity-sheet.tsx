@@ -10,6 +10,7 @@ import {
 } from '@/shared/ui/sheet'
 import { Input } from '@/shared/ui/input'
 import { Button } from '@/shared/ui/button'
+import { SelectField } from '@/shared/ui/select'
 import type { ReferentialItem } from '@/shared/referentials'
 import { usePutPersonIdentity, usePutOrganizationIdentity } from './queries'
 import type {
@@ -162,23 +163,13 @@ export function PartyIdentitySheet({
                 value={tradeRegister}
                 onChange={setTradeRegister}
               />
-              <label className="flex flex-col gap-1">
-                <span className="text-muted-foreground text-sm">
-                  {t('party.detail.field.legalForm')}
-                </span>
-                <select
-                  value={legalFormCode}
-                  onChange={(event) => setLegalFormCode(event.target.value)}
-                  className="border-input bg-background h-9 rounded-md border px-3 text-sm"
-                >
-                  <option value="">—</option>
-                  {legalForms.map((form) => (
-                    <option key={form.code} value={form.code}>
-                      {form.label}
-                    </option>
-                  ))}
-                </select>
-              </label>
+              <SelectField
+                label={t('party.detail.field.legalForm')}
+                value={legalFormCode}
+                onChange={setLegalFormCode}
+                emptyLabel="—"
+                options={legalForms}
+              />
               <LabeledInput
                 label={t('party.detail.field.website')}
                 value={website}

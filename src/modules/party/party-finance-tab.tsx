@@ -179,7 +179,8 @@ export function PartyFinanceTab({
     return Array.from(map.values()).map((g) => {
       let effective = g.socle ? BigInt(g.socle.amountMinor) : 0n
       for (const e of g.extensions) {
-        if (!e.validTo || e.validTo >= todayIso) effective += BigInt(e.amountMinor)
+        if (!e.validTo || e.validTo >= todayIso)
+          effective += BigInt(e.amountMinor)
       }
       return { ...g, effectiveMinor: effective.toString() }
     })
@@ -303,7 +304,9 @@ export function PartyFinanceTab({
             })}
           </div>
         ) : (
-          <EmptyState className="px-0">{t('party.finance.creditLimits.empty')}</EmptyState>
+          <EmptyState className="px-0">
+            {t('party.finance.creditLimits.empty')}
+          </EmptyState>
         )}
       </section>
 
@@ -344,7 +347,9 @@ export function PartyFinanceTab({
             ))}
           </div>
         ) : (
-          <EmptyState className="px-0">{t('party.finance.managers.empty')}</EmptyState>
+          <EmptyState className="px-0">
+            {t('party.finance.managers.empty')}
+          </EmptyState>
         )}
       </section>
 
@@ -418,7 +423,9 @@ export function PartyFinanceTab({
             ))}
           </div>
         ) : (
-          <EmptyState className="px-0">{t('party.finance.taxExemptions.empty')}</EmptyState>
+          <EmptyState className="px-0">
+            {t('party.finance.taxExemptions.empty')}
+          </EmptyState>
         )}
       </section>
 
@@ -509,7 +516,9 @@ export function PartyFinanceTab({
             ))}
           </div>
         ) : (
-          <EmptyState className="px-0">{t('party.finance.commercialPolicy.empty')}</EmptyState>
+          <EmptyState className="px-0">
+            {t('party.finance.commercialPolicy.empty')}
+          </EmptyState>
         )}
       </section>
 
@@ -554,7 +563,9 @@ export function PartyFinanceTab({
             ))}
           </div>
         ) : (
-          <EmptyState className="px-0">{t('party.finance.approvalRules.empty')}</EmptyState>
+          <EmptyState className="px-0">
+            {t('party.finance.approvalRules.empty')}
+          </EmptyState>
         )}
       </section>
 

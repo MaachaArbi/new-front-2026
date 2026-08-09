@@ -552,7 +552,9 @@ export function PartyDetailPage() {
     )
   }
   const subjectLabel = (subject: string) =>
-    KNOWN_SUBJECTS.has(subject) ? t(`party.history.subject.${subject}`) : subject
+    KNOWN_SUBJECTS.has(subject)
+      ? t(`party.history.subject.${subject}`)
+      : subject
   const fmtActivity = date.short
 
   const anonymizeError =
@@ -663,7 +665,7 @@ export function PartyDetailPage() {
                   matricule, rôles, bureau, dernière modification (+ son auteur, pris
                   de l'historique déjà chargé pour « Activité récente »). */}
               {headerMeta.length > 0 ? (
-                <p className="text-muted-foreground mt-1 flex flex-wrap items-center gap-x-2 text-2sm">
+                <p className="text-muted-foreground text-2sm mt-1 flex flex-wrap items-center gap-x-2">
                   {headerMeta.map((bit, i) => (
                     <React.Fragment key={i}>
                       {i > 0 ? (
@@ -760,7 +762,7 @@ export function PartyDetailPage() {
         {/* Bande d'onglets — soulignement (et NON segmented control) : mesuré, le
             segmented déborde sur le rail avec 7 onglets + icônes. Le layout-21 l'utilise
             avec 4 libellés courts ; ici le soulignement reste le bon choix. */}
-        <div className="border-border flex items-end overflow-x-auto border-b ps-4 lg:border-e lg:min-w-0 lg:ps-6 lg:pe-6 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+        <div className="border-border flex [scrollbar-width:none] items-end overflow-x-auto border-b ps-4 lg:min-w-0 lg:border-e lg:ps-6 lg:pe-6 [&::-webkit-scrollbar]:hidden">
           <TabsList variant="line" size="md" className="gap-5 border-b-0!">
             <TabsTrigger value="overview">
               <LayoutGrid />
@@ -970,7 +972,9 @@ export function PartyDetailPage() {
                         </span>
                         <button
                           type="button"
-                          onClick={() => navigate(`/parties/${parent.publicId}`)}
+                          onClick={() =>
+                            navigate(`/parties/${parent.publicId}`)
+                          }
                           className="text-primary font-medium hover:underline"
                         >
                           {parent.displayName}
@@ -1088,7 +1092,7 @@ export function PartyDetailPage() {
               ) : (
                 <EmptyState>{t('party.detail.activity.empty')}</EmptyState>
               )}
-              <p className="text-muted-foreground/70 border-border border-t px-4 py-2.5 text-2xs">
+              <p className="text-muted-foreground/70 border-border text-2xs border-t px-4 py-2.5">
                 {t('party.detail.soon.body')}
               </p>
             </Card>
@@ -1411,7 +1415,10 @@ export function PartyDetailPage() {
                                 : t('party.finance.allServices')}
                             </div>
                             <StatValue
-                              value={formatMinor(g.effectiveMinor, g.currencyCode)}
+                              value={formatMinor(
+                                g.effectiveMinor,
+                                g.currencyCode
+                              )}
                               unit={g.currencyCode ?? undefined}
                             />
                           </div>
@@ -1424,7 +1431,7 @@ export function PartyDetailPage() {
                         pending
                         pendingLabel={t('party.detail.pending')}
                       />
-                      <div className="flex items-baseline justify-between gap-2 text-2sm">
+                      <div className="text-2sm flex items-baseline justify-between gap-2">
                         <span className="text-muted-foreground">
                           {t('party.finance.availableCredit')}
                         </span>
@@ -1486,7 +1493,9 @@ export function PartyDetailPage() {
                             <PhoneDisplay value={view.phoneSecondary} />
                             <button
                               type="button"
-                              onClick={() => copyText(view.phoneSecondary ?? '')}
+                              onClick={() =>
+                                copyText(view.phoneSecondary ?? '')
+                              }
                               aria-label={t('common.copy')}
                               className="text-muted-foreground hover:text-foreground"
                             >
@@ -1538,7 +1547,10 @@ export function PartyDetailPage() {
                   </RailRow>
 
                   <RailGroupTitle title={t('party.detail.section.identity')} />
-                  <RailRow icon={<Building2 />} label={t('party.column.nature')}>
+                  <RailRow
+                    icon={<Building2 />}
+                    label={t('party.column.nature')}
+                  >
                     {t(`party.nature.${view.nature}`)}
                   </RailRow>
                   <RailRow icon={<Handshake />} label={t('party.column.roles')}>

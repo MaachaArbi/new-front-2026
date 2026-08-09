@@ -210,7 +210,9 @@ export function PartyDocumentsCard({
                     </span>
                   ) : doc.issueDate ? (
                     <span className="text-muted-foreground tabular-nums">
-                      {t('party.document.issuedOn', { date: date.day(doc.issueDate) })}
+                      {t('party.document.issuedOn', {
+                        date: date.day(doc.issueDate),
+                      })}
                     </span>
                   ) : null}
                   {status ? (
@@ -245,49 +247,49 @@ export function PartyDocumentsCard({
                       ) : null}
                     </span>
                   )}
-                {editable ? (
-                  <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                      <Button
-                        size="sm"
-                        mode="icon"
-                        variant="ghost"
-                        className="text-muted-foreground"
-                        aria-label={t('party.document.actions')}
-                      >
-                        <MoreVertical />
-                      </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end" className="min-w-48">
-                      <DropdownMenuItem onSelect={() => openEdit(doc)}>
-                        <Pencil />
-                        {t('party.document.edit')}
-                      </DropdownMenuItem>
-                      {doc.hasFile ? (
-                        <>
-                          <DropdownMenuItem onSelect={() => pickFile(doc)}>
-                            <Upload />
-                            {t('party.document.replace')}
-                          </DropdownMenuItem>
-                          <DropdownMenuItem
-                            onSelect={() => removeFile.mutate(doc.publicId)}
-                          >
-                            <FileX />
-                            {t('party.document.removeFile')}
-                          </DropdownMenuItem>
-                        </>
-                      ) : null}
-                      <DropdownMenuSeparator />
-                      <DropdownMenuItem
-                        variant="destructive"
-                        onSelect={() => setToDelete(doc)}
-                      >
-                        <Trash2 />
-                        {t('party.document.delete')}
-                      </DropdownMenuItem>
-                    </DropdownMenuContent>
-                  </DropdownMenu>
-                ) : null}
+                  {editable ? (
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <Button
+                          size="sm"
+                          mode="icon"
+                          variant="ghost"
+                          className="text-muted-foreground"
+                          aria-label={t('party.document.actions')}
+                        >
+                          <MoreVertical />
+                        </Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="end" className="min-w-48">
+                        <DropdownMenuItem onSelect={() => openEdit(doc)}>
+                          <Pencil />
+                          {t('party.document.edit')}
+                        </DropdownMenuItem>
+                        {doc.hasFile ? (
+                          <>
+                            <DropdownMenuItem onSelect={() => pickFile(doc)}>
+                              <Upload />
+                              {t('party.document.replace')}
+                            </DropdownMenuItem>
+                            <DropdownMenuItem
+                              onSelect={() => removeFile.mutate(doc.publicId)}
+                            >
+                              <FileX />
+                              {t('party.document.removeFile')}
+                            </DropdownMenuItem>
+                          </>
+                        ) : null}
+                        <DropdownMenuSeparator />
+                        <DropdownMenuItem
+                          variant="destructive"
+                          onSelect={() => setToDelete(doc)}
+                        >
+                          <Trash2 />
+                          {t('party.document.delete')}
+                        </DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+                  ) : null}
                 </span>
               </div>
             )

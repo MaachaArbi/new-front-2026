@@ -1,4 +1,5 @@
 import { test } from '@playwright/test'
+import { signIn, signOut } from './session'
 
 /**
  * NETTOYAGE — retire de la fiche Sahara les interlocuteurs techniques attrapés par
@@ -9,17 +10,10 @@ import { test } from '@playwright/test'
  * (parent direct) — chercher le texte d'abord donnait des conteneurs trop larges.
  */
 const BAD = /anonymis|adr auth|auth\s|#\d{5,}/i
-const EMAIL = `${process.env.SEED_USER ?? 'karim.belhadj'}@demo.ostravel.tn`
 
 test('nettoyer les interlocuteurs parasites', async ({ page }) => {
   test.setTimeout(120_000)
-  await page.goto('/')
-  await page.fill('#login-email', EMAIL)
-  await page.fill('#login-password', 'Demo-2026-OsTravel')
-  await page.getByRole('button', { name: /se connecter/i }).click()
-  await page.waitForURL((u) => !u.pathname.match(/login|^\/$/), { timeout: 20000 })
-  await page.goto('/parties')
-  await page.waitForTimeout(1500)
+  await signIn(page)
   const s = page.getByPlaceholder(/rechercher un tiers/i)
   if ((await s.count()) > 0) {
     await s.fill('sahara')
@@ -51,4 +45,6 @@ test('nettoyer les interlocuteurs parasites', async ({ page }) => {
   const left = await page.evaluate(() => document.body.innerText)
   console.log('CLEAN parasites restants : ' + (BAD.test(left) ? 'OUI' : 'non'))
   await page.screenshot({ path: 'e2e/screenshots/cleanup-result.png' })
+
+  await signOut(page)
 })

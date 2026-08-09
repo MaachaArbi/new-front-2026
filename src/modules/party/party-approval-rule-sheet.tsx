@@ -9,6 +9,7 @@ import {
 } from '@/shared/ui/sheet'
 import { Input } from '@/shared/ui/input'
 import { Button } from '@/shared/ui/button'
+import { SelectField } from '@/shared/ui/select'
 import { ApiError } from '@/shared/api/errors'
 import type { ReferentialItem } from '@/shared/referentials'
 import { usePartyAccounts, usePartyFinanceMutations } from './queries'
@@ -85,9 +86,6 @@ export function PartyApprovalRuleSheet({
     )
   }
 
-  const selectClass =
-    'border-input bg-background h-8.5 rounded-md border px-3 text-sm'
-
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
       <SheetContent>
@@ -100,22 +98,12 @@ export function PartyApprovalRuleSheet({
         <SheetBody className="flex flex-col gap-3">
           {error ? <p className="text-destructive text-xs">{error}</p> : null}
 
-          <label className="flex flex-col gap-1">
-            <span className="text-muted-foreground text-sm">
-              {t('party.finance.function')}
-            </span>
-            <select
-              value={functionCode}
-              onChange={(event) => setFunctionCode(event.target.value)}
-              className={selectClass}
-            >
-              {functions.map((item) => (
-                <option key={item.code} value={item.code}>
-                  {item.label}
-                </option>
-              ))}
-            </select>
-          </label>
+          <SelectField
+            label={t('party.finance.function')}
+            value={functionCode}
+            onChange={setFunctionCode}
+            options={functions}
+          />
 
           {selected ? (
             <div className="border-border flex flex-col gap-3 rounded-md border p-2">
@@ -131,29 +119,18 @@ export function PartyApprovalRuleSheet({
                   {t('party.detail.changePerson')}
                 </Button>
               </div>
-              <label className="flex flex-col gap-1">
-                <span className="text-muted-foreground text-xs">
-                  {t('party.finance.office')}
-                </span>
-                <select
-                  value={officeAccountId ?? ''}
-                  onChange={(event) =>
-                    setOfficeAccountId(
-                      event.target.value === ''
-                        ? null
-                        : Number(event.target.value)
-                    )
-                  }
-                  className={selectClass}
-                >
-                  <option value="">{t('party.finance.allOffices')}</option>
-                  {offices.map((office) => (
-                    <option key={office.value} value={office.value}>
-                      {office.label}
-                    </option>
-                  ))}
-                </select>
-              </label>
+              <SelectField
+                label={t('party.finance.office')}
+                value={officeAccountId === null ? '' : String(officeAccountId)}
+                onChange={(next) =>
+                  setOfficeAccountId(next === '' ? null : Number(next))
+                }
+                emptyLabel={t('party.finance.allOffices')}
+                options={offices.map((office) => ({
+                  code: String(office.value),
+                  label: office.label,
+                }))}
+              />
               <Button
                 variant="primary"
                 onClick={submit}

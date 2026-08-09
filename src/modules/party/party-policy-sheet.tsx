@@ -9,6 +9,7 @@ import {
   SheetTitle,
 } from '@/shared/ui/sheet'
 import { Button } from '@/shared/ui/button'
+import { SelectField } from '@/shared/ui/select'
 import { ApiError } from '@/shared/api/errors'
 import { usePartyFinanceMutations } from './queries'
 import type { OfficeChoice } from './party-credit-limit-sheet'
@@ -70,9 +71,6 @@ export function PartyPolicySheet({
       { onSuccess: () => onOpenChange(false) }
     )
 
-  const selectClass =
-    'border-input bg-background h-8.5 rounded-md border px-3 text-sm'
-
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
       <SheetContent>
@@ -85,28 +83,19 @@ export function PartyPolicySheet({
         <SheetBody className="flex flex-col gap-4">
           {error ? <p className="text-destructive text-xs">{error}</p> : null}
 
-          <label className="flex flex-col gap-1">
-            <span className="text-muted-foreground text-sm">
-              {t('party.finance.scope')}
-            </span>
-            <select
-              value={officeAccountId ?? ''}
-              disabled={isEdit}
-              onChange={(event) =>
-                setOfficeAccountId(
-                  event.target.value === '' ? null : Number(event.target.value)
-                )
-              }
-              className={selectClass}
-            >
-              <option value="">{t('party.finance.commonPolicy')}</option>
-              {offices.map((office) => (
-                <option key={office.value} value={office.value}>
-                  {office.label}
-                </option>
-              ))}
-            </select>
-          </label>
+          <SelectField
+            label={t('party.finance.scope')}
+            value={officeAccountId === null ? '' : String(officeAccountId)}
+            disabled={isEdit}
+            onChange={(next) =>
+              setOfficeAccountId(next === '' ? null : Number(next))
+            }
+            emptyLabel={t('party.finance.commonPolicy')}
+            options={offices.map((office) => ({
+              code: String(office.value),
+              label: office.label,
+            }))}
+          />
 
           <label className="flex items-center gap-2">
             <input

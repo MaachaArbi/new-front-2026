@@ -1,4 +1,5 @@
 import { test } from '@playwright/test'
+import { signIn, signOut } from './session'
 import fs from 'node:fs'
 
 /**
@@ -8,8 +9,6 @@ import fs from 'node:fs'
  */
 
 const SHOTS = 'e2e/screenshots'
-const EMAIL = 'mehdi.trabelsi@demo.ostravel.tn'
-const PASSWORD = 'Demo-2026-OsTravel'
 
 test.beforeAll(() => {
   fs.mkdirSync(SHOTS, { recursive: true })
@@ -21,10 +20,7 @@ test('connexion → liste → recherche → fiche', async ({ page }) => {
   await page.screenshot({ path: `${SHOTS}/01-login.png`, fullPage: true })
 
   // 2) Connexion avec un compte démo (Tunis)
-  await page.fill('#login-email', EMAIL)
-  await page.fill('#login-password', PASSWORD)
-  await page.getByRole('button', { name: /se connecter/i }).click()
-  await page.waitForTimeout(2500)
+  await signIn(page)
   await page.screenshot({ path: `${SHOTS}/02-apres-login.png`, fullPage: true })
 
   // 3) Liste des tiers
@@ -48,4 +44,6 @@ test('connexion → liste → recherche → fiche', async ({ page }) => {
     await page.waitForTimeout(2000)
     await page.screenshot({ path: `${SHOTS}/05-fiche.png`, fullPage: true })
   }
+
+  await signOut(page)
 })

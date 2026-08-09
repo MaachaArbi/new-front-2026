@@ -9,6 +9,7 @@ import {
 } from '@/shared/ui/sheet'
 import { Input } from '@/shared/ui/input'
 import { Button } from '@/shared/ui/button'
+import { SelectField } from '@/shared/ui/select'
 import { ApiError } from '@/shared/api/errors'
 import { usePartyAccounts, usePartyFinanceMutations } from './queries'
 import type { OfficeChoice } from './party-credit-limit-sheet'
@@ -82,9 +83,6 @@ export function PartyManagerSheet({
     )
   }
 
-  const selectClass =
-    'border-input bg-background h-8.5 rounded-md border px-3 text-sm'
-
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
       <SheetContent>
@@ -109,45 +107,27 @@ export function PartyManagerSheet({
                   {t('party.detail.changePerson')}
                 </Button>
               </div>
-              <label className="flex flex-col gap-1">
-                <span className="text-muted-foreground text-xs">
-                  {t('party.finance.assignmentType')}
-                </span>
-                <select
-                  value={assignmentType}
-                  onChange={(event) => setAssignmentType(event.target.value)}
-                  className={selectClass}
-                >
-                  {ASSIGNMENT_TYPES.map((code) => (
-                    <option key={code} value={code}>
-                      {t(`party.finance.assignment.${code}`)}
-                    </option>
-                  ))}
-                </select>
-              </label>
-              <label className="flex flex-col gap-1">
-                <span className="text-muted-foreground text-xs">
-                  {t('party.finance.office')}
-                </span>
-                <select
-                  value={officeAccountId ?? ''}
-                  onChange={(event) =>
-                    setOfficeAccountId(
-                      event.target.value === ''
-                        ? null
-                        : Number(event.target.value)
-                    )
-                  }
-                  className={selectClass}
-                >
-                  <option value="">{t('party.finance.allOffices')}</option>
-                  {offices.map((office) => (
-                    <option key={office.value} value={office.value}>
-                      {office.label}
-                    </option>
-                  ))}
-                </select>
-              </label>
+              <SelectField
+                label={t('party.finance.assignmentType')}
+                value={assignmentType}
+                onChange={setAssignmentType}
+                options={ASSIGNMENT_TYPES.map((code) => ({
+                  code,
+                  label: t(`party.finance.assignment.${code}`),
+                }))}
+              />
+              <SelectField
+                label={t('party.finance.office')}
+                value={officeAccountId === null ? '' : String(officeAccountId)}
+                onChange={(next) =>
+                  setOfficeAccountId(next === '' ? null : Number(next))
+                }
+                emptyLabel={t('party.finance.allOffices')}
+                options={offices.map((office) => ({
+                  code: String(office.value),
+                  label: office.label,
+                }))}
+              />
               <Button
                 variant="primary"
                 onClick={submit}

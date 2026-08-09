@@ -1,22 +1,14 @@
 import { test } from '@playwright/test'
+import { signIn, signOut } from './session'
 import fs from 'node:fs'
 
 const SHOTS = 'e2e/screenshots'
-const EMAIL = 'yasmine.gharbi@demo.ostravel.tn'
-const PASSWORD = 'Demo-2026-OsTravel'
 
 test.use({ viewport: { width: 1600, height: 680 } })
 test.beforeAll(() => fs.mkdirSync(SHOTS, { recursive: true }))
 
 test('page jetable /_ref', async ({ page }) => {
-  await page.goto('/')
-  await page.fill('#login-email', EMAIL)
-  await page.fill('#login-password', PASSWORD)
-  await page.getByRole('button', { name: /^se connecter$/i }).click()
-  await page.waitForURL((u) => !u.pathname.match(/login|^\/$/), {
-    timeout: 20000,
-  })
-  await page.waitForTimeout(1500)
+  await signIn(page)
   await page.goto('/_ref')
   await page.waitForTimeout(2500)
   const diag = await page.evaluate(() => {
@@ -78,4 +70,6 @@ test('page jetable /_ref', async ({ page }) => {
   await page.getByRole('button', { name: /documents/i }).first().click()
   await page.waitForTimeout(400)
   await page.screenshot({ path: `${SHOTS}/ref-documents.png` })
+
+  await signOut(page)
 })

@@ -9,6 +9,7 @@ import {
 } from '@/shared/ui/sheet'
 import { Input } from '@/shared/ui/input'
 import { Button } from '@/shared/ui/button'
+import { SelectField } from '@/shared/ui/select'
 import { ApiError } from '@/shared/api/errors'
 import { usePartyFinanceMutations } from './queries'
 import type { OfficeChoice } from './party-credit-limit-sheet'
@@ -161,41 +162,35 @@ export function PartyTaxExemptionSheet({
                 label={t('party.finance.office')}
                 error={errors.officeAccountId}
               >
-                <select
-                  value={officeAccountId ?? ''}
-                  onChange={(event) =>
-                    setOfficeAccountId(
-                      event.target.value === ''
-                        ? null
-                        : Number(event.target.value)
-                    )
+                <SelectField
+                  ariaLabel={t('party.finance.office')}
+                  value={
+                    officeAccountId === null ? '' : String(officeAccountId)
                   }
-                  className={selectClass}
-                >
-                  <option value="">{t('party.finance.chooseOffice')}</option>
-                  {offices.map((office) => (
-                    <option key={office.value} value={office.value}>
-                      {office.label}
-                    </option>
-                  ))}
-                </select>
+                  onChange={(next) =>
+                    setOfficeAccountId(next === '' ? null : Number(next))
+                  }
+                  emptyLabel={t('party.finance.chooseOffice')}
+                  options={offices.map((office) => ({
+                    code: String(office.value),
+                    label: office.label,
+                  }))}
+                />
               </LabeledField>
 
               <LabeledField
                 label={t('party.finance.exemptionType')}
                 error={errors.exemptionType}
               >
-                <select
+                <SelectField
+                  ariaLabel={t('party.finance.exemptionType')}
                   value={exemptionType}
-                  onChange={(event) => setExemptionType(event.target.value)}
-                  className={selectClass}
-                >
-                  {EXEMPTION_TYPES.map((code) => (
-                    <option key={code} value={code}>
-                      {t(`party.finance.exemption.${code}`)}
-                    </option>
-                  ))}
-                </select>
+                  onChange={setExemptionType}
+                  options={EXEMPTION_TYPES.map((code) => ({
+                    code,
+                    label: t(`party.finance.exemption.${code}`),
+                  }))}
+                />
               </LabeledField>
 
               <LabeledField

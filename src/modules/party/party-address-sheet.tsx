@@ -9,6 +9,8 @@ import {
 } from '@/shared/ui/sheet'
 import { Input } from '@/shared/ui/input'
 import { Button } from '@/shared/ui/button'
+import { SelectField } from '@/shared/ui/select'
+import { CountrySelect } from '@/shared/ui/country-select'
 import type { ReferentialItem } from '@/shared/referentials'
 import { usePartyAddressMutations } from './queries'
 import type { PartyAddress } from './api'
@@ -120,22 +122,12 @@ export function PartyAddressSheet({
           </SheetTitle>
         </SheetHeader>
         <SheetBody className="flex flex-col gap-4">
-          <label className="flex flex-col gap-1">
-            <span className="text-muted-foreground text-sm">
-              {t('party.address.type')}
-            </span>
-            <select
-              value={addressType}
-              onChange={(event) => setAddressType(event.target.value)}
-              className="border-input bg-background h-9 rounded-md border px-3 text-sm"
-            >
-              {addressTypes.map((type) => (
-                <option key={type.code} value={type.code}>
-                  {type.label}
-                </option>
-              ))}
-            </select>
-          </label>
+          <SelectField
+            label={t('party.address.type')}
+            value={addressType}
+            onChange={setAddressType}
+            options={addressTypes}
+          />
           <LabeledInput
             label={t('party.address.line1')}
             value={line1}
@@ -160,18 +152,12 @@ export function PartyAddressSheet({
             <span className="text-muted-foreground text-sm">
               {t('party.column.country')}
             </span>
-            <select
+            <CountrySelect
+              countries={countries}
               value={countryAlpha2}
-              onChange={(event) => setCountryAlpha2(event.target.value)}
-              className="border-input bg-background h-9 rounded-md border px-3 text-sm"
-            >
-              <option value="">—</option>
-              {countries.map((country) => (
-                <option key={country.code} value={country.code}>
-                  {country.label}
-                </option>
-              ))}
-            </select>
+              onChange={(next) => setCountryAlpha2(next ?? '')}
+              t={t}
+            />
           </label>
           <label className="flex items-center gap-2">
             <input

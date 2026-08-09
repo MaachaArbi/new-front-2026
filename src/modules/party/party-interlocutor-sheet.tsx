@@ -9,6 +9,7 @@ import {
 } from '@/shared/ui/sheet'
 import { Input } from '@/shared/ui/input'
 import { Button } from '@/shared/ui/button'
+import { SelectField } from '@/shared/ui/select'
 import { ApiError } from '@/shared/api/errors'
 import type { ReferentialItem } from '@/shared/referentials'
 import { usePartyAccounts, usePartyFunctionMutations } from './queries'
@@ -105,22 +106,12 @@ export function PartyInterlocutorSheet({
                   {t('party.detail.changePerson')}
                 </Button>
               </div>
-              <label className="flex flex-col gap-1">
-                <span className="text-muted-foreground text-xs">
-                  {t('party.detail.function')}
-                </span>
-                <select
-                  value={functionCode}
-                  onChange={(event) => setFunctionCode(event.target.value)}
-                  className="border-input bg-background h-8.5 rounded-md border px-3 text-sm"
-                >
-                  {functions.map((item) => (
-                    <option key={item.code} value={item.code}>
-                      {item.label}
-                    </option>
-                  ))}
-                </select>
-              </label>
+              <SelectField
+                label={t('party.detail.function')}
+                value={functionCode}
+                onChange={setFunctionCode}
+                options={functions}
+              />
               <Button
                 variant="primary"
                 onClick={submit}

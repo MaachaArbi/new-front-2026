@@ -5,6 +5,7 @@ import { SkeletonRow } from '@/shared/feedback'
 import { formatMinor } from '@/shared/lib/money'
 import { useDateFormat } from '@/shared/lib/use-date-format'
 import { InitialsAvatar } from '@/shared/ui/initials-avatar'
+import { SelectField } from '@/shared/ui/select'
 import { usePartyHistory } from './queries'
 import type { PartyHistoryEntry } from './api'
 
@@ -228,9 +229,7 @@ export function PartyHistoryTab({
   )
   const distinctAuthors = Array.from(
     new Set(
-      entries
-        .map((e) => e.actor?.displayName)
-        .filter((n): n is string => !!n)
+      entries.map((e) => e.actor?.displayName).filter((n): n is string => !!n)
     )
   )
   const searchLower = search.trim().toLowerCase()
@@ -256,14 +255,11 @@ export function PartyHistoryTab({
     }
     return true
   })
-  const filtersActive = !!(
-    search ||
-    typeFilter ||
-    actionFilter ||
-    authorFilter
-  )
-  const selectCls =
-    'border-border bg-background text-foreground rounded-md border px-2 py-1.5 text-sm'
+  const filtersActive = !!(search || typeFilter || actionFilter || authorFilter)
+  // Barre d'outils : le déclencheur partagé est `w-full` (utile en formulaire) — ici
+  // on le remet à largeur naturelle, avec un plancher pour que les trois filtres
+  // gardent le même gabarit quand leurs libellés diffèrent.
+  const filterTrigger = 'w-auto min-w-[9.5rem]'
 
   if (entries.length === 0) {
     return (
@@ -291,49 +287,43 @@ export function PartyHistoryTab({
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder={t('party.history.searchPlaceholder')}
-            className="border-border bg-background text-foreground w-full rounded-md border py-1.5 pe-2 ps-8 text-sm"
+            className="border-border bg-background text-foreground w-full rounded-md border py-1.5 ps-8 pe-2 text-sm"
           />
         </div>
-        <select
+        <SelectField
+          ariaLabel={t('party.history.filterTypeLabel')}
           value={typeFilter}
-          onChange={(e) => setTypeFilter(e.target.value)}
-          className={selectCls}
-          aria-label={t('party.history.filterTypeLabel')}
-        >
-          <option value="">{t('party.history.allTypes')}</option>
-          {distinctTypes.map((s) => (
-            <option key={s} value={s}>
-              {subjectLabel(s)}
-            </option>
-          ))}
-        </select>
-        <select
+          onChange={setTypeFilter}
+          emptyLabel={t('party.history.allTypes')}
+          options={distinctTypes.map((code) => ({
+            code,
+            label: subjectLabel(code),
+          }))}
+          triggerClassName={filterTrigger}
+        />
+        <SelectField
+          ariaLabel={t('party.history.filterActionLabel')}
           value={actionFilter}
-          onChange={(e) => setActionFilter(e.target.value)}
-          className={selectCls}
-          aria-label={t('party.history.filterActionLabel')}
-        >
-          <option value="">{t('party.history.allActions')}</option>
-          {['INSERT', 'UPDATE', 'DELETE'].map((op) => (
-            <option key={op} value={op}>
-              {t(`party.history.op.${op}`)}
-            </option>
-          ))}
-        </select>
+          onChange={setActionFilter}
+          emptyLabel={t('party.history.allActions')}
+          options={['INSERT', 'UPDATE', 'DELETE'].map((op) => ({
+            code: op,
+            label: t(`party.history.op.${op}`),
+          }))}
+          triggerClassName={filterTrigger}
+        />
         {distinctAuthors.length > 0 ? (
-          <select
+          <SelectField
+            ariaLabel={t('party.history.filterAuthorLabel')}
             value={authorFilter}
-            onChange={(e) => setAuthorFilter(e.target.value)}
-            className={selectCls}
-            aria-label={t('party.history.filterAuthorLabel')}
-          >
-            <option value="">{t('party.history.allAuthors')}</option>
-            {distinctAuthors.map((name) => (
-              <option key={name} value={name}>
-                {name}
-              </option>
-            ))}
-          </select>
+            onChange={setAuthorFilter}
+            emptyLabel={t('party.history.allAuthors')}
+            options={distinctAuthors.map((name) => ({
+              code: name,
+              label: name,
+            }))}
+            triggerClassName={filterTrigger}
+          />
         ) : null}
       </div>
       {filtersActive ? (
@@ -375,7 +365,7 @@ export function PartyHistoryTab({
                   key={`${entry.at}-${entry.subject}-${index}`}
                   className="group"
                 >
-                  <summary className="flex list-none cursor-pointer items-start justify-between gap-3 py-2.5 [&::-webkit-details-marker]:hidden">
+                  <summary className="flex cursor-pointer list-none items-start justify-between gap-3 py-2.5 [&::-webkit-details-marker]:hidden">
                     <span className="flex min-w-0 items-start gap-3">
                       <span className="ring-background relative z-10 inline-flex rounded-full ring-4">
                         <InitialsAvatar

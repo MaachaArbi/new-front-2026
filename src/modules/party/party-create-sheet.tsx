@@ -13,6 +13,7 @@ import { Input } from '@/shared/ui/input'
 import { PhoneInput } from '@/shared/ui/phone-input'
 import { CountrySelect } from '@/shared/ui/country-select'
 import { Button } from '@/shared/ui/button'
+import { SelectField } from '@/shared/ui/select'
 import { ApiError } from '@/shared/api/errors'
 import { useAuth } from '@/app/providers/auth-provider'
 import { officesOf, officeCountryOf } from '@/shared/auth/me'
@@ -147,9 +148,6 @@ export function PartyCreateSheet({
     )
   }
 
-  const selectClass =
-    'border-input bg-background h-9 rounded-md border px-3 text-sm'
-
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
       <SheetContent>
@@ -282,18 +280,17 @@ export function PartyCreateSheet({
                   label={t('party.create.relationType')}
                   error={errors.relationType}
                 >
-                  <select
+                  <SelectField
+                    ariaLabel={t('party.create.relationType')}
                     value={relationType}
-                    onChange={(event) =>
-                      setRelationType(
-                        event.target.value as 'customer' | 'supplier'
-                      )
+                    onChange={(next) =>
+                      setRelationType(next as 'customer' | 'supplier')
                     }
-                    className={selectClass}
-                  >
-                    <option value="customer">{roleLabel('customer')}</option>
-                    <option value="supplier">{roleLabel('supplier')}</option>
-                  </select>
+                    options={[
+                      { code: 'customer', label: roleLabel('customer') },
+                      { code: 'supplier', label: roleLabel('supplier') },
+                    ]}
+                  />
                 </LabeledField>
               </>
             ) : (

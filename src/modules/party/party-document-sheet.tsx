@@ -10,6 +10,7 @@ import {
 import { Input } from '@/shared/ui/input'
 import { Button } from '@/shared/ui/button'
 import { CountrySelect } from '@/shared/ui/country-select'
+import { SelectField } from '@/shared/ui/select'
 import { ApiError } from '@/shared/api/errors'
 import type { ReferentialItem } from '@/shared/referentials'
 import { usePartyDocumentMutations } from './queries'
@@ -145,17 +146,15 @@ export function PartyDocumentSheet({
                 {t(`party.document.type.${documentType}`)}
               </span>
             ) : (
-              <select
+              <SelectField
+                ariaLabel={t('party.document.type')}
                 value={documentType}
-                onChange={(event) => setDocumentType(event.target.value)}
-                className={dateClass}
-              >
-                {DOCUMENT_TYPES.map((code) => (
-                  <option key={code} value={code}>
-                    {t(`party.document.type.${code}`)}
-                  </option>
-                ))}
-              </select>
+                onChange={setDocumentType}
+                options={DOCUMENT_TYPES.map((code) => ({
+                  code,
+                  label: t(`party.document.type.${code}`),
+                }))}
+              />
             )}
           </LabeledField>
 

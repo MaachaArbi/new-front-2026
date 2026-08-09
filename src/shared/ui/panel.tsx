@@ -107,17 +107,20 @@ export function Gauge({
 }) {
   const pct =
     !pending && used != null && total ? Math.min(100, (used / total) * 100) : 0
-  const tone = pct > 85 ? 'bg-destructive' : pct > 60 ? 'bg-amber-500' : 'bg-emerald-500'
+  const tone =
+    pct > 85 ? 'bg-destructive' : pct > 60 ? 'bg-amber-500' : 'bg-emerald-500'
   return (
     <div>
-      <div className="mb-1.5 flex items-baseline justify-between gap-2 text-2sm">
+      <div className="text-2sm mb-1.5 flex items-baseline justify-between gap-2">
         <span className="text-muted-foreground">{label}</span>
         {pending ? (
           <span className="text-muted-foreground text-2xs tracking-wide uppercase">
             {pendingLabel}
           </span>
         ) : (
-          <span className="font-semibold tabular-nums">{Math.round(pct)} %</span>
+          <span className="font-semibold tabular-nums">
+            {Math.round(pct)} %
+          </span>
         )}
       </div>
       <div className="bg-muted h-2 w-full overflow-hidden rounded-full">
@@ -153,7 +156,9 @@ export function StatValue({
         {value}
       </span>
       {unit ? (
-        <span className="text-muted-foreground text-2sm font-medium">{unit}</span>
+        <span className="text-muted-foreground text-2sm font-medium">
+          {unit}
+        </span>
       ) : null}
     </span>
   )

@@ -1,4 +1,5 @@
 import { test } from '@playwright/test'
+import { signIn, signOut } from './session'
 
 /**
  * MÉDIAS DE DÉMO — pose le logo de l'agence et dépose les scans fournis par Arbi.
@@ -10,20 +11,12 @@ const LOGO = `${DIR}/Logo-vibrant-du-voyage-au-Sahara-small.png`
 const RC = `${DIR}/RC.webp`
 const CONTRAT = `${DIR}/RezLive NDA - International.pdf`
 
-const EMAIL = 'karim.belhadj@demo.ostravel.tn'
-const PASSWORD = 'Demo-2026-OsTravel'
 
 test('semer les médias', async ({ page }) => {
   test.setTimeout(180_000)
   const log = (m: string) => console.log('MEDIA ' + m)
 
-  await page.goto('/')
-  await page.fill('#login-email', EMAIL)
-  await page.fill('#login-password', PASSWORD)
-  await page.getByRole('button', { name: /se connecter/i }).click()
-  await page.waitForURL((u) => !u.pathname.match(/login|^\/$/), { timeout: 20000 })
-  await page.goto('/parties')
-  await page.waitForTimeout(1500)
+  await signIn(page)
   const search = page.getByPlaceholder(/rechercher un tiers/i)
   if ((await search.count()) > 0) {
     await search.fill('sahara')
@@ -72,4 +65,6 @@ test('semer les médias', async ({ page }) => {
 
   await page.screenshot({ path: 'e2e/screenshots/medias-result.png', fullPage: true })
   log('terminé')
+
+  await signOut(page)
 })

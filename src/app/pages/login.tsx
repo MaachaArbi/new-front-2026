@@ -57,21 +57,34 @@ export function LoginPage() {
     setValue,
     formState: { errors, isSubmitting },
   } = useForm<LoginForm>({ defaultValues: { email: '', password: '' } })
+  /**
+   * Trois cas distincts, et un seul mène au tunnel :
+   *  - `credentials` : 401, le couple e-mail / mot de passe est faux ;
+   *  - `server` : le serveur A RÉPONDU et refuse (409 « trois sessions au plus »,
+   *    403 origine non autorisée…) — son message est le plus précis qu'on ait,
+   *    on l'affiche tel quel ;
+   *  - `network` : rien n'est revenu — là seulement le tunnel est en cause.
+   *
+   * Avant, tout ce qui n'était pas 401 tombait dans `network` : un refus de session
+   * s'affichait « Serveur injoignable », ce qui envoie chercher la panne au mauvais
+   * endroit — c'est exactement ce qui s'est produit en test.
+   */
   const [errorKind, setErrorKind] = React.useState<
     'credentials' | 'network' | null
   >(null)
+  const [serverMessage, setServerMessage] = React.useState<string | null>(null)
 
   const attemptLogin = React.useCallback(
     async (email: string, password: string) => {
       setErrorKind(null)
+      setServerMessage(null)
       try {
         await login(email, password)
       } catch (error) {
-        // 401 = mauvais identifiants ; tout le reste (réseau, CORS, serveur
-        // injoignable) = un message DISTINCT, pour ne pas accuser à tort le mot
-        // de passe (le back nous avait prévenus : origine/tunnel ≠ 401).
         if (error instanceof ApiError && error.isUnauthorized) {
           setErrorKind('credentials')
+        } else if (error instanceof ApiError && error.message !== '') {
+          setServerMessage(error.message)
         } else {
           setErrorKind('network')
           console.error('Échec de connexion :', error)
@@ -98,7 +111,7 @@ export function LoginPage() {
       ? t('login.error')
       : errorKind === 'network'
         ? t('login.networkError')
-        : null
+        : serverMessage
 
   return (
     <div className="bg-background flex min-h-dvh items-center justify-center p-6">

@@ -1,4 +1,5 @@
 import { test, type Page } from '@playwright/test'
+import { signIn, signOut } from './session'
 
 /**
  * JEU DE DÉMO — étoffe « Groupe Sahara Voyages » via l'INTERFACE (donc en respectant
@@ -11,20 +12,12 @@ import { test, type Page } from '@playwright/test'
  * Blocs isolables : SEED_ONLY=plafonds|docs|contacts npx playwright test e2e/seed-demo…
  */
 // Comptes démo limités à 3 sessions : rotation via SEED_USER si besoin.
-const EMAIL = `${process.env.SEED_USER ?? 'mehdi.trabelsi'}@demo.ostravel.tn`
-const PASSWORD = 'Demo-2026-OsTravel'
 const ONLY = process.env.SEED_ONLY ?? 'all'
 const run = (block: string) => ONLY === 'all' || ONLY === block
 const log = (m: string) => console.log('SEED ' + m)
 
 async function openSahara(page: Page) {
-  await page.goto('/')
-  await page.fill('#login-email', EMAIL)
-  await page.fill('#login-password', PASSWORD)
-  await page.getByRole('button', { name: /se connecter/i }).click()
-  await page.waitForURL((u) => !u.pathname.match(/login|^\/$/), { timeout: 20000 })
-  await page.goto('/parties')
-  await page.waitForTimeout(1500)
+  await signIn(page)
   const search = page.getByPlaceholder(/rechercher un tiers/i)
   if ((await search.count()) > 0) {
     await search.fill('sahara')
@@ -133,4 +126,6 @@ test('semer les données de démo', async ({ page }) => {
 
   await page.screenshot({ path: 'e2e/screenshots/seed-result.png', fullPage: true })
   log('terminé')
+
+  await signOut(page)
 })

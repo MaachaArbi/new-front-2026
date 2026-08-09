@@ -10,6 +10,7 @@ import {
 import { Input } from '@/shared/ui/input'
 import { Button } from '@/shared/ui/button'
 import { CurrencySelect } from '@/shared/ui/currency-select'
+import { SelectField } from '@/shared/ui/select'
 import { ApiError } from '@/shared/api/errors'
 import { majorToMinor } from '@/shared/lib/money'
 import type { ReferentialItem } from '@/shared/referentials'
@@ -154,22 +155,18 @@ export function PartyCreditLimitSheet({
             label={t('party.finance.office')}
             error={errors.officeAccountId}
           >
-            <select
-              value={officeAccountId ?? ''}
-              onChange={(event) =>
-                setOfficeAccountId(
-                  event.target.value === '' ? null : Number(event.target.value)
-                )
+            <SelectField
+              ariaLabel={t('party.finance.office')}
+              value={officeAccountId === null ? '' : String(officeAccountId)}
+              onChange={(next) =>
+                setOfficeAccountId(next === '' ? null : Number(next))
               }
-              className={selectClass}
-            >
-              <option value="">{t('party.finance.chooseOffice')}</option>
-              {offices.map((office) => (
-                <option key={office.value} value={office.value}>
-                  {office.label}
-                </option>
-              ))}
-            </select>
+              emptyLabel={t('party.finance.chooseOffice')}
+              options={offices.map((office) => ({
+                code: String(office.value),
+                label: office.label,
+              }))}
+            />
           </LabeledField>
 
           <LabeledField
@@ -189,18 +186,13 @@ export function PartyCreditLimitSheet({
             hint={t('party.finance.service.hint')}
             error={errors.serviceTypeCode}
           >
-            <select
+            <SelectField
+              ariaLabel={t('party.finance.service')}
               value={serviceTypeCode}
-              onChange={(event) => setServiceTypeCode(event.target.value)}
-              className={selectClass}
-            >
-              <option value="">{t('party.finance.allServices')}</option>
-              {serviceTypes.map((item) => (
-                <option key={item.code} value={item.code}>
-                  {item.label}
-                </option>
-              ))}
-            </select>
+              onChange={setServiceTypeCode}
+              emptyLabel={t('party.finance.allServices')}
+              options={serviceTypes}
+            />
           </LabeledField>
 
           <LabeledField
