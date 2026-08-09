@@ -4,6 +4,8 @@ import { CalendarDays, X } from 'lucide-react'
 import { Popover, PopoverContent, PopoverTrigger } from '@/shared/ui/popover'
 import { Calendar } from '@/shared/ui/calendar'
 import { useDateFormat } from '@/shared/lib/use-date-format'
+import { useAuth } from '@/app/providers/auth-provider'
+import { officeCountryOf } from '@/shared/auth/me'
 import { cn } from '@/shared/lib/cn'
 
 /**
@@ -42,6 +44,10 @@ export function DateField({
 }) {
   const intl = useIntl()
   const date = useDateFormat()
+  const { me } = useAuth()
+  // Le premier jour de la semaine suit le PAYS du bureau, pas la langue de l'interface.
+  // Le champ va le chercher lui-même : chaque appelant n'a pas à y penser.
+  const country = me ? officeCountryOf(me) : null
   const [open, setOpen] = React.useState(false)
 
   const empty = value === ''
@@ -93,6 +99,7 @@ export function DateField({
           value={value}
           min={min}
           max={max}
+          country={country}
           onSelect={(iso) => {
             onChange(iso)
             setOpen(false)

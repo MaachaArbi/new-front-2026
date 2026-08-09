@@ -136,7 +136,6 @@ export function PartyHistoryTab({
   // « Charger plus » : on ne ramène PAS tout — on charge par tranches de HISTORY_LIMIT
   // (20, 40, 60…). `keepPreviousData` évite le clignotement pendant l'agrandissement.
   const [loaded, setLoaded] = React.useState(HISTORY_LIMIT)
-  const [end, setEnd] = React.useState(false)
   const query = usePartyHistory(publicId, 1, loaded)
   // Filtres — appliqués EN CLIENT sur la page chargée (l'API pagine sans filtre serveur ;
   // vrai filtre = demande back). '' = pas de filtre.
@@ -182,25 +181,6 @@ export function PartyHistoryTab({
   const entries = query.data?.data ?? []
   const since = query.data?.meta.satellitesSince ?? null
 
-  // Fin de liste : `meta` ne porte NI total NI `hasMore`, et l'API renvoie parfois moins
-  // de lignes que le `limit` demandé (mesuré : 5→4, 10→9, 20→18). On ne peut donc pas
-  // déduire la fin d'une « tranche non pleine » — sinon le bouton disparaît à tort.
-  // Règle robuste : un « Charger plus » qui n'apporte AUCUNE nouvelle entrée = fin.
-  // → demande back : exposer `hasMore` (ou le total) dans `meta`.
-  const lastCountRef = React.useRef<number | null>(null)
-  React.useEffect(() => {
-    if (query.isFetching) return
-    const count = entries.length
-    if (
-      lastCountRef.current !== null &&
-      count === lastCountRef.current &&
-      loaded > HISTORY_LIMIT
-    ) {
-      setEnd(true)
-    }
-    lastCountRef.current = count
-  }, [entries.length, query.isFetching, loaded])
-
   if (query.isLoading) {
     return (
       <div className="flex flex-col gap-2 pt-2">
@@ -219,7 +199,11 @@ export function PartyHistoryTab({
     )
   }
 
-  const hasMore = !end && entries.length >= loaded - 1
+  // `meta.hasMore` (livré le 09/08) remplace le repli qui devinait la fin en comparant
+  // le nombre d'entrées d'un chargement à l'autre — au prix d'un aller-retour inutile.
+  // On ne déduit plus rien du COMPTE : le serveur découpe les lignes du journal puis
+  // écarte celles qui n'ont rien à montrer, donc une page courte n'est pas une fin.
+  const hasMore = query.data?.meta.hasMore ?? false
 
   // Types : liste COMPLÈTE des sujets d'audit connus (pas seulement ceux présents sur
   // la page — sinon le filtre ment sur ce qu'on peut chercher). Triée par libellé.

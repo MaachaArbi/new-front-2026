@@ -25,6 +25,8 @@ import type { PartyCreditLimit } from './api'
 export interface CreditScope {
   readonly key: string
   readonly officeAccountId: number
+  /** Nom livré par l'API ; `null` = bureau hors du périmètre de visibilité. */
+  readonly officeDisplayName: string | null
   readonly currencyCode: string | null
   readonly serviceTypeCode: string | null
   readonly socle: PartyCreditLimit | null
@@ -71,6 +73,7 @@ export function groupCreditLimits(
     string,
     {
       officeAccountId: number
+      officeDisplayName: string | null
       currencyCode: string | null
       serviceTypeCode: string | null
       socle: PartyCreditLimit | null
@@ -84,6 +87,7 @@ export function groupCreditLimits(
     if (!group) {
       group = {
         officeAccountId: limit.officeAccountId,
+        officeDisplayName: limit.officeDisplayName,
         currencyCode: limit.currencyCode,
         serviceTypeCode: limit.serviceTypeCode,
         socle: null,

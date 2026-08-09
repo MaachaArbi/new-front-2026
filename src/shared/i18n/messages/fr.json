@@ -524,5 +524,6 @@
   "party.document.issuedExpired": "Émis le {issued} · expiré le {expiry}",
   "party.detail.partialLoad": "La fiche complète n'a pas pu être chargée. Ce qui s'affiche est INCOMPLET — un plafond, une adresse ou un document peut exister sans apparaître ici.",
   "common.retry": "Réessayer",
-  "common.close": "Fermer"
+  "common.close": "Fermer",
+  "party.finance.otherOffice": "Autre société"
 }

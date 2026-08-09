@@ -524,5 +524,6 @@
   "party.document.issuedExpired": "Issued {issued} · expired {expiry}",
   "party.detail.partialLoad": "The full record could not be loaded. What you see is INCOMPLETE — a credit limit, address or document may exist without appearing here.",
   "common.retry": "Retry",
-  "common.close": "Close"
+  "common.close": "Close",
+  "party.finance.otherOffice": "Another company"
 }

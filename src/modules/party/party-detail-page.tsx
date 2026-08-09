@@ -228,14 +228,20 @@ export function PartyDetailPage() {
     () => codeLabel(referentials?.functions),
     [referentials]
   )
-  // accountId → nom de bureau ; `null` = « toutes les sociétés » (portée, jamais « manque »).
+  /**
+   * Nom de bureau pour les CHARGÉS DE COMPTE — la seule liste dont l'API ne livre pas
+   * encore `officeDisplayName` (les plafonds, exonérations, politiques et règles, si :
+   * voir `office-label.ts`). On résout donc via les organisations de l'utilisateur, et
+   * à défaut on rend un libellé NEUTRE : la liste de `/me` ne connaît que SES bureaux,
+   * un identifiant brut n'apprendrait rien à personne.
+   */
   const officeName = React.useCallback(
     (accountId: number | null): string => {
       if (accountId == null) return t('party.finance.allOffices')
       const found = (me ? officesOf(me) : []).find(
         (office) => office.accountId === accountId
       )
-      return found ? found.displayName : `#${accountId}`
+      return found ? found.displayName : t('party.finance.otherOffice')
     },
     [me, t]
   )
@@ -245,9 +251,10 @@ export function PartyDetailPage() {
       const found = (me ? officesOf(me) : []).find(
         (office) => office.publicId === officePublicId
       )
-      return found ? found.displayName : officePublicId
+      // Même principe que ci-dessus : à défaut, un libellé neutre plutôt qu'un UUID.
+      return found ? found.displayName : t('party.finance.otherOffice')
     },
-    [me]
+    [me, t]
   )
   // Bureaux de l'utilisateur (source `/me`) — options des sélecteurs de société finance.
   const officeOptions = React.useMemo(

@@ -35,19 +35,36 @@ function todayIso(): string {
 }
 
 /**
- * Premier jour de la semaine.
+ * Premier jour de la semaine — déduit du PAYS du bureau, pas de la langue.
  *
- * Ce n'est PAS une affaire de langue mais de PAYS : un Tunisien qui met l'interface en
- * arabe travaille toujours du lundi au vendredi. Se fier à la langue donnerait samedi à
- * tout arabophone — or nous n'avons qu'un seul « arabe », donc l'erreur serait
- * systématique à Tunis comme à Alger.
+ * Un Tunisien qui met l'interface en arabe travaille toujours du lundi au vendredi :
+ * se fier à la langue donnerait samedi à tout arabophone, et nous n'avons qu'un seul
+ * « arabe » — l'erreur serait systématique à Tunis comme à Alger.
  *
- * Lundi par défaut : c'est la convention des trois pays où l'agence opère — Tunisie,
- * Algérie, France. Le jour où l'API exposera le pays du bureau (`/me`, même manque que
- * pour l'indicatif téléphonique par défaut), on le lira ici : la norme le donne pour
- * chaque pays, et le Golfe basculerait alors sur samedi tout seul.
+ * Le pays vient de `/me` (clé `organizations`, filtrée sur `isOffice`). La norme Unicode
+ * porte la convention de chaque pays : lundi en Tunisie, en Algérie et en France, samedi
+ * dans le Golfe, dimanche aux États-Unis. Lundi reste le repli quand le pays est inconnu
+ * (utilisateur sans bureau, ou bureaux de pays différents) ou quand le navigateur
+ * n'expose pas `weekInfo` — c'est la convention des trois pays où l'agence opère.
  */
-const FIRST_DAY_OF_WEEK = 1 // lundi (dimanche = 0, comme `Date.getDay()`)
+const DEFAULT_FIRST_DAY = 1 // lundi (dimanche = 0, comme `Date.getDay()`)
+
+function firstDayOfWeekFor(country: string | null): number {
+  if (!country) return DEFAULT_FIRST_DAY
+  try {
+    const locale = new Intl.Locale(`und-${country}`) as Intl.Locale & {
+      weekInfo?: { firstDay?: number }
+      getWeekInfo?: () => { firstDay?: number }
+    }
+    const week = locale.getWeekInfo?.() ?? locale.weekInfo
+    const first = week?.firstDay
+    // La norme numérote lundi = 1 … dimanche = 7 ; `getDay()` numérote dimanche = 0.
+    if (typeof first === 'number') return first === 7 ? 0 : first
+  } catch {
+    /* pays inconnu de la norme : on garde le repli */
+  }
+  return DEFAULT_FIRST_DAY
+}
 
 export function Calendar({
   /** Jour sélectionné, en ISO. Chaîne vide = aucun. */
@@ -56,15 +73,19 @@ export function Calendar({
   /** Bornes inclusives, en ISO — les jours hors bornes restent affichés mais inertes. */
   min,
   max,
+  /** Pays du bureau (alpha-2) — décide du premier jour de la semaine. */
+  country = null,
   className,
 }: {
   value: string
   onSelect: (iso: string) => void
   min?: string
   max?: string
+  country?: string | null
   className?: string
 }) {
   const intl = useIntl()
+  const firstDay = firstDayOfWeekFor(country)
   const selected = partsOf(value)
   const today = todayIso()
 
@@ -93,16 +114,16 @@ export function Calendar({
     const format = new Intl.DateTimeFormat(intl.locale, { weekday: 'short' })
     return Array.from({ length: 7 }, (_, i) => {
       // 2024-01-07 est un dimanche : point de départ connu, hors de tout fuseau utile.
-      const day = new Date(2024, 0, 7 + ((FIRST_DAY_OF_WEEK + i) % 7))
+      const day = new Date(2024, 0, 7 + ((firstDay + i) % 7))
       return format.format(day)
     })
-  }, [intl.locale])
+  }, [intl.locale, firstDay])
 
   // Grille : on remonte au premier jour de semaine précédant le 1er du mois, puis on
   // avance de 42 cases — six semaines, la seule taille qui ne saute jamais.
   const cells = React.useMemo(() => {
     const firstOfMonth = new Date(cursor.y, cursor.m, 1)
-    const shift = (firstOfMonth.getDay() - FIRST_DAY_OF_WEEK + 7) % 7
+    const shift = (firstOfMonth.getDay() - firstDay + 7) % 7
     return Array.from({ length: 42 }, (_, i) => {
       const day = new Date(cursor.y, cursor.m, 1 - shift + i)
       return {
@@ -111,7 +132,7 @@ export function Calendar({
         outside: day.getMonth() !== cursor.m,
       }
     })
-  }, [cursor])
+  }, [cursor, firstDay])
 
   const move = (delta: number) =>
     setCursor((c) => {

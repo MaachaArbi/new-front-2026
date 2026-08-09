@@ -121,6 +121,13 @@ export interface PartyCreditLimit {
   readonly publicId: string
   /** Société — **obligatoire** pour un plafond. */
   readonly officeAccountId: number
+  /**
+   * Nom lisible du bureau, livré par l'API (06/08). `null` a DEUX sens, que
+   * `officeAccountId` sépare : identifiant nul aussi = portée commune ; identifiant
+   * renseigné = bureau hors du périmètre de visibilité (RLS). Dans ce second cas on
+   * affiche un libellé neutre — jamais l'identifiant.
+   */
+  readonly officeDisplayName: string | null
   readonly currencyCode: string | null
   readonly serviceTypeCode: string | null
   /** Montant en unités mineures, **chaîne** — ne jamais convertir en nombre. */
@@ -144,6 +151,13 @@ export interface PartyTaxExemption {
   readonly publicId: string
   /** Société qui l'accorde — **obligatoire**. */
   readonly officeAccountId: number
+  /**
+   * Nom lisible du bureau, livré par l'API (06/08). `null` a DEUX sens, que
+   * `officeAccountId` sépare : identifiant nul aussi = portée commune ; identifiant
+   * renseigné = bureau hors du périmètre de visibilité (RLS). Dans ce second cas on
+   * affiche un libellé neutre — jamais l'identifiant.
+   */
+  readonly officeDisplayName: string | null
   readonly exemptionType: string | null
   readonly certificateNumber: string | null
   /** `false` = exonération **sans justificatif** — à MONTRER en premier. */
@@ -154,6 +168,13 @@ export interface PartyTaxExemption {
 export interface PartyCommercialPolicy {
   /** `null` = politique **commune** ; sinon propre à une société. La plus précise l'emporte. */
   readonly officeAccountId: number | null
+  /**
+   * Nom lisible du bureau, livré par l'API (06/08). `null` a DEUX sens, que
+   * `officeAccountId` sépare : identifiant nul aussi = portée commune ; identifiant
+   * renseigné = bureau hors du périmètre de visibilité (RLS). Dans ce second cas on
+   * affiche un libellé neutre — jamais l'identifiant.
+   */
+  readonly officeDisplayName: string | null
   readonly forceOnRequest: boolean
   readonly blockWhenInsufficientBalance: boolean
 }
@@ -163,6 +184,13 @@ export interface PartyApprovalRule {
   readonly validatorPublicId: string
   readonly validatorDisplayName: string
   readonly officeAccountId: number | null
+  /**
+   * Nom lisible du bureau, livré par l'API (06/08). `null` a DEUX sens, que
+   * `officeAccountId` sépare : identifiant nul aussi = portée commune ; identifiant
+   * renseigné = bureau hors du périmètre de visibilité (RLS). Dans ce second cas on
+   * affiche un libellé neutre — jamais l'identifiant.
+   */
+  readonly officeDisplayName: string | null
   /** `false` = validateur **parti** de l'organisation (reste désigné) — afficher l'alerte. */
   readonly validatorStillQualified: boolean
 }
@@ -559,6 +587,14 @@ export interface PartyHistoryEntry {
 export interface PartyHistoryMeta {
   readonly page: number
   readonly limit: number
+  /**
+   * « Le journal porte encore des écritures au-delà » — et NON « la page suivante
+   * montrera quelque chose ». Le `LIMIT` découpe les lignes du journal, puis l'API
+   * écarte celles dont l'écran n'aurait rien à dire ; une page peut donc être plus
+   * courte que `limit` sans être la dernière. Ne jamais déduire la fin du nombre
+   * d'entrées rendues.
+   */
+  readonly hasMore: boolean
   readonly satellitesSince: string
 }
 export interface PartyHistoryPage {

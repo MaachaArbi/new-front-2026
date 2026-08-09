@@ -524,5 +524,6 @@
   "party.document.issuedExpired": "صدر في {issued} · انتهى في {expiry}",
   "party.detail.partialLoad": "تعذّر تحميل البطاقة كاملة. ما يظهر غير مكتمل — قد يوجد سقف أو عنوان أو وثيقة دون أن تظهر هنا.",
   "common.retry": "إعادة المحاولة",
-  "common.close": "إغلاق"
+  "common.close": "إغلاق",
+  "party.finance.otherOffice": "شركة أخرى"
 }

@@ -24,6 +24,7 @@ import { PartyManagerSheet } from './party-manager-sheet'
 import { PartyTaxExemptionSheet } from './party-tax-exemption-sheet'
 import { PartyPolicySheet } from './party-policy-sheet'
 import { PartyApprovalRuleSheet } from './party-approval-rule-sheet'
+import { officeLabelOf } from './office-label'
 import type {
   PartyApprovalRule,
   PartyCommercialPolicy,
@@ -194,7 +195,7 @@ export function PartyFinanceTab({
                   className="border-border rounded-xl border p-4"
                 >
                   <div className="text-muted-foreground text-xs">
-                    {officeName(g.officeAccountId)}
+                    {officeLabelOf(g.officeAccountId, g.officeDisplayName, t)}
                     {g.serviceTypeCode
                       ? ` · ${serviceTypeLabel(g.serviceTypeCode)}`
                       : ''}
@@ -374,7 +375,11 @@ export function PartyFinanceTab({
                     </span>
                   ) : null}
                   <span className="text-foreground font-medium">
-                    {officeName(exemption.officeAccountId)}
+                    {officeLabelOf(
+                      exemption.officeAccountId,
+                      exemption.officeDisplayName,
+                      t
+                    )}
                   </span>
                   {exemption.validFrom || exemption.validTo ? (
                     <span className="text-muted-foreground text-sm tabular-nums">
@@ -449,7 +454,11 @@ export function PartyFinanceTab({
                   <span className="text-muted-foreground text-xs font-medium">
                     {policyItem.officeAccountId == null
                       ? t('party.finance.commonPolicy')
-                      : officeName(policyItem.officeAccountId)}
+                      : officeLabelOf(
+                          policyItem.officeAccountId,
+                          policyItem.officeDisplayName,
+                          t
+                        )}
                   </span>
                   {editable ? (
                     <Button
