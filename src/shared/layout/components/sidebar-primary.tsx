@@ -60,7 +60,9 @@ export function SidebarPrimary() {
     : -1
 
   return (
-    <div className="bg-sidebar text-sidebar-foreground flex w-[70px] shrink-0 flex-col items-center justify-between gap-5 py-2.5 lg:w-(--sidebar-collapsed-width)">
+    // Rail SANS fond : c'est le gris de la page (`lg:bg-muted` sur le body) qui
+    // transparaît — comme layout-21. Seul le panneau de menu est blanc.
+    <div className="flex w-[70px] shrink-0 flex-col items-center justify-between gap-5 py-2.5 lg:w-(--sidebar-collapsed-width)">
       {/* Rail des modules */}
       <div className="relative w-full grow">
         <div className="relative flex grow flex-col items-center gap-[10px]">
@@ -75,7 +77,6 @@ export function SidebarPrimary() {
 
           {MODULES.map((module) => {
             const Icon = module.icon
-            const isActive = activeModule?.id === module.id
             return (
               <Tooltip key={module.id}>
                 <TooltipTrigger asChild>
@@ -89,9 +90,10 @@ export function SidebarPrimary() {
                       // les autres restent en retrait — repère sans bruit.
                       'size-[34px] rounded-lg border-2 border-white shadow-sm transition-all duration-300',
                       'hover:shadow-[0_4px_12px_0_rgba(37,47,74,0.35)] dark:border-transparent',
+                      // Couleurs PLEINES (jamais estompées) : c'est ce qui rend le
+                      // rail net. Le module actif se repère au trait indicateur.
                       module.tint,
-                      'text-white hover:text-white',
-                      isActive ? 'opacity-100' : 'opacity-55 hover:opacity-100'
+                      'text-white hover:text-white'
                     )}
                   >
                     <Link to={module.path} aria-label={t(module.titleKey)}>
