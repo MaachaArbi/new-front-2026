@@ -1,7 +1,6 @@
-import { useTheme } from 'next-themes'
 import { useIntl } from 'react-intl'
 import { Link } from 'react-router-dom'
-import { Languages, Moon, PanelLeftOpen, Search, Sun } from 'lucide-react'
+import { PanelLeftOpen, Search } from 'lucide-react'
 import { useLayout } from '../context'
 import { Button } from '@/shared/ui/button'
 import { Kbd } from '@/shared/ui/kbd'
@@ -21,10 +20,8 @@ import { UserDropdownMenu } from './user-dropdown-menu'
  */
 export function Header() {
   const intl = useIntl()
-  const { resolvedTheme, setTheme } = useTheme()
   const { isSidebarOpen, sidebarToggle } = useLayout()
   const t = (id: string) => intl.formatMessage({ id })
-  const isDark = resolvedTheme === 'dark'
 
   return (
     <header className="border-border bg-background fixed start-0 end-0 top-0 z-10 flex h-(--header-height-mobile) shrink-0 items-stretch border-b transition-[left,right] duration-300 lg:start-[calc(var(--sidebar-width)+var(--page-margin))] lg:end-(--page-margin) lg:top-(--page-margin) lg:h-(--header-height) lg:rounded-se-xl lg:border-e lg:border-t lg:in-data-[sidebar-open=false]:start-(--page-margin) lg:in-data-[sidebar-open=false]:rounded-ss-xl lg:in-data-[sidebar-open=false]:border-s">
@@ -60,23 +57,9 @@ export function Header() {
             <span className="text-2sm">{t('layout.search')}</span>
             <Kbd className="ms-4">⌘K</Kbd>
           </Button>
-          <Button
-            mode="icon"
-            variant="outline"
-            aria-label={t('layout.language')}
-          >
-            <Languages />
-          </Button>
-          <Button
-            mode="icon"
-            variant="outline"
-            onClick={() => setTheme(isDark ? 'light' : 'dark')}
-            aria-label={
-              isDark ? t('layout.theme.light') : t('layout.theme.dark')
-            }
-          >
-            {isDark ? <Sun /> : <Moon />}
-          </Button>
+          {/* Ni bascule de thème ni sélecteur de langue ici : ils vivent dans le
+              menu utilisateur, comme dans layout-1. Deux chemins vers le même
+              réglage font hésiter au lieu d'aider. */}
           {/* Avatar et menu prélevés de layout-1, déclencheur compris — la classe
               de l'image est celle du template, au pixel. */}
           <UserDropdownMenu
