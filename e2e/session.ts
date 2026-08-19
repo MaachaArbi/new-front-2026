@@ -27,7 +27,11 @@ export async function signIn(page: Page, email = DEMO_USER): Promise<void> {
   await page.fill('#login-password', PASSWORD)
   await page.getByRole('button', { name: /se connecter/i }).click()
   // L'application rend le tableau de bord sans changer d'URL : on attend le menu.
-  await page.getByPlaceholder(/rechercher/i).waitFor({ timeout: 20000 })
+  // Repère stable : l'entrée « Tiers » de la navigation, présente sur tout écran.
+  await page
+    .getByRole('link', { name: /tiers/i })
+    .first()
+    .waitFor({ timeout: 20000 })
   await page.waitForTimeout(1000)
 }
 

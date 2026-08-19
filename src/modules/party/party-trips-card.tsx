@@ -57,11 +57,17 @@ const LEG_ICON: Record<LegKind, typeof Hotel> = {
   car: Car,
 }
 
-/** Teintes de la barre — dérivées de l'accent, jamais des couleurs d'état. */
-const LEG_BAR: Record<LegKind, string> = {
-  hotel: 'bg-primary',
-  flight: 'bg-primary/70',
-  car: 'bg-primary/40',
+/**
+ * La barre prend la couleur du STATUT du service, pas celle de sa nature. C'est le
+ * seul endroit de la carte où l'on voit d'un coup qu'un voyage est à moitié ferme :
+ * un segment ambre au milieu de segments verts, et l'œil s'arrête dessus.
+ */
+const LEG_BAR: Record<StatusTone, string> = {
+  neutral: 'bg-muted-foreground/40',
+  success: 'bg-primary',
+  warning: 'bg-[var(--color-warning)]',
+  danger: 'bg-destructive',
+  info: 'bg-[var(--color-info)]',
 }
 
 const DOT: Record<StatusTone, string> = {
@@ -146,7 +152,7 @@ export function PartyTripsCard({ trips }: { trips: readonly Trip[] }) {
                     {trip.legs.map((leg) => (
                       <span
                         key={leg.label}
-                        className={LEG_BAR[leg.kind]}
+                        className={LEG_BAR[leg.tone]}
                         style={{ width: `${leg.weight}%` }}
                       />
                     ))}

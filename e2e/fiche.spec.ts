@@ -95,7 +95,7 @@ test('fiche Tiers — clair + sombre', async ({ page }) => {
   await page.getByRole('tab', { name: /contacts & équipe/i }).click()
   await page.waitForTimeout(800)
   await page.screenshot({ path: `${SHOTS}/fiche-team.png` })
-  await page.getByRole('tab', { name: /^documents$/i }).click()
+  await page.getByRole('tab', { name: /documents/i }).click()
   await page.waitForTimeout(800)
 
   // Crée 2 pièces pour VÉRIFIER les statuts d'expiration calculés (expire bientôt /

@@ -15,14 +15,13 @@ import {
   Hash,
   History,
   LayoutGrid,
-  ListChecks,
   Mail,
   MapPin,
   MoreVertical,
   Pencil,
   Phone,
   Plus,
-  StickyNote,
+  ShoppingCart,
   Trash2,
   Users,
   UserX,
@@ -36,14 +35,7 @@ import { officesOf, officeCountryOf } from '@/shared/auth/me'
 import { useReferentials, codeLabel } from '@/shared/referentials'
 import { formatMinor } from '@/shared/lib/money'
 import './party-detail-page.css'
-import {
-  Card,
-  CardHead,
-  Gauge,
-  RailGroupTitle,
-  RailRow,
-  StatValue,
-} from '@/shared/ui/panel'
+import { Card, CardHead, RailGroupTitle, RailRow } from '@/shared/ui/panel'
 import { RowActions } from '@/shared/ui/row-actions'
 import { useDateFormat } from '@/shared/lib/use-date-format'
 import { InitialsAvatar } from '@/shared/ui/initials-avatar'
@@ -84,6 +76,9 @@ import { SkeletonRow } from '@/shared/feedback'
 import { TabsContent, TabsTrigger } from '@/shared/ui/tabs'
 import { EventPhrase } from '@/shared/ui/timeline'
 import { RecordShell } from '@/shared/ui/record-shell'
+import { Num } from '@/shared/ui/num'
+import { MockValue } from '@/shared/ui/mock-value'
+import { usePageBreadcrumb } from '@/shared/layout/breadcrumb-trail'
 import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
@@ -118,6 +113,13 @@ const ROLE_VARIANT: Record<string, 'info' | 'warning'> = {
   customer: 'info',
   supplier: 'warning',
 }
+
+/**
+ * Parts consommées, en attendant l'encours réel. Trois valeurs qui couvrent les trois
+ * régimes visuels — sous le seuil, proche, dépassé — pour qu'on juge le rendu de tous
+ * les cas et pas seulement du cas confortable.
+ */
+const MOCK_USAGE = [68, 75, 85] as const
 
 type FieldItem = {
   label: string
@@ -300,6 +302,19 @@ export function PartyDetailPage() {
     createdAt: detail?.createdAt ?? null,
     updatedAt: detail?.updatedAt ?? null,
   }
+
+  // Fil d'Ariane : « Tiers / Groupe Sahara Voyages ». Sans ça, une fiche ouverte
+  // affichait le même chemin que la liste. Posé AVANT les retours anticipés :
+  // un hook ne peut pas être appelé conditionnellement.
+  usePageBreadcrumb(
+    React.useMemo(
+      () => [
+        { label: t('nav.module.parties'), href: '/parties' },
+        { label: view.displayName },
+      ],
+      [t, view.displayName]
+    )
+  )
 
   const notFound =
     detailQuery.error instanceof ApiError && detailQuery.error.isNotFound
@@ -545,8 +560,17 @@ export function PartyDetailPage() {
   const recentEntries = recentHistory.data?.data ?? []
 
   // Ligne méta de l'en-tête — uniquement des données réelles déjà chargées.
-  const headerMeta: string[] = []
+  // Nœuds et non chaînes : une entrée peut être marquée comme statique.
+  const headerMeta: React.ReactNode[] = []
+  // `taxId` et `tradeRegister` portent DÉJÀ leur préfixe (« MF : 123456 ») —
+  // en rajouter un donnait « MF MF : 123456 ».
   if (organization?.taxId) headerMeta.push(organization.taxId)
+  // Registre de commerce et forme juridique : ce qui identifie légalement une
+  // société. Ils étaient dans la carte Identité seulement ; le résumé du haut sert
+  // justement à reconnaître le tiers sans descendre dans la page.
+  if (organization?.tradeRegister) headerMeta.push(organization.tradeRegister)
+  if (organization?.legalFormCode)
+    headerMeta.push(legalFormLabel(organization.legalFormCode))
   if (view.roles.length > 0)
     headerMeta.push(view.roles.map((c) => roleLabel(c)).join(' · '))
   if (view.offices.length > 0)
@@ -555,6 +579,14 @@ export function PartyDetailPage() {
     )
   else if (view.officeScope === 'all_offices')
     headerMeta.push(t('party.offices.all'))
+  headerMeta.push(
+    <MockValue
+      key="customer-since"
+      reason="Ancienneté de la relation : l'API ne rend que la date de création de la fiche, pas le début du courant d'affaires."
+    >
+      {t('party.detail.customerSince', { date: 'mars 2021' })}
+    </MockValue>
+  )
   if (view.updatedAt) {
     const who = recentEntries[0]?.actor?.displayName
     headerMeta.push(
@@ -713,10 +745,18 @@ export function PartyDetailPage() {
         meta={editingName ? undefined : headerMeta}
         actions={
           <>
+            {/* « Relancer » n'apparaît QUE si l'e-mail n'est pas vérifié : une
+                action qui ne sert à rien encombre autant qu'elle rassure. */}
+            {editable && view.email && !view.emailVerifiedAt ? (
+              <Button size="sm" variant="outline">
+                <Mail />
+                {t('party.detail.action.remind')}
+              </Button>
+            ) : null}
             {editable ? (
               <Button size="sm">
                 <Plus />
-                {t('party.detail.newBooking')}
+                {t('party.detail.newFolder')}
               </Button>
             ) : null}
             <DropdownMenu>
@@ -792,6 +832,18 @@ export function PartyDetailPage() {
               <Wallet />
               {t('party.detail.tab.finance')}
             </TabsTrigger>
+            {/* Voyages — le compteur est statique tant que les dossiers ne sont
+                pas lisibles ; l'onglet mène au bloc de la vue d'ensemble. */}
+            <TabsTrigger value="trips">
+              <ShoppingCart />
+              {t('party.detail.tab.trips')}
+              <MockValue
+                reason="Nombre de dossiers du client : /booking-folders ne rend rien."
+                className="text-muted-foreground text-2xs"
+              >
+                <Num>42</Num>
+              </MockValue>
+            </TabsTrigger>
             <TabsTrigger value="history">
               <History />
               {t('party.detail.tab.history')}
@@ -799,30 +851,20 @@ export function PartyDetailPage() {
             <TabsTrigger value="team">
               <Users />
               {t('party.detail.tab.team')}
-            </TabsTrigger>
-            {/* Notes / Tâches — features sans back : onglets GRISÉS + repère « Soon »
-                pour ne pas les oublier (voir docs/backlog/en-attente-donnees). */}
-            <TabsTrigger value="notes" disabled>
-              <StickyNote />
-              {t('party.detail.tab.notes')}
-              <Badge variant="secondary" appearance="light" size="xs">
-                {t('common.soon')}
-              </Badge>
-            </TabsTrigger>
-            <TabsTrigger value="tasks" disabled>
-              <ListChecks />
-              {t('party.detail.tab.tasks')}
-              <Badge variant="secondary" appearance="light" size="xs">
-                {t('common.soon')}
-              </Badge>
+              <Num className="text-muted-foreground text-2xs">
+                {view.contacts.length + view.managers.length}
+              </Num>
             </TabsTrigger>
             <TabsTrigger value="documents">
               <FileText />
               {t('party.detail.tab.documents')}
+              <Num className="text-muted-foreground text-2xs">
+                {view.documents.length}
+              </Num>
             </TabsTrigger>
-            {/* Onglets futurs (Réservations/Paiements/Factures) retirés : ils débordaient
-                sur le rail, et le « à venir » est déjà signalé dans la Vue d'ensemble.
-                À rétablir quand les modules existent. */}
+            {/* Notes et Tâches retirés : deux onglets grisés qui ne mènent nulle
+                part occupent la place et n'apprennent rien. Le « à venir » est
+                déjà porté par le registre. */}
           </>
         }
         railTitle={t(
@@ -841,50 +883,81 @@ export function PartyDetailPage() {
                   croire qu'on peut le corriger à la main. Il descend sur les devises,
                   la seule chose qu'il modifie réellement. */}
               <RailGroupTitle title={t('party.detail.tab.finance')} />
-              {/* CRÉDIT — le chiffre le plus cher de la fiche traité comme un
-                  chiffre (pas une ligne parmi d'autres), avec sa jauge d'usage.
-                  L'encours n'existe pas encore → jauge en attente, jamais un faux %. */}
+              {/* CRÉDIT — une barre par portée : le plafond, ce qui est consommé,
+                  et la part utilisée. Un agent ne lit pas trois grands nombres ; il
+                  lit une seule chose — combien reste-t-il avant le plafond.
+                  ⚠️ L'ENCOURS N'EXISTE PAS encore côté API : les montants consommés
+                  sont statiques et marqués. Le plafond, lui, est réel. */}
               <Card className="mt-1 mb-4">
                 <CardHead
                   icon={<Wallet />}
                   title={t('party.finance.creditLimits')}
+                  action={
+                    <span className="text-muted-foreground text-2xs">
+                      {t('party.finance.alertThreshold', { percent: 80 })}
+                    </span>
+                  }
                 />
                 <div className="flex flex-col gap-3.5 p-4">
                   {creditGroups.length > 0 ? (
-                    creditGroups.map((g) => (
-                      <div key={g.key}>
-                        <div className="text-muted-foreground text-2xs font-semibold tracking-wide uppercase">
-                          {t('party.finance.effective')}
-                          {' · '}
-                          {g.serviceTypeCode
-                            ? railServiceLabel(g.serviceTypeCode)
-                            : t('party.finance.allServices')}
+                    creditGroups.map((group, index) => {
+                      // Part consommée — statique tant que l'encours n'existe pas.
+                      const share = MOCK_USAGE[index % MOCK_USAGE.length] ?? 0
+                      const usedMinor = (
+                        (BigInt(group.effectiveMinor) * BigInt(share)) /
+                        100n
+                      ).toString()
+                      const tone =
+                        share >= 85
+                          ? 'bg-destructive'
+                          : share >= 60
+                            ? 'bg-[var(--color-warning)]'
+                            : 'bg-primary'
+                      return (
+                        <div key={group.key} className="flex flex-col gap-1.5">
+                          <div className="flex items-baseline justify-between gap-3">
+                            <span className="flex min-w-0 items-baseline gap-2">
+                              <span className="text-foreground text-2sm truncate font-medium">
+                                {group.serviceTypeCode
+                                  ? railServiceLabel(group.serviceTypeCode)
+                                  : t('party.finance.allServices')}
+                              </span>
+                              <MockValue
+                                reason="Encours consommé : n'existe pas encore (modules Factures / Règlements)."
+                                className="text-muted-foreground text-2xs"
+                              >
+                                {t('party.finance.used', {
+                                  amount: formatMinor(
+                                    usedMinor,
+                                    group.currencyCode ?? ''
+                                  ),
+                                })}
+                              </MockValue>
+                            </span>
+                            <span className="flex shrink-0 items-baseline gap-1.5">
+                              <Num className="text-foreground text-sm font-semibold">
+                                {formatMinor(
+                                  group.effectiveMinor,
+                                  group.currencyCode ?? ''
+                                )}
+                              </Num>
+                              <span className="text-muted-foreground text-2xs">
+                                {group.currencyCode ?? ''}
+                              </span>
+                            </span>
+                          </div>
+                          <div className="bg-muted h-1.5 overflow-hidden rounded-full">
+                            <div
+                              className={cn('h-full rounded-full', tone)}
+                              style={{ width: `${share}%` }}
+                            />
+                          </div>
                         </div>
-                        <StatValue
-                          value={formatMinor(
-                            g.effectiveMinor,
-                            g.currencyCode ?? ''
-                          )}
-                          unit={g.currencyCode ?? undefined}
-                        />
-                      </div>
-                    ))
+                      )
+                    })
                   ) : (
                     <p className="text-muted-foreground text-2sm">—</p>
                   )}
-                  <Gauge
-                    label={t('party.finance.encours')}
-                    pending
-                    pendingLabel={t('party.detail.pending')}
-                  />
-                  <div className="text-2sm flex items-baseline justify-between gap-2">
-                    <span className="text-muted-foreground">
-                      {t('party.finance.availableCredit')}
-                    </span>
-                    <Badge variant="secondary" appearance="light" size="sm">
-                      {t('party.detail.pending')}
-                    </Badge>
-                  </div>
                 </div>
               </Card>
 
@@ -1697,20 +1770,10 @@ export function PartyDetailPage() {
           </section>
         </TabsContent>
 
-        {/* Notes / Tâches — placeholders (features sans back), reproduits de la maquette de référence. */}
-        <TabsContent value="notes" className="pt-4">
-          <div className="border-border bg-muted/20 rounded-xl border border-dashed p-6">
-            <p className="text-muted-foreground text-sm">
-              {t('party.detail.soon.tabBody')}
-            </p>
-          </div>
-        </TabsContent>
-        <TabsContent value="tasks" className="pt-4">
-          <div className="border-border bg-muted/20 rounded-xl border border-dashed p-6">
-            <p className="text-muted-foreground text-sm">
-              {t('party.detail.soon.tabBody')}
-            </p>
-          </div>
+        {/* Voyages — le bloc complet, celui que la vue d'ensemble ne montre qu'en
+            tête. Statique tant que /booking-folders ne rend aucun dossier. */}
+        <TabsContent value="trips" className="pt-4">
+          <PartyTripsCard trips={demoTrips(t)} />
         </TabsContent>
 
         <TabsContent value="documents" className="pt-4">

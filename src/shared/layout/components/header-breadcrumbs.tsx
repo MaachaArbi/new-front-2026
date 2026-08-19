@@ -3,6 +3,7 @@ import { PanelRight } from 'lucide-react'
 import { useI18n } from '@/app/providers/i18n-provider'
 import { MODULE_MENUS, flattenMenu, moduleFromPath } from '../menu.config'
 import { useLayout } from './context'
+import { useBreadcrumbTrail } from '../breadcrumb-trail'
 import { Button } from '@/shared/ui/button'
 import {
   Breadcrumb,
@@ -21,6 +22,7 @@ export function HeaderBreadcrumbs() {
   const { isMobile, sidebarToggle } = useLayout()
   const { pathname } = useLocation()
 
+  const trail = useBreadcrumbTrail()
   const activeModule = moduleFromPath(pathname)
   const menu = activeModule ? (MODULE_MENUS[activeModule.id] ?? []) : []
   const activeEntry = flattenMenu(menu).find((item) => item.path === pathname)
@@ -40,10 +42,29 @@ export function HeaderBreadcrumbs() {
       )}
       <Breadcrumb>
         <BreadcrumbList>
-          <BreadcrumbItem>
-            <BreadcrumbLink href="/">{t('layout.home')}</BreadcrumbLink>
-          </BreadcrumbItem>
-          {activeModule && (
+          {trail.length > 0 ? (
+            trail.map((crumb, index) => (
+              <BreadcrumbItem key={`${crumb.label}-${index}`}>
+                {crumb.href ? (
+                  <>
+                    <BreadcrumbLink href={crumb.href}>
+                      {crumb.label}
+                    </BreadcrumbLink>
+                    <BreadcrumbSeparator className="text-muted-foreground text-xs">
+                      /
+                    </BreadcrumbSeparator>
+                  </>
+                ) : (
+                  <BreadcrumbPage>{crumb.label}</BreadcrumbPage>
+                )}
+              </BreadcrumbItem>
+            ))
+          ) : (
+            <BreadcrumbItem>
+              <BreadcrumbLink href="/">{t('layout.home')}</BreadcrumbLink>
+            </BreadcrumbItem>
+          )}
+          {trail.length === 0 && activeModule && (
             <>
               <BreadcrumbSeparator className="text-muted-foreground text-xs">
                 /

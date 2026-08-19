@@ -45,11 +45,19 @@ export function SidebarHeader() {
               className="text-sidebar-muted hover:text-sidebar-foreground -ms-1.5 inline-flex px-1.5"
               disabled={offices.length === 0}
             >
-              <div className="bg-primary text-primary-foreground flex size-6 items-center justify-center rounded-md">
-                <Building2 className="size-4" />
+              {/* Carré d'initiale + nom du bureau + sa devise : l'agent travaille
+                  souvent sur plusieurs bureaux, et la devise change ce qu'il lit
+                  dans toute l'application. La dire ici évite de la chercher. */}
+              <div className="bg-primary text-primary-foreground flex size-7 shrink-0 items-center justify-center rounded-lg text-sm font-bold">
+                {(selected?.displayName ?? 'O').slice(0, 1).toLowerCase()}
               </div>
-              <span className="text-sidebar-foreground text-sm font-medium">
-                {selected?.displayName ?? t('layout.office')}
+              <span className="flex min-w-0 flex-col items-start gap-0">
+                <span className="text-sidebar-foreground text-2sm truncate leading-tight font-semibold">
+                  {selected?.displayName ?? t('layout.office')}
+                </span>
+                <span className="text-sidebar-muted text-2xs leading-tight">
+                  {t('nav.office.subtitle', { currency: 'TND' })}
+                </span>
               </span>
               <ChevronsUpDown className="opacity-100" />
             </Button>

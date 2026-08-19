@@ -11,7 +11,6 @@ import {
   SheetTrigger,
 } from '@/shared/ui/sheet'
 import { Button } from '@/shared/ui/button'
-import { SidebarPrimary } from './sidebar-primary'
 import { SidebarSecondary } from './sidebar-secondary'
 
 // Prélevé de layout-21/components/header-menu.tsx : barre latérale en tiroir sur
@@ -48,7 +47,6 @@ export function HeaderMenu() {
         >
           <SheetHeader className="space-y-0 p-0" />
           <SheetBody className="flex grow p-0">
-            <SidebarPrimary />
             <SidebarSecondary />
           </SheetBody>
         </SheetContent>

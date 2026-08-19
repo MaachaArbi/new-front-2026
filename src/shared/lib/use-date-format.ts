@@ -22,6 +22,10 @@ export function useDateFormat() {
   const short = (iso: string | null | undefined): string =>
     iso ? intl.formatDate(iso, { day: 'numeric', month: 'short' }) : ''
 
+  /** « mars 2021 » — l'ancienneté d'une relation, pas un jour précis. */
+  const monthYear = (iso: string | null | undefined): string =>
+    iso ? intl.formatDate(iso, { month: 'long', year: 'numeric' }) : ''
+
   const time = (iso: string | null | undefined): string =>
     iso ? intl.formatDate(iso, { hour: '2-digit', minute: '2-digit' }) : ''
 
@@ -44,5 +48,5 @@ export function useDateFormat() {
     return intl.formatRelativeTime(0, 'minute')
   }
 
-  return { day, short, time, relative }
+  return { day, short, monthYear, time, relative }
 }

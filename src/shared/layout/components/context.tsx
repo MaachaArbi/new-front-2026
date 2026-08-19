@@ -57,7 +57,7 @@ export function LayoutProvider({
   const style: CSSProperties = useMemo(
     () => ({
       '--page-margin': '10px',
-      '--sidebar-width': '300px',
+      '--sidebar-width': '238px',
       '--sidebar-collapsed-width': '60px',
       '--sidebar-header-height': '54px',
       '--header-height': '60px',

@@ -2,6 +2,7 @@ import { BrowserRouter } from 'react-router-dom'
 import { ThemeProvider } from './app/providers/theme-provider'
 import { DisplayPreferencesProvider } from './app/providers/display-preferences'
 import { MockValueProvider } from './shared/ui/mock-value'
+import { BreadcrumbTrailProvider } from './shared/layout/breadcrumb-trail'
 import { I18nProvider, useI18n } from './app/providers/i18n-provider'
 import { QueryProvider } from './app/providers/query-provider'
 import { AuthProvider, useAuth } from './app/providers/auth-provider'
@@ -46,15 +47,17 @@ export function App() {
     <ThemeProvider>
       <DisplayPreferencesProvider>
         <MockValueProvider>
-          <I18nProvider>
-            <QueryProvider>
-              <BrowserRouter>
-                <AuthProvider>
-                  <AuthGate />
-                </AuthProvider>
-              </BrowserRouter>
-            </QueryProvider>
-          </I18nProvider>
+          <BreadcrumbTrailProvider>
+            <I18nProvider>
+              <QueryProvider>
+                <BrowserRouter>
+                  <AuthProvider>
+                    <AuthGate />
+                  </AuthProvider>
+                </BrowserRouter>
+              </QueryProvider>
+            </I18nProvider>
+          </BreadcrumbTrailProvider>
         </MockValueProvider>
       </DisplayPreferencesProvider>
     </ThemeProvider>

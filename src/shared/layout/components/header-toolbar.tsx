@@ -13,6 +13,7 @@ import {
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/shared/ui/tooltip'
 import { DisplayPreferencesMenu } from './display-preferences-menu'
 import { MockCounter } from './mock-counter'
+import { HeaderSearch } from './header-search'
 
 // Réécrit de layout-21/components/header-toolbar.tsx : les actions de
 // démonstration (Coffee, Reports, Add…) sont remplacées par les deux contrôles
@@ -27,6 +28,7 @@ export function HeaderToolbar() {
   return (
     <nav className="flex items-center gap-2.5">
       <MockCounter />
+      <HeaderSearch />
       <DisplayPreferencesMenu />
       {/* Sélecteur de langue */}
       <DropdownMenu>
