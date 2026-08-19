@@ -213,6 +213,32 @@
   --font-disp: var(--font-ui);
 }
 
+/* ── Densité et taille ──────────────────────────────────────────────────────
+   Deux variables, lues par CHAQUE composant dès sa création.
+
+   Le coût annoncé en début de semaine (« trop cher ») portait sur le rattrapage de
+   206 tailles déjà écrites en dur. La bibliothèque repart de zéro : intégrer la
+   densité maintenant ne coûte rien, l'ajouter après coûterait tout.
+
+   `--ui-row`   hauteur d'une ligne et d'un contrôle — c'est elle qui décide combien
+                de lignes tiennent dans un tableau, donc combien l'agent voit sans
+                défiler. C'est la variable qui compte au comptoir.
+   `--ui-scale` multiplicateur du texte. Séparé de la densité : on peut vouloir des
+                lignes serrées ET un texte lisible, ce sont deux besoins distincts
+                (l'un vient de l'écran, l'autre des yeux).
+
+   Garantie limitée et assumée : chaque axe est garanti seul ; seuls TROIS
+   préréglages nommés sont réellement vérifiés (comptoir · standard · confort). */
+:root {
+  --ui-row: 2.125rem; /* 34 px — dense, le défaut */
+  --ui-scale: 1;
+}
+:root[data-density='compact'] { --ui-row: 1.75rem; } /* 28 px */
+:root[data-density='cozy'] { --ui-row: 2.5rem; } /* 40 px */
+
+:root[data-scale='small'] { --ui-scale: 0.9375; }
+:root[data-scale='large'] { --ui-scale: 1.0625; }
+
 @theme inline {
   /** Typographie — Inter (chargée dans index.html), comme le socle Metronic. **/
   --font-sans: var(--font-ui);
@@ -222,9 +248,15 @@
       Sans eux, tout le texte dense reste à 14 px et l'interface paraît « grosse ».
       Usage : `text-2sm` = zones denses (cellules, lignes de liste, méta),
       `text-2xs` = micro-labels en capitales. **/
-  --text-2sm: 0.8125rem; /* 13 px */
+  /* Tout le barème suit `--ui-scale` : une seule variable déplace l'échelle. */
+  --text-xs: calc(0.75rem * var(--ui-scale));
+  --text-sm: calc(0.875rem * var(--ui-scale));
+  --text-base: calc(1rem * var(--ui-scale));
+  --text-lg: calc(1.125rem * var(--ui-scale));
+  --text-xl: calc(1.25rem * var(--ui-scale));
+  --text-2sm: calc(0.8125rem * var(--ui-scale)); /* 13 px */
   --text-2sm--line-height: calc(1.075 / 0.8125);
-  --text-2xs: 0.6875rem; /* 11 px */
+  --text-2xs: calc(0.6875rem * var(--ui-scale)); /* 11 px */
   --text-2xs--line-height: calc(0.825 / 0.6875);
 
   /** Base Colors **/
@@ -246,6 +278,7 @@
   --color-primary: var(--primary);
   --color-primary-foreground: var(--primary-foreground);
 
+  --spacing-row: var(--ui-row);
   --color-ink: var(--ink);
   --color-ink-foreground: var(--ink-foreground);
 

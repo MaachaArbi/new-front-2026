@@ -1,8 +1,9 @@
-import { BrowserRouter, Route, Routes } from 'react-router-dom'
+import { BrowserRouter } from 'react-router-dom'
 import { ThemeProvider } from './app/providers/theme-provider'
 import { DisplayPreferencesProvider } from './app/providers/display-preferences'
 import { I18nProvider } from './app/providers/i18n-provider'
 import { QueryProvider } from './app/providers/query-provider'
+import { Router } from './app/router'
 
 /**
  * Racine de l'application — SOCLE SEUL.
@@ -27,24 +28,11 @@ export function App() {
         <I18nProvider>
           <QueryProvider>
             <BrowserRouter>
-              <Routes>
-                <Route path="*" element={<Placeholder />} />
-              </Routes>
+              <Router />
             </BrowserRouter>
           </QueryProvider>
         </I18nProvider>
       </DisplayPreferencesProvider>
     </ThemeProvider>
-  )
-}
-
-/** Repère temporaire : l'application démarre, le socle répond, rien n'est dessiné. */
-function Placeholder() {
-  return (
-    <div className="bg-background text-foreground flex min-h-dvh items-center justify-center">
-      <p className="text-muted-foreground text-sm">
-        Socle en place — la couche visuelle est à construire.
-      </p>
-    </div>
   )
 }
