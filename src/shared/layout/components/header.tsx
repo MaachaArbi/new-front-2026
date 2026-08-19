@@ -1,10 +1,11 @@
 import { useIntl } from 'react-intl'
-import { Link } from 'react-router-dom'
+import { Link, useLocation } from 'react-router-dom'
 import { PanelLeftOpen, Search } from 'lucide-react'
 import { useLayout } from '../context'
 import { Button } from '@/shared/ui/button'
 import { Kbd } from '@/shared/ui/kbd'
 import { UserDropdownMenu } from './user-dropdown-menu'
+import { CATALOG } from '@/design/catalog'
 
 /**
  * Barre du haut — deux rôles, deux côtés.
@@ -22,6 +23,11 @@ export function Header() {
   const intl = useIntl()
   const { isSidebarOpen, sidebarToggle } = useLayout()
   const t = (id: string) => intl.formatMessage({ id })
+  const { pathname } = useLocation()
+  const isDesign = pathname.startsWith('/design')
+  const component = CATALOG.flatMap((group) => group.entries).find(
+    (entry) => entry.id === pathname.split('/')[2]
+  )
 
   return (
     <header className="border-border bg-background fixed start-0 end-0 top-0 z-10 flex h-(--header-height-mobile) shrink-0 items-stretch border-b transition-[left,right] duration-300 lg:start-[calc(var(--sidebar-width)+var(--page-margin))] lg:end-(--page-margin) lg:top-(--page-margin) lg:h-(--header-height) lg:rounded-se-xl lg:border-e lg:border-t lg:in-data-[sidebar-open=false]:start-(--page-margin) lg:in-data-[sidebar-open=false]:rounded-ss-xl lg:in-data-[sidebar-open=false]:border-s">
@@ -37,17 +43,32 @@ export function Header() {
               <PanelLeftOpen />
             </Button>
           ) : null}
+          {/* Fil d'Ariane PROVISOIRE : il déduit son chemin de la route, faute
+              d'écrans qui puissent poser le leur. À remplacer par un fil posé par
+              chaque page dès que les premiers écrans existeront. */}
           <nav className="text-muted-foreground text-2sm flex items-center gap-2">
-            <Link
-              to="/parties"
-              className="hover:text-foreground transition-colors"
-            >
-              {t('nav.parties')}
-            </Link>
-            <span className="text-border">/</span>
-            <span className="text-foreground font-medium">
-              Groupe Sahara Voyages
-            </span>
+            {isDesign ? (
+              <>
+                <Link
+                  to="/design"
+                  className="hover:text-foreground transition-colors"
+                >
+                  {t('design.title')}
+                </Link>
+                {component ? (
+                  <>
+                    <span className="text-border">/</span>
+                    <span className="text-foreground font-medium">
+                      {t(component.titleKey)}
+                    </span>
+                  </>
+                ) : null}
+              </>
+            ) : (
+              <span className="text-foreground font-medium">
+                {t('nav.parties')}
+              </span>
+            )}
           </nav>
         </div>
 

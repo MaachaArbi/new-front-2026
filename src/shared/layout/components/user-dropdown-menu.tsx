@@ -10,14 +10,11 @@
  * Adaptations, et elles seules : chemins d'import, `react-router` → `react-router-dom`,
  * et `toAbsoluteUrl()` retiré (nos médias sont servis depuis `public/`).
  *
- * Trois adaptations FORCÉES par notre configuration, notées ici pour qu'on sache
+ * Deux adaptations FORCÉES par notre configuration, notées ici pour qu'on sache
  * qu'elles ne sont pas des choix :
  *  · `IdCard` n'existe pas dans notre version de lucide (0.408) → `ContactRound` ;
  *  · l'accès `I18N_LANGUAGES[0]` doit être affirmé — `noUncheckedIndexedAccess`
  *    est non négociable (ADR-F05), et `!` est interdit par le lint ;
- *  · notre `Button` n'a pas encore de prop `size` : le bouton « Logout » prend la
- *    taille par défaut (34 px au lieu de 28). À reprendre quand la bibliothèque de
- *    composants sera portée.
  *
  * ⚠️ Le seul élément VIVANT est la bascule de thème : elle passe par `next-themes`,
  * comme dans le template. La langue est affichée mais n'agit pas encore.
@@ -258,7 +255,7 @@ export function UserDropdownMenu({ trigger }: { trigger: ReactNode }) {
           </div>
         </DropdownMenuItem>
         <div className="mt-1 p-2">
-          <Button variant="outline" className="w-full">
+          <Button variant="outline" size="sm" className="w-full">
             Logout
           </Button>
         </div>

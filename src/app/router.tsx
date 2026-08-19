@@ -1,5 +1,7 @@
 import { Route, Routes } from 'react-router-dom'
 import { Layout } from '@/shared/layout'
+import { DesignSidebar } from '@/design/design-sidebar'
+import { DesignPage } from '@/design/design-page'
 
 /**
  * Routage — la coquille et rien d'autre pour l'instant.
@@ -11,6 +13,12 @@ import { Layout } from '@/shared/layout'
 export function Router() {
   return (
     <Routes>
+      {/* Le système de design occupe la MÊME coquille : seul le menu de gauche
+          change. C'est la condition pour juger un composant dans son décor réel. */}
+      <Route element={<Layout nav={<DesignSidebar />} />}>
+        <Route path="/design" element={<DesignPage />} />
+        <Route path="/design/:componentId" element={<DesignPage />} />
+      </Route>
       <Route element={<Layout />}>
         <Route path="*" element={<Blank />} />
       </Route>
