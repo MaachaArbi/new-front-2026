@@ -5,6 +5,7 @@ import { Languages, Moon, PanelLeftOpen, Search, Sun } from 'lucide-react'
 import { useLayout } from '../context'
 import { Button } from '@/shared/ui/button'
 import { Kbd } from '@/shared/ui/kbd'
+import { UserDropdownMenu } from './user-dropdown-menu'
 
 /**
  * Barre du haut — deux rôles, deux côtés.
@@ -76,16 +77,17 @@ export function Header() {
           >
             {isDark ? <Sun /> : <Moon />}
           </Button>
-          <Button
-            variant="ghost"
-            className="gap-2 ps-1"
-            aria-label={t('layout.account')}
-          >
-            <span className="bg-primary text-primary-foreground text-2xs flex size-6 items-center justify-center rounded-full font-semibold">
-              MT
-            </span>
-            <span className="text-2sm text-foreground">Mehdi Trabelsi</span>
-          </Button>
+          {/* Avatar et menu prélevés de layout-1, déclencheur compris — la classe
+              de l'image est celle du template, au pixel. */}
+          <UserDropdownMenu
+            trigger={
+              <img
+                className="size-9 shrink-0 cursor-pointer rounded-full border-2 border-green-500"
+                src="/media/avatars/300-2.png"
+                alt={t('layout.account')}
+              />
+            }
+          />
         </div>
       </div>
     </header>

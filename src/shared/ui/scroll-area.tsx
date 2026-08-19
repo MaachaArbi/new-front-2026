@@ -55,8 +55,13 @@ function ScrollBar({
       orientation={orientation}
       className={cn(
         'flex touch-none transition-colors select-none',
+        // ÉCART IMPOSÉ par ADR-F04 : le template écrit `border-l`, une propriété
+        // PHYSIQUE. En arabe la barre passe à gauche et le filet se retrouverait du
+        // mauvais côté. `border-s` vise le côté de DÉBUT — donc l'arête intérieure
+        // de la barre dans les deux sens de lecture. Notre règle ESLint l'a refusé
+        // avant que ça n'arrive à l'écran.
         orientation === 'vertical' &&
-          'h-full w-2 border-l border-l-transparent p-[1px]',
+          'h-full w-2 border-s border-s-transparent p-[1px]',
         orientation === 'horizontal' &&
           'h-2 flex-col border-t border-t-transparent p-[1px]',
         className
