@@ -13,7 +13,6 @@ export {
   useShortcutScope,
   useActiveShortcuts,
 } from './shortcut-provider'
-export { ShortcutHelp } from './shortcut-help'
 export {
   eventMatchesChord,
   resolveKey,

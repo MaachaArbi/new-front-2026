@@ -72,5 +72,3 @@ export {
 export type { ApiMoney } from './api'
 
 // Composant de saisie
-export { MoneyInput } from './money-input'
-export type { MoneyInputProps } from './money-input'

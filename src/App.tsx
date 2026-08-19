@@ -1,65 +1,50 @@
-import { BrowserRouter } from 'react-router-dom'
+import { BrowserRouter, Route, Routes } from 'react-router-dom'
 import { ThemeProvider } from './app/providers/theme-provider'
 import { DisplayPreferencesProvider } from './app/providers/display-preferences'
-import { MockValueProvider } from './shared/ui/mock-value'
-import { BreadcrumbTrailProvider } from './shared/layout/breadcrumb-trail'
-import { I18nProvider, useI18n } from './app/providers/i18n-provider'
+import { I18nProvider } from './app/providers/i18n-provider'
 import { QueryProvider } from './app/providers/query-provider'
-import { AuthProvider, useAuth } from './app/providers/auth-provider'
-import { AppRoutes } from './app/router'
-import { LoginPage } from './app/pages/login'
-import { ShortcutProvider, ShortcutHelp } from '@/shared/keyboard'
-import { CommandPalette } from '@/shared/command-palette'
-import { NavigationShortcuts } from '@/shared/navigation/navigation-shortcuts'
 
-// Point d'entrée applicatif.
-//
-// Ordre des providers : thème → i18n (pilote aussi Accept-Language) → TanStack
-// Query (état serveur) → routeur → Auth. La porte `AuthGate` décide : splash
-// pendant la reprise de session, écran de connexion si non authentifié, sinon
-// l'app protégée (socle d'interactions inclus).
-
-function SplashScreen() {
-  const { t } = useI18n()
-  return (
-    <div className="bg-background flex min-h-dvh items-center justify-center">
-      <span className="text-muted-foreground text-sm">{t('app.loading')}</span>
-    </div>
-  )
-}
-
-function AuthGate() {
-  const { status } = useAuth()
-  if (status === 'loading') return <SplashScreen />
-  if (status === 'unauthenticated') return <LoginPage />
-  return (
-    <ShortcutProvider>
-      <AppRoutes />
-      <CommandPalette />
-      <ShortcutHelp />
-      <NavigationShortcuts />
-    </ShortcutProvider>
-  )
-}
-
+/**
+ * Racine de l'application — SOCLE SEUL.
+ *
+ * Reprise du 19/08 : toute la couche visuelle a été retirée (voir la branche
+ * `archive/ui-v1` pour la précédente). Ce qui reste ici est ce qui avait été payé
+ * cher et qu'il aurait été absurde de réapprendre : l'accès à l'API et son enveloppe
+ * d'erreur, la session sans stockage, le noyau monétaire, l'i18n et le RTL, les
+ * raccourcis par position physique, les jetons de thème.
+ *
+ * L'ordre des fournisseurs n'est pas indifférent : le thème et les préférences
+ * s'appliquent avant tout rendu (sinon l'écran saute), l'i18n encadre le reste
+ * (les messages d'erreur de l'API sont traduits), et les requêtes viennent en
+ * dernier — elles dépendent de la langue envoyée en en-tête.
+ *
+ * `AuthProvider` et le routage réel reviendront avec les premiers écrans.
+ */
 export function App() {
   return (
     <ThemeProvider>
       <DisplayPreferencesProvider>
-        <MockValueProvider>
-          <BreadcrumbTrailProvider>
-            <I18nProvider>
-              <QueryProvider>
-                <BrowserRouter>
-                  <AuthProvider>
-                    <AuthGate />
-                  </AuthProvider>
-                </BrowserRouter>
-              </QueryProvider>
-            </I18nProvider>
-          </BreadcrumbTrailProvider>
-        </MockValueProvider>
+        <I18nProvider>
+          <QueryProvider>
+            <BrowserRouter>
+              <Routes>
+                <Route path="*" element={<Placeholder />} />
+              </Routes>
+            </BrowserRouter>
+          </QueryProvider>
+        </I18nProvider>
       </DisplayPreferencesProvider>
     </ThemeProvider>
+  )
+}
+
+/** Repère temporaire : l'application démarre, le socle répond, rien n'est dessiné. */
+function Placeholder() {
+  return (
+    <div className="bg-background text-foreground flex min-h-dvh items-center justify-center">
+      <p className="text-muted-foreground text-sm">
+        Socle en place — la couche visuelle est à construire.
+      </p>
+    </div>
   )
 }
