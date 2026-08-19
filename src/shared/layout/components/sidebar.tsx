@@ -4,6 +4,7 @@ import { PanelLeftClose, Zap } from 'lucide-react'
 import { NAV_GROUPS, SAVED_VIEWS, SETTINGS_ENTRY } from '../nav.config'
 import { useLayout } from '../context'
 import { Button } from '@/shared/ui/button'
+import { ScrollArea } from '@/shared/ui/scroll-area'
 import { cn } from '@/shared/lib/cn'
 
 /**
@@ -60,74 +61,83 @@ export function Sidebar() {
           </Button>
         </div>
 
-        <nav className="flex min-h-0 grow flex-col gap-4 overflow-y-auto px-2.5 py-3.5">
-          {NAV_GROUPS.map((group) => (
-            <div key={group.titleKey} className="flex flex-col gap-0.5">
-              <span className="text-muted-foreground text-2xs mb-1 px-2.5 font-semibold tracking-wider uppercase">
-                {t(group.titleKey)}
-              </span>
-              {group.entries.map((entry) => {
-                const Icon = entry.icon
-                const active = isActive(entry.path)
-                return (
-                  <Link
-                    key={entry.path}
-                    to={entry.path}
-                    style={{ minHeight: 'var(--ui-row)' }}
-                    className={cn(
-                      row,
-                      active
-                        ? 'bg-muted text-foreground font-medium'
-                        : 'text-foreground hover:bg-accent'
-                    )}
-                  >
-                    <span className="flex min-w-0 items-center gap-2.5">
-                      <Icon className={cn('size-4 shrink-0', entry.tint)} />
-                      <span className="text-2sm truncate">
-                        {t(entry.titleKey)}
-                      </span>
-                    </span>
-                    {entry.count != null ? (
-                      <span
-                        dir="ltr"
-                        className="text-muted-foreground text-2xs tabular-nums [unicode-bidi:isolate]"
-                      >
-                        {entry.count}
-                      </span>
-                    ) : null}
-                  </Link>
-                )
-              })}
-            </div>
-          ))}
-
-          <div className="flex flex-col gap-0.5">
-            <span className="text-muted-foreground text-2xs mb-1 px-2.5 font-semibold tracking-wider uppercase">
-              {t('nav.group.views')}
-            </span>
-            {SAVED_VIEWS.map((view) => (
-              <Link
-                key={view.path}
-                to={view.path}
-                style={{ minHeight: 'var(--ui-row)' }}
-                className={cn(row, 'text-foreground hover:bg-accent')}
-              >
-                <span className="flex min-w-0 items-center gap-2.5">
-                  <span
-                    className={cn('size-1.5 shrink-0 rounded-full', view.tone)}
-                  />
-                  <span className="text-2sm truncate">{t(view.titleKey)}</span>
+        {/* Barre de défilement du template : en surimpression, elle ne prend
+            aucune largeur — la native en mangeait 15 px au menu. */}
+        <ScrollArea className="min-h-0 grow">
+          <nav className="flex flex-col gap-4 px-2.5 py-3.5">
+            {NAV_GROUPS.map((group) => (
+              <div key={group.titleKey} className="flex flex-col gap-0.5">
+                <span className="text-muted-foreground text-2xs mb-1 px-2.5 font-semibold tracking-wider uppercase">
+                  {t(group.titleKey)}
                 </span>
-                <span
-                  dir="ltr"
-                  className="text-muted-foreground text-2xs tabular-nums [unicode-bidi:isolate]"
-                >
-                  {view.count}
-                </span>
-              </Link>
+                {group.entries.map((entry) => {
+                  const Icon = entry.icon
+                  const active = isActive(entry.path)
+                  return (
+                    <Link
+                      key={entry.path}
+                      to={entry.path}
+                      style={{ minHeight: 'var(--ui-row)' }}
+                      className={cn(
+                        row,
+                        active
+                          ? 'bg-muted text-foreground font-medium'
+                          : 'text-foreground hover:bg-accent'
+                      )}
+                    >
+                      <span className="flex min-w-0 items-center gap-2.5">
+                        <Icon className={cn('size-4 shrink-0', entry.tint)} />
+                        <span className="text-2sm truncate">
+                          {t(entry.titleKey)}
+                        </span>
+                      </span>
+                      {entry.count != null ? (
+                        <span
+                          dir="ltr"
+                          className="text-muted-foreground text-2xs tabular-nums [unicode-bidi:isolate]"
+                        >
+                          {entry.count}
+                        </span>
+                      ) : null}
+                    </Link>
+                  )
+                })}
+              </div>
             ))}
-          </div>
-        </nav>
+
+            <div className="flex flex-col gap-0.5">
+              <span className="text-muted-foreground text-2xs mb-1 px-2.5 font-semibold tracking-wider uppercase">
+                {t('nav.group.views')}
+              </span>
+              {SAVED_VIEWS.map((view) => (
+                <Link
+                  key={view.path}
+                  to={view.path}
+                  style={{ minHeight: 'var(--ui-row)' }}
+                  className={cn(row, 'text-foreground hover:bg-accent')}
+                >
+                  <span className="flex min-w-0 items-center gap-2.5">
+                    <span
+                      className={cn(
+                        'size-1.5 shrink-0 rounded-full',
+                        view.tone
+                      )}
+                    />
+                    <span className="text-2sm truncate">
+                      {t(view.titleKey)}
+                    </span>
+                  </span>
+                  <span
+                    dir="ltr"
+                    className="text-muted-foreground text-2xs tabular-nums [unicode-bidi:isolate]"
+                  >
+                    {view.count}
+                  </span>
+                </Link>
+              ))}
+            </div>
+          </nav>
+        </ScrollArea>
 
         {/* Réglages, à l'écart : on n'y va pas en travaillant. */}
         <div className="border-border shrink-0 border-t p-2.5">
