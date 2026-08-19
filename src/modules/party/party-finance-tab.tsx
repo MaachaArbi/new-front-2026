@@ -200,7 +200,10 @@ export function PartyFinanceTab({
                       ? ` · ${serviceTypeLabel(g.serviceTypeCode)}`
                       : ''}
                   </div>
-                  <div className="text-foreground mt-0.5 text-2xl font-semibold tabular-nums">
+                  <div
+                    dir="ltr"
+                    className="text-foreground mt-0.5 text-2xl font-semibold tabular-nums [unicode-bidi:isolate]"
+                  >
                     {formatMinor(g.effectiveMinor, cur)}{' '}
                     <span className="text-muted-foreground text-base font-normal">
                       {cur}
@@ -382,7 +385,10 @@ export function PartyFinanceTab({
                     )}
                   </span>
                   {exemption.validFrom || exemption.validTo ? (
-                    <span className="text-muted-foreground text-sm tabular-nums">
+                    <span
+                      dir="ltr"
+                      className="text-muted-foreground text-sm tabular-nums [unicode-bidi:isolate]"
+                    >
                       {date.day(exemption.validFrom) || '…'} →{' '}
                       {date.day(exemption.validTo) || '…'}
                     </span>

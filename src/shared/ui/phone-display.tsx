@@ -20,7 +20,10 @@ export function PhoneDisplay({
 }) {
   if (!value) return null
   return (
-    <span dir="ltr" className={cn('tabular-nums', className)}>
+    <span
+      dir="ltr"
+      className={cn('tabular-nums [unicode-bidi:isolate]', className)}
+    >
       {value}
     </span>
   )

@@ -1,5 +1,5 @@
 import { formatMinor } from '@/shared/lib/money'
-import { cn } from '@/shared/lib/cn'
+import { Num } from '@/shared/ui/num'
 
 /**
  * Montant monétaire — `amountMinor` est une **chaîne d'unités mineures** (millimes pour
@@ -23,10 +23,10 @@ export function MoneyText({
 }) {
   const code = currency ?? ''
   return (
-    <span className={cn('tabular-nums', className)}>
+    <Num className={className}>
       {signed ? '+' : ''}
       {formatMinor(minor, code)}
       {code ? ` ${code}` : ''}
-    </span>
+    </Num>
   )
 }

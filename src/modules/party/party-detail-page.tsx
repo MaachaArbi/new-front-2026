@@ -105,6 +105,7 @@ import { PartyAddressSheet } from './party-address-sheet'
 import { PartyContactSheet } from './party-contact-sheet'
 import { PartyParentSheet } from './party-parent-sheet'
 import { groupCreditLimits, todayIso } from './credit'
+import { PartyTripsCard, demoTrips } from './party-trips-card'
 
 const STATE_BADGE: Record<
   Exclude<PartyState, 'active'>,
@@ -1189,6 +1190,11 @@ export function PartyDetailPage() {
         }
       >
         <TabsContent value="overview" className="flex flex-col gap-4 pt-4">
+          {/* VOYAGES — la fiche s'ouvre sur ce que le client a acheté, pas sur des
+              indicateurs financiers génériques. Encore statique : le module
+              Réservations n'est pas branché (voir party-trips-card). */}
+          <PartyTripsCard trips={demoTrips(t)} />
+
           {/* « À traiter » (reproduction de la maquette de référence) — en-tête + compteur, puis lignes
               point de sévérité + texte + ACTION. Alertes réelles ; masqué si rien. */}
           {todoAlerts.length > 0 ? (

@@ -122,7 +122,10 @@ export function Gauge({
             {pendingLabel}
           </span>
         ) : (
-          <span className="font-semibold tabular-nums">
+          <span
+            dir="ltr"
+            className="font-semibold tabular-nums [unicode-bidi:isolate]"
+          >
             {Math.round(pct)} %
           </span>
         )}
@@ -153,7 +156,7 @@ export function StatValue({
     <span className="flex items-baseline gap-1.5">
       <span
         className={cn(
-          'text-2xl leading-8 font-bold tracking-tight tabular-nums',
+          'text-2xl leading-8 font-bold tracking-tight tabular-nums [unicode-bidi:isolate]',
           muted ? 'text-muted-foreground' : 'text-foreground'
         )}
       >

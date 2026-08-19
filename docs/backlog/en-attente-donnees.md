@@ -101,6 +101,27 @@ Convention : `élément d'UI` · où · **statut** · débloqué par.
   C'est cette passe qui rend les **thèmes utilisateur** possibles (tout passe par des
   tokens ; une valeur en dur ne répondrait jamais à un thème).
 
+## Valeurs statiques à l'écran (règle du 19/08)
+
+Depuis le 19/08 on conçoit chaque page COMPLÈTE sans attendre l'API. Toute valeur
+inventée porte un **soulignement pointillé** (`<MockValue>`) et se déclare : le
+compteur de l'en-tête totalise ce qui reste à brancher sur l'écran courant. Sur un
+écran entièrement branché, le compteur disparaît — c'est l'indicateur qu'on vise.
+
+**Fiche Tiers — 26 valeurs**, toutes dans le bloc « Voyages en cours ».
+
+| Ce qui est statique | D'où ça viendra | Bloquant |
+|---|---|---|
+| Numéro de dossier, destination, dates du séjour | `GET /booking-folders/{id}` | `/booking-folders` ne rend **aucun** dossier ; un `folderPublicId` valide répond 404 |
+| Services du dossier (hôtel, vol, transfert) et leur statut | `bookings[]` du dossier | idem |
+| Nombre de voyageurs | `travelers` du service | idem |
+| Montants (total vendu, solde dû, option) | totaux par service | idem — et la **forme des montants reste à trancher** : le module Réservations rend `{amount: number}` là où Tiers rend `amountMinor: string` |
+| Compteurs du menu (Tiers 128, Clients 96, …) et vues enregistrées | décompte serveur, pas un chargement de la liste | à demander |
+
+**Ce qui n'est PAS statique et ne doit pas le devenir** : tout ce que l'API rend déjà
+— identité, rattachements, coordonnées, adresses, plafonds, activité, interlocuteurs.
+Un champ vide s'affiche « — » ; il ne se remplace jamais par une valeur inventée.
+
 ### À traiter AVANT la mise en production (pas urgent en dev)
 - **Jauge « Encours »** : aujourd'hui une barre grise vide + « EN ATTENTE ». Acceptable en
   développement (aucun utilisateur), mais à revoir avant la prod : barre hachurée, ou pas

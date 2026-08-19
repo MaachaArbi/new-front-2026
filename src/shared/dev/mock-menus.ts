@@ -15,7 +15,48 @@ export const MODULE_MENUS: Record<string, MenuConfig> = {
   // Contacts séparés — décision Arbi : une seule table, donc une seule entrée
   // (aucun sens d'avoir plusieurs tableaux pour la même chose). Les écrans finance
   // (soldes, relevés) vivront dans le module Règlements, pas ici.
-  parties: [{ titleKey: 'menu.parties.tiers', path: '/parties' }],
+  // Le menu du module Tiers, en deux temps : ce qu'on ouvre tous les jours, puis
+  // les VUES ENREGISTRÉES — des filtres nommés qui font gagner un aller-retour
+  // (« qui dépasse 75 % de son plafond ? »). Les compteurs sont encore statiques :
+  // ils viendront d'un décompte serveur, pas d'un chargement de toute la liste.
+  parties: [
+    {
+      titleKey: 'menu.parties.group.exploitation',
+      children: [
+        { titleKey: 'menu.parties.tiers', path: '/parties', badgeCount: 128 },
+        {
+          titleKey: 'menu.parties.customers',
+          path: '/parties?role=customer',
+          badgeCount: 96,
+        },
+        {
+          titleKey: 'menu.parties.suppliers',
+          path: '/parties?role=supplier',
+          badgeCount: 41,
+        },
+      ],
+    },
+    {
+      titleKey: 'menu.parties.group.views',
+      children: [
+        {
+          titleKey: 'menu.parties.view.overLimit',
+          path: '/parties?view=over-limit',
+          badgeCount: 4,
+        },
+        {
+          titleKey: 'menu.parties.view.expiring',
+          path: '/parties?view=expiring',
+          badgeCount: 2,
+        },
+        {
+          titleKey: 'menu.parties.view.unverified',
+          path: '/parties?view=unverified',
+          badgeCount: 7,
+        },
+      ],
+    },
+  ],
   bookings: [
     {
       titleKey: 'menu.bookings.group.ops',

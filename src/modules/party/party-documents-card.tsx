@@ -188,7 +188,10 @@ export function PartyDocumentsCard({
                     {typeLabel(doc.documentType)}
                   </span>
                   {doc.documentNumber ? (
-                    <span className="text-muted-foreground shrink-0 text-sm tabular-nums">
+                    <span
+                      dir="ltr"
+                      className="text-muted-foreground shrink-0 text-sm tabular-nums [unicode-bidi:isolate]"
+                    >
                       · n° {doc.documentNumber}
                     </span>
                   ) : null}
@@ -202,7 +205,10 @@ export function PartyDocumentsCard({
                       qu'une expiration existait, alors qu'elle est saisissable et sert
                       à vérifier l'authenticité d'une pièce. */}
                   {doc.issueDate || doc.expiryDate ? (
-                    <span className="text-muted-foreground tabular-nums">
+                    <span
+                      dir="ltr"
+                      className="text-muted-foreground tabular-nums [unicode-bidi:isolate]"
+                    >
                       {doc.issueDate && doc.expiryDate
                         ? t(
                             status === 'expired'

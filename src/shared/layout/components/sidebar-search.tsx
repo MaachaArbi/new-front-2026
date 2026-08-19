@@ -17,7 +17,11 @@ export function SidebarSearch() {
           placeholder={t('layout.search')}
           className="text-sidebar-foreground placeholder:text-sidebar-muted border-0 bg-transparent shadow-none"
         />
-        <Badge variant="outline" className="whitespace-nowrap" size="sm">
+        <Badge
+          variant="outline"
+          className="border-sidebar-border text-sidebar-muted bg-transparent whitespace-nowrap"
+          size="sm"
+        >
           ⌘ K
         </Badge>
       </InputWrapper>
