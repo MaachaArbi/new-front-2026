@@ -33,8 +33,12 @@ export function Sidebar() {
   const row =
     'flex items-center justify-between gap-2 rounded-lg px-2.5 transition-colors'
 
+  // ÉCART ASSUMÉ au template : layout-21 colle sa barre au bord gauche (`start-0`)
+  // alors qu'il laisse 10 px en haut, en bas et à droite. Le cadre n'était donc
+  // symétrique que menu FERMÉ. On rend la marge de gauche pour que l'encadrement
+  // soit le même dans les deux états.
   return (
-    <aside className="fixed start-0 top-(--page-margin) bottom-(--page-margin) z-20 flex w-(--sidebar-width) shrink-0 flex-col overflow-hidden transition-all duration-300 in-data-[sidebar-open=false]:w-(--sidebar-collapsed-width)">
+    <aside className="fixed start-(--page-margin) top-(--page-margin) bottom-(--page-margin) z-20 flex w-(--sidebar-width) shrink-0 flex-col overflow-hidden transition-all duration-300 in-data-[sidebar-open=false]:w-(--sidebar-collapsed-width)">
       <div className="border-border bg-background flex min-h-0 grow flex-col overflow-hidden rounded-s-xl border">
         {/* Identité : le produit, puis le bureau — en texte, jamais un menu. */}
         <div className="border-border flex h-[calc(var(--header-height)-1px)] shrink-0 items-center justify-between gap-2 border-b px-4">

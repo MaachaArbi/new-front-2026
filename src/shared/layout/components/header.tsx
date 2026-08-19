@@ -26,7 +26,7 @@ export function Header() {
   const isDark = resolvedTheme === 'dark'
 
   return (
-    <header className="border-border bg-background fixed start-0 end-0 top-0 z-10 flex h-(--header-height-mobile) shrink-0 items-stretch border-b transition-[left,right] duration-300 lg:start-(--sidebar-width) lg:end-(--page-margin) lg:top-(--page-margin) lg:h-(--header-height) lg:rounded-se-xl lg:border-e lg:border-t lg:in-data-[sidebar-open=false]:start-(--page-margin) lg:in-data-[sidebar-open=false]:rounded-ss-xl lg:in-data-[sidebar-open=false]:border-s">
+    <header className="border-border bg-background fixed start-0 end-0 top-0 z-10 flex h-(--header-height-mobile) shrink-0 items-stretch border-b transition-[left,right] duration-300 lg:start-[calc(var(--sidebar-width)+var(--page-margin))] lg:end-(--page-margin) lg:top-(--page-margin) lg:h-(--header-height) lg:rounded-se-xl lg:border-e lg:border-t lg:in-data-[sidebar-open=false]:start-(--page-margin) lg:in-data-[sidebar-open=false]:rounded-ss-xl lg:in-data-[sidebar-open=false]:border-s">
       <div className="flex grow items-center justify-between gap-3 px-4 lg:px-6">
         <div className="flex min-w-0 items-center gap-2">
           {!isSidebarOpen ? (
