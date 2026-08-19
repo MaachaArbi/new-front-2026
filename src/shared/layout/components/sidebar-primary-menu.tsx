@@ -33,8 +33,8 @@ export function SidebarPrimaryMenu() {
       type="multiple"
       className="space-y-7.5 px-2.5"
       classNames={{
-        label: 'text-xs font-normal text-muted-foreground mb-2',
-        item: 'h-8.5 px-2.5 text-sm font-normal text-foreground hover:text-primary data-[selected=true]:bg-muted data-[selected=true]:text-foreground',
+        label: 'text-xs font-normal text-sidebar-muted mb-2',
+        item: 'h-8.5 px-2.5 text-sm font-normal text-sidebar-foreground hover:bg-sidebar-hover data-[selected=true]:bg-sidebar-active data-[selected=true]:text-sidebar-foreground',
         group: '',
       }}
     >

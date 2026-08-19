@@ -36,19 +36,19 @@ export function SidebarHeader() {
   }, [selectedOfficeId, offices, setSelectedOffice])
 
   return (
-    <div className="border-border flex h-[calc(var(--header-height)-1px)] items-center gap-2 border-b">
+    <div className="border-sidebar-border flex h-[calc(var(--header-height)-1px)] items-center gap-2 border-b">
       <div className="flex w-full grow items-center justify-between gap-2.5 px-5">
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button
               variant="ghost"
-              className="text-muted-foreground hover:text-foreground -ms-1.5 inline-flex px-1.5"
+              className="text-sidebar-muted hover:text-sidebar-foreground -ms-1.5 inline-flex px-1.5"
               disabled={offices.length === 0}
             >
               <div className="bg-primary text-primary-foreground flex size-6 items-center justify-center rounded-md">
                 <Building2 className="size-4" />
               </div>
-              <span className="text-foreground text-sm font-medium">
+              <span className="text-sidebar-foreground text-sm font-medium">
                 {selected?.displayName ?? t('layout.office')}
               </span>
               <ChevronsUpDown className="opacity-100" />
@@ -61,10 +61,10 @@ export function SidebarHeader() {
                 onClick={() => setSelectedOffice(office.accountId)}
                 data-active={selectedOfficeId === office.accountId}
               >
-                <div className="bg-muted text-muted-foreground flex size-6 items-center justify-center rounded-md">
+                <div className="bg-sidebar-hover text-sidebar-muted flex size-6 items-center justify-center rounded-md">
                   <Building2 className="size-4" />
                 </div>
-                <span className="text-foreground text-sm font-medium">
+                <span className="text-sidebar-foreground text-sm font-medium">
                   {office.displayName}
                 </span>
                 <Check
@@ -86,7 +86,7 @@ export function SidebarHeader() {
           variant="ghost"
           onClick={sidebarToggle}
           aria-label={t('layout.toggleSidebar')}
-          className="text-muted-foreground hover:text-foreground hidden lg:inline-flex"
+          className="text-sidebar-muted hover:text-sidebar-foreground hidden lg:inline-flex"
         >
           <PanelRight className="opacity-100" />
         </Button>

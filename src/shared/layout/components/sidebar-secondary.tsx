@@ -17,14 +17,14 @@ export function SidebarSecondary() {
   const activeModule = moduleFromPath(pathname)
 
   return (
-    <div className="border-border bg-sidebar text-sidebar-foreground overflow-hidden border lg:rounded-s-xl">
+    <div className="border-sidebar-border bg-sidebar text-sidebar-foreground overflow-hidden border lg:rounded-s-xl">
       <SidebarHeader />
       <ScrollArea className="mt-0 mb-2.5 h-[calc(100vh-4.5rem)] shrink-0 lg:h-[calc(100vh-5.5rem)]">
         <SidebarSearch />
 
         {/* Nom du module courant en clair — une icône seule est ambiguë (ADR-F02) */}
         <div className="px-5 pt-3.5 pb-1">
-          <span className="text-foreground text-sm font-semibold">
+          <span className="text-sidebar-foreground text-sm font-semibold">
             {activeModule ? t(activeModule.titleKey) : ''}
           </span>
         </div>

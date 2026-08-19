@@ -1198,7 +1198,7 @@ export function PartyDetailPage() {
                 title={t('party.todo.title')}
                 tone="urgent"
                 action={
-                  <Badge variant="warning" appearance="light" size="sm">
+                  <Badge variant="destructive" appearance="light" size="sm">
                     {todoAlerts.length}
                   </Badge>
                 }

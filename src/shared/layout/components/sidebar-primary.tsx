@@ -60,9 +60,11 @@ export function SidebarPrimary() {
     : -1
 
   return (
-    // Rail SANS fond : c'est le gris de la page (`lg:bg-muted` sur le body) qui
-    // transparaît — comme layout-21. Seul le panneau de menu est blanc.
-    <div className="flex w-[70px] shrink-0 flex-col items-center justify-between gap-5 py-2.5 lg:w-(--sidebar-collapsed-width)">
+    // Le rail prend le fond du MENU, pas celui de la page : les deux colonnes de
+    // gauche forment une seule bande, et l'axe « barre latérale claire/sombre »
+    // les emmène ensemble. Les carrés de module gardent leur couleur pleine —
+    // c'est le seul endroit où la couleur identifie plutôt qu'elle ne décore.
+    <div className="bg-sidebar flex w-[70px] shrink-0 flex-col items-center justify-between gap-5 py-2.5 lg:w-(--sidebar-collapsed-width)">
       {/* Rail des modules */}
       <div className="relative w-full grow">
         <div className="relative flex grow flex-col items-center gap-[10px]">
@@ -70,7 +72,7 @@ export function SidebarPrimary() {
               start-1.75 = propriété logique (ADR-F04), donc correct en RTL. */}
           {activeIndex >= 0 && (
             <motion.div
-              className="bg-foreground absolute start-1 z-10 w-[3px] rounded-full"
+              className="bg-sidebar-foreground absolute start-1 z-10 w-[3px] rounded-full"
               initial={false}
               animate={{
                 y: activeIndex * RAIL_ITEM_SPACING + 7,
@@ -127,7 +129,7 @@ export function SidebarPrimary() {
             <Button
               variant="ghost"
               mode="icon"
-              className="text-muted-foreground hover:text-foreground"
+              className="text-sidebar-muted hover:text-sidebar-foreground"
             >
               <Plus />
             </Button>
@@ -159,12 +161,10 @@ export function SidebarPrimary() {
                 </AvatarIndicator>
               </Avatar>
               <div className="flex flex-col items-start">
-                <span className="text-foreground text-sm font-semibold">
+                <span className="text-sidebar-foreground text-sm font-semibold">
                   {userName}
                 </span>
-                <span className="text-muted-foreground text-xs">
-                  {userEmail}
-                </span>
+                <span className="text-sidebar-muted text-xs">{userEmail}</span>
               </div>
             </div>
 

@@ -114,11 +114,109 @@
 }
 
 /** Theme Setup **/
-@theme inline {
-  /** Typographie — Inter (chargée dans index.html), comme le socle Metronic. **/
-  --font-sans:
+/* ═══════════════════════════════════════════════════════════════════════════
+   PRÉFÉRENCES D'AFFICHAGE — quatre axes, quatre attributs sur <html>.
+   ═══════════════════════════════════════════════════════════════════════════
+
+   Décision du 19/08 : on ouvre QUATRE réglages à l'utilisateur — thème, barre
+   latérale, accent, police — et **pas** la densité ni la taille. Ces deux-là
+   demanderaient de faire passer 206 tailles figées de `shared/ui` par des
+   variables, et surtout de promettre des centaines de combinaisons que personne
+   ne peut vérifier. Les quatre retenus ne coûtent rien : ce sont déjà des
+   jetons ; il suffit de les redéfinir par attribut.
+
+   Le thème vit dans `class="dark"` (next-themes). Les trois autres sont des
+   attributs `data-*` posés sur <html> : aucune règle JS dans le rendu, une
+   seule cascade CSS, et le réglage s'applique avant la première peinture.
+
+   Règle : ne JAMAIS écrire une couleur en dur dans un composant. Aujourd'hui
+   le code de production n'en contient aucune — c'est ce qui rend l'accent
+   commutable pour rien. Toute couleur littérale ajoutée ici casserait l'axe.  */
+
+/* ── Accent ─────────────────────────────────────────────────────────────────
+   Une seule teinte pilote `--primary` (liens, onglet actif, indicateurs) et
+   son halo. Elle ne touche PAS `--ink` : le bouton principal reste encre, et
+   les couleurs d'état (succès, alerte, erreur) gardent leur sens propre —
+   un accent qui repeindrait le rouge d'une erreur détruirait l'information. */
+:root[data-accent='teal'] { --primary: #0f766e; }
+:root[data-accent='indigo'] { --primary: #3730a3; }
+:root[data-accent='steel'] { --primary: #4b6b8a; }
+:root[data-accent='amber'] { --primary: #b45309; }
+
+.dark[data-accent='teal'] { --primary: #2dd4bf; }
+.dark[data-accent='indigo'] { --primary: #a5b4fc; }
+.dark[data-accent='steel'] { --primary: #93b0cc; }
+.dark[data-accent='amber'] { --primary: #fbbf24; }
+
+/* ── Barre latérale ─────────────────────────────────────────────────────────
+   Axe INDÉPENDANT du thème : on peut vouloir un menu sombre sur une interface
+   claire (c'est le défaut retenu — le contraste ancre la navigation et laisse
+   le contenu respirer). Les quatre combinaisons thème × barre sont donc
+   déclarées explicitement, jamais déduites. */
+:root[data-sidebar='dark'] {
+  --sidebar: #1c1917; /* encre CHAUDE — la même que `--ink`, pas un gris froid */
+  --sidebar-foreground: #e7e5e4;
+  --sidebar-muted: #8a827c;
+  --sidebar-border: #2e2a27;
+  --sidebar-hover: rgb(255 255 255 / 7%);
+  --sidebar-active: rgb(255 255 255 / 10%);
+}
+:root[data-sidebar='light'] {
+  --sidebar: var(--background);
+  --sidebar-foreground: var(--foreground);
+  --sidebar-muted: var(--muted-foreground);
+  --sidebar-border: var(--border);
+  --sidebar-hover: var(--accent);
+  --sidebar-active: var(--muted);
+}
+/* En thème sombre, une barre « claire » ne redevient pas blanche : elle prend
+   la surface la plus haute du triptyque sombre, sinon elle éblouit. */
+.dark[data-sidebar='light'] {
+  --sidebar: #262322;
+  --sidebar-foreground: var(--foreground);
+  --sidebar-muted: var(--muted-foreground);
+  --sidebar-border: var(--border);
+  --sidebar-hover: var(--accent);
+  --sidebar-active: var(--muted);
+}
+
+/* ── Police ─────────────────────────────────────────────────────────────────
+   `--font-ui` porte l'interface, `--font-display` les chiffres et les titres.
+   Un condensé pour les nombres donne la densité sans rétrécir le texte lu —
+   c'est le seul endroit où les deux diffèrent. Les piles de repli ont des
+   métriques proches pour que la substitution ne fasse pas sauter la mise en
+   page pendant le chargement. */
+:root {
+  --font-ui:
     'Inter', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto,
     'Helvetica Neue', Arial, 'Noto Sans', sans-serif;
+  --font-disp: var(--font-ui);
+}
+:root[data-font='plex'] {
+  --font-ui:
+    'IBM Plex Sans', ui-sans-serif, system-ui, -apple-system, 'Segoe UI',
+    Roboto, Arial, sans-serif;
+  --font-disp:
+    'IBM Plex Sans Condensed', 'IBM Plex Sans', ui-sans-serif, system-ui,
+    sans-serif;
+}
+:root[data-font='barlow'] {
+  --font-ui:
+    'Barlow', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto,
+    Arial, sans-serif;
+  --font-disp: 'Barlow Condensed', 'Barlow', ui-sans-serif, sans-serif;
+}
+:root[data-font='system'] {
+  --font-ui:
+    ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto,
+    'Helvetica Neue', Arial, sans-serif;
+  --font-disp: var(--font-ui);
+}
+
+@theme inline {
+  /** Typographie — Inter (chargée dans index.html), comme le socle Metronic. **/
+  --font-sans: var(--font-ui);
+  --font-display: var(--font-disp);
 
   /** Deux crans SOUS l'échelle Tailwind — repris tels quels du socle Metronic.
       Sans eux, tout le texte dense reste à 14 px et l'interface paraît « grosse ».
@@ -162,6 +260,10 @@
   /* Surface rail/menu (S3c) → utilitaires bg-sidebar / text-sidebar-foreground */
   --color-sidebar: var(--sidebar);
   --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-muted: var(--sidebar-muted);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-hover: var(--sidebar-hover);
+  --color-sidebar-active: var(--sidebar-active);
 
   /** Base Styles **/
   --color-border: var(--border);

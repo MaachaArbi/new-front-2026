@@ -49,16 +49,22 @@ export function CardHead({
   /** Compteur discret accolé au titre (« Interlocuteurs · 4 »). */
   count?: number
   action?: React.ReactNode
-  /** `urgent` = bandeau ambré : la carte demande une action. */
+  /**
+   * `urgent` = la carte demande une action.
+   *
+   * Le bandeau n'est PLUS teinté en jaune (décision d'Arbi, 19/08). Deux raisons :
+   * le lavis ambré servait à la fois d'alerte et de marquage, deux messages dans une
+   * seule couleur ; et sur ce fond, le rouge d'un vrai problème ne ressortait plus.
+   * L'urgence se lit désormais à l'icône et au compteur — la couleur est réservée à
+   * la SÉVÉRITÉ de chaque ligne, là où elle porte une information.
+   */
   tone?: 'default' | 'urgent'
 }) {
   return (
     <div
       className={cn(
         'border-border flex items-center justify-between gap-3 border-b px-4 py-2.5',
-        tone === 'urgent'
-          ? 'bg-[var(--color-warning-accent,var(--color-yellow-100))]'
-          : 'bg-strip'
+        'bg-strip'
       )}
     >
       <span className="text-foreground flex min-w-0 items-center gap-2 text-base leading-none font-semibold tracking-tight">
@@ -66,9 +72,7 @@ export function CardHead({
           <span
             className={cn(
               '[&_svg]:size-4',
-              tone === 'urgent'
-                ? 'text-[var(--color-warning-foreground,var(--color-yellow-800))]'
-                : 'text-muted-foreground'
+              tone === 'urgent' ? 'text-destructive' : 'text-muted-foreground'
             )}
           >
             {icon}

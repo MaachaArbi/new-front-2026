@@ -14,6 +14,22 @@
       href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap"
     />
     <title>OsTravel Back Office</title>
+    <script>
+      // Réglages d'affichage appliqués avant la première peinture (cf.
+      // src/app/providers/display-preferences.tsx). Sans ce script, l'écran
+      // s'affiche au défaut puis saute au choix de l'utilisateur.
+      (function () {
+        try {
+          var d = JSON.parse(localStorage.getItem('ostravel-display') || '{}')
+          var r = document.documentElement
+          r.dataset.accent = d.accent || 'teal'
+          r.dataset.sidebar = d.sidebar || 'dark'
+          r.dataset.font = d.font || 'inter'
+        } catch (e) {
+          document.documentElement.dataset.sidebar = 'dark'
+        }
+      })()
+    </script>
   </head>
   <body>
     <div id="root"></div>

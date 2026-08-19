@@ -1,5 +1,6 @@
 import { BrowserRouter } from 'react-router-dom'
 import { ThemeProvider } from './app/providers/theme-provider'
+import { DisplayPreferencesProvider } from './app/providers/display-preferences'
 import { I18nProvider, useI18n } from './app/providers/i18n-provider'
 import { QueryProvider } from './app/providers/query-provider'
 import { AuthProvider, useAuth } from './app/providers/auth-provider'
@@ -42,15 +43,17 @@ function AuthGate() {
 export function App() {
   return (
     <ThemeProvider>
-      <I18nProvider>
-        <QueryProvider>
-          <BrowserRouter>
-            <AuthProvider>
-              <AuthGate />
-            </AuthProvider>
-          </BrowserRouter>
-        </QueryProvider>
-      </I18nProvider>
+      <DisplayPreferencesProvider>
+        <I18nProvider>
+          <QueryProvider>
+            <BrowserRouter>
+              <AuthProvider>
+                <AuthGate />
+              </AuthProvider>
+            </BrowserRouter>
+          </QueryProvider>
+        </I18nProvider>
+      </DisplayPreferencesProvider>
     </ThemeProvider>
   )
 }
