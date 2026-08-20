@@ -11,7 +11,7 @@ import { DataGrid, DataGridContainer } from '@/shared/ui/data-grid'
 import { DataGridBulkActions } from '@/shared/ui/data-grid-bulk-actions'
 import { DataGridColumnHeader } from '@/shared/ui/data-grid-column-header'
 import { DataGridColumnVisibility } from '@/shared/ui/data-grid-column-visibility'
-import { DataGridDensity } from '@/shared/ui/data-grid-density'
+import { DataGridDisplayOptions } from '@/shared/ui/data-grid-display-options'
 import { DataGridPagination } from '@/shared/ui/data-grid-pagination'
 import { DataGridRowActions } from '@/shared/ui/data-grid-row-actions'
 import {
@@ -200,6 +200,9 @@ export function PartiesListPage() {
         size: 44,
         enableSorting: false,
         enableHiding: false,
+        // Une colonne d'icône ne se redimensionne pas — et `truncate`, que le
+        // redimensionnement ajoute, coupait l'icône avec des points de suspension.
+        enableResizing: false,
       },
       {
         id: 'nature',
@@ -210,6 +213,7 @@ export function PartiesListPage() {
         cell: ({ row }) => <NatureCell nature={row.original.nature} />,
         size: 44,
         enableSorting: false,
+        enableResizing: false,
         meta: {
           headerTitle: t('parties.filter.nature'),
           skeleton: <Skeleton className="size-4 rounded-full" />,
@@ -363,6 +367,7 @@ export function PartiesListPage() {
         size: 60,
         enableSorting: false,
         enableHiding: false,
+        enableResizing: false,
       },
     ],
     [intl.locale] // eslint-disable-line react-hooks/exhaustive-deps
@@ -380,6 +385,11 @@ export function PartiesListPage() {
     enableColumnResizing: true,
     columnResizeMode: 'onChange',
     enableColumnPinning: true,
+    // La colonne d'actions reste visible quand on fait défiler à l'horizontale :
+    // c'est celle qu'on vient chercher après avoir lu la ligne. `right` est le
+    // vocabulaire de TanStack ; notre rendu le traduit en propriété LOGIQUE,
+    // donc elle se colle au bord de FIN, à gauche en arabe.
+    initialState: { columnPinning: { right: ['actions'] } },
     getCoreRowModel: getCoreRowModel(),
   })
 
@@ -395,6 +405,10 @@ export function PartiesListPage() {
         columnsVisibility: true,
         columnsResizable: true,
         columnsPinnable: true,
+        // L'en-tête colle : dès la quinzième ligne on ne sait plus quelle colonne
+        // on lit, et on remonte pour vérifier. C'est le défaut le plus coûteux
+        // d'une liste longue.
+        headerSticky: true,
       }}
       // GOUTTIÈRE (décision 04/08) : la bande touche les bords, mais le CONTENU
       // de la première et de la dernière colonne s'aligne sur le retrait de page.
@@ -472,7 +486,7 @@ export function PartiesListPage() {
                       </Button>
                     }
                   />
-                  <DataGridDensity label={false} />
+                  <DataGridDisplayOptions label={false} />
                   <SavedViews />
                   <ExportButton recordCount={source.total} />
                 </>

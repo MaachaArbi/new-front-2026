@@ -427,7 +427,7 @@ export function TableShowcase() {
 
   const layouts: Record<string, DataGridProps<Tier>['tableLayout']> = {
     dense: { density: 'compact', rowBorder: true },
-    stripped: { stripped: true, rowBorder: false, headerBackground: false },
+    stripped: { striped: true, rowBorder: false, headerBackground: false },
   }
 
   return (

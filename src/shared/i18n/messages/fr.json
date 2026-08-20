@@ -286,5 +286,7 @@
   "ui.table.density": "Densité",
   "ui.table.density.compact": "Condensé",
   "ui.table.density.default": "Normal",
-  "ui.table.density.comfortable": "Aéré"
+  "ui.table.density.comfortable": "Aéré",
+  "ui.table.display": "Affichage",
+  "ui.table.striped": "Lignes rayées"
 }

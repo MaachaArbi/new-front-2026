@@ -10,11 +10,20 @@ import fs from 'node:fs'
  * champs vides qui doivent s'afficher au lieu de disparaître.
  */
 const SHOTS = 'e2e/screenshots'
-test.use({ viewport: { width: 1500, height: 1000 } })
+/**
+ * `slowMo` ramené à 50 ms. La configuration globale le met à 500 pour que les
+ * VIDÉOS se regardent comme si on était devant l'écran — utile pour une
+ * démonstration, absurde pour un test de captures : il a fait dépasser les cinq
+ * minutes sans rien ajouter à l'image.
+ */
+test.use({
+  viewport: { width: 1500, height: 1000 },
+  launchOptions: { slowMo: 50 },
+})
 test.beforeAll(() => fs.mkdirSync(SHOTS, { recursive: true }))
 
 test('liste Tiers — captures', async ({ page }) => {
-  test.setTimeout(180_000)
+  test.setTimeout(300_000)
   const set = async (entries: Record<string, string>) => {
     await page.evaluate((o) => {
       for (const [k, v] of Object.entries(o)) localStorage.setItem(k, v)
@@ -39,13 +48,35 @@ test('liste Tiers — captures', async ({ page }) => {
   await page.waitForTimeout(700)
   await page.screenshot({ path: `${SHOTS}/tiers-liste-arabe.png` })
 
+  // ⚠️ On REVIENT en français avant la suite : les étapes ci-dessous visent des
+  // boutons par leur libellé, et l'écran est encore en arabe. C'est exactement le
+  // piège dans lequel je suis tombé — le test attendait « Affichage » pendant que
+  // la page affichait « العرض ».
+  await set({ 'i18n-language': 'fr' })
+
+  // En-tête collant + colonne d'actions épinglée : on défile, les deux restent.
+  await page.goto('/parties?size=25')
+  await page.waitForTimeout(1800)
+  await page.mouse.move(700, 500)
+  await page.mouse.wheel(0, 700)
+  await page.waitForTimeout(700)
+  await page.screenshot({ path: `${SHOTS}/tiers-liste-entete-collant.png` })
+
+  // Lignes rayées — l'option est offerte à l'utilisateur, pas figée par le code.
+  await page.mouse.wheel(0, -900)
+  await page.waitForTimeout(500)
+  await page.getByRole('button', { name: 'Affichage' }).click()
+  await page.getByRole('menuitemcheckbox', { name: 'Lignes rayées' }).click()
+  await page.keyboard.press('Escape')
+  await page.waitForTimeout(600)
+  await page.screenshot({ path: `${SHOTS}/tiers-liste-rayee.png` })
+
   // Les trois crans de densité, côte à côte — c'est la mesure qui compte dans un
   // ERP : combien de lignes l'agent voit sans défiler.
-  await set({ 'i18n-language': 'fr' })
   await page.goto('/parties')
   await page.waitForTimeout(1600)
   for (const [level, name] of [['condense', 'Condensé'], ['aere', 'Aéré']] as const) {
-    await page.getByRole('button', { name: 'Densité' }).click()
+    await page.getByRole('button', { name: 'Affichage' }).click()
     await page.getByRole('menuitem', { name }).click()
     await page.waitForTimeout(600)
     await page.screenshot({ path: `${SHOTS}/tiers-liste-${level}.png` })
@@ -53,7 +84,7 @@ test('liste Tiers — captures', async ({ page }) => {
 })
 
 test('liste Tiers — les décisions du 04/08 tiennent', async ({ page }) => {
-  test.setTimeout(180_000)
+  test.setTimeout(300_000)
   await page.goto('/parties')
   await page.waitForTimeout(1800)
 

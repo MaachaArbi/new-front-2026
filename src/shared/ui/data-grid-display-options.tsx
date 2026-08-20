@@ -1,5 +1,5 @@
 /**
- * DENSITÉ DU TABLEAU — condensé · normal · aéré.
+ * AFFICHAGE DU TABLEAU — densité et rayures.
  *
  * Écrit par nous. Le template n'a qu'un booléen `dense`, posé par le
  * développeur : l'utilisateur ne pouvait rien régler.
@@ -16,18 +16,27 @@
  * est plus serré que chez un autre. Les deux réglages s'additionnent au lieu de
  * se contredire.
  *
- * ⚠️ Le choix ne SURVIT PAS au rechargement. La persistance en préférences
+ * ── POURQUOI LES RAYURES SONT ICI ET PAS AILLEURS ──────────────────────────────
+ * Elles règlent la même chose que la densité : la **lisibilité d'une ligne au
+ * milieu de vingt-cinq**. Deux boutons pour un seul geste encombreraient une
+ * barre déjà chargée ; ce sont deux réponses au même besoin, elles vivent
+ * ensemble.
+ *
+ * ⚠️ Aucun de ces choix ne SURVIT au rechargement. La persistance en préférences
  * utilisateur est en phase 2 (décision du 04/08, avec la disposition des
  * colonnes et les vues nommées). Inscrit au registre.
  */
 import { useIntl } from 'react-intl'
-import { Check, Rows2, Rows3, Rows4 } from 'lucide-react'
+import { Check, Rows2, Rows3, Rows4, Settings2 } from 'lucide-react'
 import { Button } from '@/shared/ui/button'
 import { DataGridDensityValue, useDataGrid } from '@/shared/ui/data-grid'
 import {
   DropdownMenu,
+  DropdownMenuCheckboxItem,
   DropdownMenuContent,
   DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/shared/ui/dropdown-menu'
 
@@ -40,11 +49,10 @@ const LEVELS: readonly {
   { value: 'comfortable', icon: Rows2 },
 ]
 
-function DataGridDensity({ label = true }: { label?: boolean }) {
+function DataGridDisplayOptions({ label = true }: { label?: boolean }) {
   const intl = useIntl()
-  const { density, setDensity } = useDataGrid()
-  const current = LEVELS.find((level) => level.value === density) ?? LEVELS[1]
-  const CurrentIcon = current?.icon ?? Rows3
+  const t = (id: string) => intl.formatMessage({ id })
+  const { density, setDensity, striped, setStriped } = useDataGrid()
 
   return (
     <DropdownMenu>
@@ -53,13 +61,16 @@ function DataGridDensity({ label = true }: { label?: boolean }) {
           variant="secondary"
           size="sm"
           mode={label ? 'default' : 'icon'}
-          aria-label={intl.formatMessage({ id: 'ui.table.density' })}
+          aria-label={t('ui.table.display')}
         >
-          <CurrentIcon />
-          {label ? intl.formatMessage({ id: 'ui.table.density' }) : null}
+          <Settings2 />
+          {label ? t('ui.table.display') : null}
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="end" className="min-w-44">
+      <DropdownMenuContent align="end" className="min-w-48">
+        <DropdownMenuLabel className="text-ink-muted font-normal">
+          {t('ui.table.density')}
+        </DropdownMenuLabel>
         {LEVELS.map((level) => {
           const Icon = level.icon
           return (
@@ -69,7 +80,7 @@ function DataGridDensity({ label = true }: { label?: boolean }) {
             >
               <Icon />
               <span className="grow">
-                {intl.formatMessage({ id: `ui.table.density.${level.value}` })}
+                {t(`ui.table.density.${level.value}`)}
               </span>
               {level.value === density && (
                 <Check className="text-primary size-4" />
@@ -77,9 +88,17 @@ function DataGridDensity({ label = true }: { label?: boolean }) {
             </DropdownMenuItem>
           )
         })}
+        <DropdownMenuSeparator />
+        <DropdownMenuCheckboxItem
+          checked={striped}
+          onSelect={(event) => event.preventDefault()}
+          onCheckedChange={setStriped}
+        >
+          {t('ui.table.striped')}
+        </DropdownMenuCheckboxItem>
       </DropdownMenuContent>
     </DropdownMenu>
   )
 }
 
-export { DataGridDensity }
+export { DataGridDisplayOptions }

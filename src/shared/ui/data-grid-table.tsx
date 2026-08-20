@@ -168,7 +168,7 @@ function DataGridTableHeadRow<TData>({
   children: ReactNode
   headerGroup: HeaderGroup<TData>
 }) {
-  const { props } = useDataGrid()
+  const { props, striped } = useDataGrid()
 
   return (
     <tr
@@ -177,7 +177,7 @@ function DataGridTableHeadRow<TData>({
         'bg-muted',
         props.tableLayout?.headerBorder && '[&>th]:border-b',
         props.tableLayout?.cellBorder && '[&_>:last-child]:border-e-0',
-        props.tableLayout?.stripped && 'bg-transparent',
+        striped && 'bg-transparent',
         props.tableLayout?.headerBackground === false && 'bg-transparent',
         props.tableClassNames?.headerRow
       )}
@@ -232,7 +232,7 @@ function DataGridTableHeadRowCell<TData>({
           'truncate',
         props.tableLayout?.columnsPinnable &&
           column.getCanPin() &&
-          '[&[data-pinned][data-last-col]]:border-border data-pinned:bg-muted data-pinned:backdrop-blur-xs [&:not([data-pinned]):has(+[data-pinned])_div.cursor-col-resize:last-child]:opacity-0 [&[data-last-col=left]_div.cursor-col-resize:last-child]:opacity-0 [&[data-pinned=left][data-last-col=left]]:border-e! [&[data-pinned=right]:last-child_div.cursor-col-resize:last-child]:opacity-0 [&[data-pinned=right][data-last-col=right]]:border-s!',
+          '[&[data-pinned][data-last-col]]:border-border data-pinned:bg-muted [&:not([data-pinned]):has(+[data-pinned])_div.cursor-col-resize:last-child]:opacity-0 [&[data-last-col=left]_div.cursor-col-resize:last-child]:opacity-0 [&[data-pinned=left][data-last-col=left]]:border-e! [&[data-pinned=right]:last-child_div.cursor-col-resize:last-child]:opacity-0 [&[data-pinned=right][data-last-col=right]]:border-s!',
         header.column.columnDef.meta?.headerClassName,
         column.getIndex() === 0 ||
           column.getIndex() === header.headerGroup.headers.length - 1
@@ -285,18 +285,20 @@ function DataGridTableBody({ children }: { children: ReactNode }) {
 
 /** Classes partagées par la ligne réelle et la ligne squelette. */
 function useBodyRowClasses() {
-  const { props, table, density } = useDataGrid()
+  const { props, table, density, striped } = useDataGrid()
 
   return cn(
     bodyRowHeightVariants({ size: density }),
-    'hover:bg-accent data-[state=selected]:bg-bg-primary',
+    // La ligne porte SON fond, et les cellules épinglées l'héritent
+    // (`data-pinned:bg-inherit` plus bas). Sans ça, une colonne épinglée garde un
+    // fond fixe et se détache au survol comme à la sélection.
+    'bg-background hover:bg-accent data-[state=selected]:bg-bg-primary',
     props.onRowClick && 'cursor-pointer',
-    !props.tableLayout?.stripped &&
+    !striped &&
       props.tableLayout?.rowBorder &&
       'border-border border-b [&:not(:last-child)>td]:border-b',
     props.tableLayout?.cellBorder && '[&_>:last-child]:border-e-0',
-    props.tableLayout?.stripped &&
-      'odd:bg-muted hover:bg-transparent odd:hover:bg-accent',
+    striped && 'odd:bg-muted odd:hover:bg-accent',
     table.options.enableRowSelection && '[&_>:first-child]:relative',
     props.tableClassNames?.bodyRow
   )
@@ -437,7 +439,7 @@ function DataGridTableBodyRowCell<TData>({
         cell.column.columnDef.meta?.cellClassName,
         props.tableLayout?.columnsPinnable &&
           column.getCanPin() &&
-          '[&[data-pinned][data-last-col]]:border-border data-pinned:bg-background/90 data-pinned:backdrop-blur-xs [&[data-pinned=left][data-last-col=left]]:border-e! [&[data-pinned=right][data-last-col=right]]:border-s!',
+          '[&[data-pinned][data-last-col]]:border-border data-pinned:bg-inherit [&[data-pinned=left][data-last-col=left]]:border-e! [&[data-pinned=right][data-last-col=right]]:border-s!',
         column.getIndex() === 0 ||
           column.getIndex() === row.getVisibleCells().length - 1
           ? props.tableClassNames?.edgeCell
@@ -531,7 +533,7 @@ function DataGridTableRowSelectAll({ size }: { size?: 'sm' | 'md' | 'lg' }) {
 }
 
 function DataGridTable<TData>() {
-  const { table, isLoading, props } = useDataGrid()
+  const { table, isLoading, props, striped } = useDataGrid()
   const pagination = table.getState().pagination
 
   return (
@@ -562,9 +564,7 @@ function DataGridTable<TData>() {
           ))}
       </DataGridTableHead>
 
-      {(props.tableLayout?.stripped || !props.tableLayout?.rowBorder) && (
-        <DataGridTableRowSpacer />
-      )}
+      {(striped || !props.tableLayout?.rowBorder) && <DataGridTableRowSpacer />}
 
       <DataGridTableBody>
         {props.loadingMode === 'skeleton' &&

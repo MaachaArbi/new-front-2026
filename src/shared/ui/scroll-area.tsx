@@ -15,6 +15,12 @@ import { cn } from '@/shared/lib/cn'
  * Pourquoi ce composant plutôt que `overflow-y-auto` : la barre native du système
  * **prend 15 px de largeur** et affiche ses flèches. Celle-ci est posée en
  * surimpression, ne consomme rien, et n'apparaît qu'au défilement.
+ *
+ * ── AJOUT du 21/08 : la barre HORIZONTALE ──────────────────────────────────────
+ * Le template n'en pose qu'une, verticale. Il en faut une seconde depuis qu'un
+ * tableau peut être plus large que son panneau (colonnes redimensionnées) : sans
+ * elle, le contenu déborde sans qu'on puisse l'atteindre. C'est aussi ce qui
+ * permet à l'en-tête de tableau de COLLER — voir `data-grid.tsx`.
  */
 function ScrollArea({
   className,
@@ -39,6 +45,7 @@ function ScrollArea({
         {children}
       </ScrollAreaPrimitive.Viewport>
       <ScrollBar />
+      <ScrollBar orientation="horizontal" />
       <ScrollAreaPrimitive.Corner />
     </ScrollAreaPrimitive.Root>
   )

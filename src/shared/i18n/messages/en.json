@@ -286,5 +286,7 @@
   "ui.table.density": "Density",
   "ui.table.density.compact": "Compact",
   "ui.table.density.default": "Normal",
-  "ui.table.density.comfortable": "Comfortable"
+  "ui.table.density.comfortable": "Comfortable",
+  "ui.table.display": "Display",
+  "ui.table.striped": "Striped rows"
 }

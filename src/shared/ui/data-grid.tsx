@@ -75,6 +75,8 @@ export interface DataGridContextProps<TData extends object> {
   isLoading: boolean
   density: DataGridDensityValue
   setDensity: (value: DataGridDensityValue) => void
+  striped: boolean
+  setStriped: (value: boolean) => void
 }
 
 export type DataGridRequestParams = {
@@ -98,10 +100,14 @@ export interface DataGridProps<TData extends object> {
   tableLayout?: {
     /** Cran de DÉPART. L'utilisateur peut en changer par la barre d'outils. */
     density?: DataGridDensityValue
+    /**
+     * Lignes rayées — état de DÉPART, réglable ensuite par l'utilisateur.
+     * (Le template écrivait `stripped`, avec deux « p » ; c'était une faute.)
+     */
+    striped?: boolean
     cellBorder?: boolean
     rowBorder?: boolean
     rowRounded?: boolean
-    stripped?: boolean
     headerBackground?: boolean
     headerBorder?: boolean
     headerSticky?: boolean
@@ -150,6 +156,9 @@ function DataGridProvider<TData extends object>({
   const [density, setDensity] = useState<DataGridDensityValue>(
     props.tableLayout?.density ?? 'default'
   )
+  const [striped, setStriped] = useState<boolean>(
+    props.tableLayout?.striped ?? false
+  )
 
   return (
     <DataGridContext.Provider
@@ -160,6 +169,8 @@ function DataGridProvider<TData extends object>({
         isLoading: props.isLoading ?? false,
         density,
         setDensity,
+        striped,
+        setStriped,
       }}
     >
       {children}
@@ -179,7 +190,7 @@ function DataGrid<TData extends object>({
       cellBorder: false,
       rowBorder: true,
       rowRounded: false,
-      stripped: false,
+      striped: false,
       headerSticky: false,
       headerBackground: true,
       headerBorder: true,
@@ -195,7 +206,10 @@ function DataGrid<TData extends object>({
       base: '',
       header: '',
       headerRow: '',
-      headerSticky: 'bg-background/90 sticky top-0 z-10 backdrop-blur-xs',
+      // L'en-tête colle au HAUT du panneau de contenu. `z-20` le fait passer
+      // au-dessus des cellules épinglées (z-1), sinon une colonne épinglée
+      // glisserait par-dessus les titres au défilement horizontal.
+      headerSticky: 'sticky top-0 z-20',
       body: '',
       bodyRow: '',
       footer: '',
@@ -233,15 +247,23 @@ function DataGridContainer({
   className?: string
   border?: boolean
 }) {
+  const { props } = useDataGrid()
+
   return (
     <div
       data-slot="data-grid"
       className={cn(
-        // `overflow-x-auto` : un tableau plus large que son conteneur doit
-        // DÉFILER, jamais déborder sur la page. Absent du template, où le
-        // débordement passait inaperçu tant que le tableau était pleine largeur —
-        // il se voit dès qu'on en pose deux côte à côte.
-        'grid w-full overflow-x-auto',
+        'grid w-full',
+        // ⚠️ PIÈGE CSS, et il m'a eu. `overflow-x: auto` fait de l'élément un
+        // conteneur de défilement sur les DEUX axes — CSS l'impose, on ne peut
+        // pas garder `overflow-y: visible`. L'en-tête collant se met alors à
+        // coller à CE conteneur, dont la hauteur est celle du tableau entier :
+        // il ne colle donc à rien et disparaît au défilement.
+        //
+        // Quand l'en-tête doit coller, on laisse donc le débordement horizontal
+        // à la zone défilante de la page — elle a maintenant sa barre horizontale
+        // — et le tableau ne clôt plus rien.
+        !props.tableLayout?.headerSticky && 'overflow-x-auto',
         border && 'border-border rounded-lg border',
         className
       )}
