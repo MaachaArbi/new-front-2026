@@ -89,5 +89,14 @@
   "design.input.groupsHint": "Addon, field and button read as a single object.",
   "design.input.types": "Types",
   "design.input.nativeDate": "native date — avoid",
-  "design.input.typesHint": "Native controls (file, date) keep the browser’s language, not ours."
+  "design.input.typesHint": "Native controls (file, date) keep the browser’s language, not ours.",
+  "design.comp.calendar": "Calendar",
+  "design.calendar.modes": "Modes",
+  "design.calendar.single": "single date",
+  "design.calendar.range": "range",
+  "design.calendar.dropdown": "month · year",
+  "design.calendar.localeHint": "Months, days and reading direction follow the language — switch to Arabic to judge.",
+  "design.calendar.bounds": "Bounds",
+  "design.calendar.pastDisabled": "past disabled",
+  "design.calendar.boundsHint": "A disabled day must be seen without being read."
 }

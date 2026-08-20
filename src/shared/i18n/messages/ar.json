@@ -89,5 +89,14 @@
   "design.input.groupsHint": "الملحق والحقل والزر تُقرأ ككائن واحد.",
   "design.input.types": "الأنواع",
   "design.input.nativeDate": "تاريخ أصلي — يُتجنّب",
-  "design.input.typesHint": "الحقول الأصلية (ملف، تاريخ) تتبع لغة المتصفّح لا لغتنا."
+  "design.input.typesHint": "الحقول الأصلية (ملف، تاريخ) تتبع لغة المتصفّح لا لغتنا.",
+  "design.comp.calendar": "التقويم",
+  "design.calendar.modes": "الأنماط",
+  "design.calendar.single": "تاريخ واحد",
+  "design.calendar.range": "مدى",
+  "design.calendar.dropdown": "شهر · سنة",
+  "design.calendar.localeHint": "الأشهر والأيام واتجاه القراءة تتبع اللغة — بدّل إلى العربية للحكم.",
+  "design.calendar.bounds": "الحدود",
+  "design.calendar.pastDisabled": "الماضي ممنوع",
+  "design.calendar.boundsHint": "اليوم الممنوع يجب أن يُرى دون أن يُقرأ."
 }

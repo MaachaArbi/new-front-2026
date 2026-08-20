@@ -89,5 +89,14 @@
   "design.input.groupsHint": "Addon, champ et bouton se lisent comme un seul objet.",
   "design.input.types": "Types",
   "design.input.nativeDate": "date native — à éviter",
-  "design.input.typesHint": "Les contrôles natifs (fichier, date) gardent la langue du navigateur, pas la nôtre."
+  "design.input.typesHint": "Les contrôles natifs (fichier, date) gardent la langue du navigateur, pas la nôtre.",
+  "design.comp.calendar": "Calendrier",
+  "design.calendar.modes": "Modes",
+  "design.calendar.single": "date simple",
+  "design.calendar.range": "plage",
+  "design.calendar.dropdown": "mois · année",
+  "design.calendar.localeHint": "Mois, jours et sens de lecture suivent la langue — bascule en arabe pour juger.",
+  "design.calendar.bounds": "Bornes",
+  "design.calendar.pastDisabled": "passé interdit",
+  "design.calendar.boundsHint": "Un jour interdit doit se voir sans être lu."
 }

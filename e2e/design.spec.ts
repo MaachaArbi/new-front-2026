@@ -89,8 +89,23 @@ test('système de design — palette et bouton', async ({ page }) => {
   await set({ 'ostravel-theme': 'light', 'i18n-language': 'ar' })
   await shot('champ-arabe')
 
+  // ── Calendrier. L'arabe est le test qui compte : mois traduits, grille
+  //    inversée, flèches retournées, coins de plage du bon côté.
+  await set({ 'ostravel-theme': 'light', 'i18n-language': 'fr' })
+  await page.goto('/design/calendar')
+  await page.waitForTimeout(1600)
+  await shot('calendrier-clair')
+
+  await set({ 'ostravel-theme': 'dark' })
+  await shot('calendrier-sombre')
+
+  await set({ 'ostravel-theme': 'light', 'i18n-language': 'ar' })
+  await shot('calendrier-arabe')
+
   // ── Densités, sur le bouton : c'est là que --ui-row se juge.
   await set({ 'i18n-language': 'fr' })
+  await page.goto('/design/button')
+  await page.waitForTimeout(1200)
   await page.evaluate(() => {
     document.documentElement.dataset.density = 'compact'
   })

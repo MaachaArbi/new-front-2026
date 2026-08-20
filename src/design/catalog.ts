@@ -85,6 +85,14 @@ export const CATALOG: readonly CatalogGroup[] = [
           'bordure physique → logique : le template ignore le RTL (ADR-F04)',
         ported: true,
       },
+      {
+        id: 'calendar',
+        titleKey: 'design.comp.calendar',
+        source: 'registre ReUI — npx shadcn add @reui/date-selector',
+        adapted:
+          "AUCUNE retouche visuelle : il consomme les noms que la couche de raccordement alimente déjà. Seuls la locale date-fns et le sens de lecture lui sont passés par l'appelant.",
+        ported: true,
+      },
       { id: 'tooltip', titleKey: 'design.comp.tooltip', ported: false },
       { id: 'dialog', titleKey: 'design.comp.dialog', ported: false },
       { id: 'table', titleKey: 'design.comp.table', ported: false },
