@@ -4,10 +4,11 @@
  *
  * ── ÉCARTS ASSUMÉS ─────────────────────────────────────────────────────────────
  *
- *  1. **« 1 – 25 sur 128 » est isolé en LTR.** C'est la leçon des montants qui se
- *     réordonnaient : dans un paragraphe arabe, une suite de nombres séparés par
- *     des tirets est réagencée par l'algorithme bidi — « 1 – 25 sur 128 »
- *     devenait « 128 sur 25 – 1 ». La page affichée mentait sur elle-même.
+ *  1. **On isole les NOMBRES, pas la phrase.** Premier essai raté : j'avais posé
+ *     `dir="ltr"` sur toute la ligne « 1 – 6 sur 12 ». En arabe, le mot « من »
+ *     s'est retrouvé à la fin — « 1 – 6 12 من ». Forcer la direction d'une phrase
+ *     qui contient du texte traduit le casse. Chaque nombre porte donc sa propre
+ *     isolation, et la phrase garde le sens de lecture de la page.
  *
  *  2. `indicatorPosition="right"` devient `"end"` : notre sélecteur a été corrigé
  *     ce matin, l'ancienne valeur n'existe plus.
@@ -32,6 +33,18 @@ import {
 } from '@/shared/ui/select'
 import { Skeleton } from '@/shared/ui/skeleton'
 import { cn } from '@/shared/lib/cn'
+
+/**
+ * Un nombre isolé. Sans isolation, une suite « 1 – 6 » dans une phrase arabe est
+ * réagencée par l'algorithme bidi et la pagination ment sur elle-même.
+ */
+function Num({ value }: { value: number }) {
+  return (
+    <span dir="ltr" className="tabular-nums [unicode-bidi:isolate]">
+      {value}
+    </span>
+  )
+}
 
 interface DataGridPaginationProps {
   sizes?: number[]
@@ -137,14 +150,14 @@ function DataGridPagination(props: DataGridPaginationProps) {
           merged.infoSkeleton
         ) : (
           <>
-            {/* Isolé : sans ça, « 1 – 25 sur 128 » se réagence en arabe. */}
-            <div
-              dir="ltr"
-              className="text-ink-muted text-2sm order-2 text-nowrap tabular-nums [unicode-bidi:isolate] sm:order-1"
-            >
+            <div className="text-ink-muted text-2sm order-2 text-nowrap tabular-nums sm:order-1">
               {intl.formatMessage(
                 { id: 'ui.table.range' },
-                { from, to, count: recordCount }
+                {
+                  from: <Num value={from} />,
+                  to: <Num value={to} />,
+                  count: <Num value={recordCount} />,
+                }
               )}
             </div>
             {pageCount > 1 && (

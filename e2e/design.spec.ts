@@ -1,4 +1,4 @@
-import { test } from '@playwright/test'
+import { expect, test } from '@playwright/test'
 import fs from 'node:fs'
 
 /**
@@ -333,4 +333,51 @@ test('système de design — tableau', async ({ page }) => {
     document.documentElement.dataset.density = 'cozy'
   })
   await shot('tableau-confort')
+})
+
+/**
+ * COMPORTEMENTS du tableau — pas des captures, des vérifications.
+ *
+ * Ces trois-là ne se voient sur aucune image et se cassent silencieusement :
+ * une garde de clic qu'on oublie, une sélection qui ne mène nulle part, un
+ * montant inconnu affiché « 0 ». Ils méritent un test, pas une relecture.
+ */
+test('tableau — garde du clic, sélection, valeur inconnue', async ({ page }) => {
+  test.setTimeout(180_000)
+  await page.goto('/design/table')
+  await page.waitForTimeout(2000)
+
+  const opened = page.locator('text=/^Ouvert : /').first()
+  const isOpened = () => opened.isVisible().catch(() => false)
+
+  // 1. Cocher une case ne doit PAS ouvrir la fiche.
+  await page.getByRole('checkbox', { name: 'Sélectionner la ligne' }).first().click()
+  await page.waitForTimeout(400)
+  expect(await isOpened(), 'cocher ne doit pas ouvrir la fiche').toBe(false)
+
+  // 2. La sélection fait apparaître la barre d'actions groupées.
+  // `role=status` : la barre s'ANNONCE, c'est ce qui la rend perceptible au
+  // lecteur d'écran — et ça donne un sélecteur stable.
+  const bulkBar = page.locator('[data-slot=data-grid-bulk-actions]')
+  await expect(bulkBar).toBeVisible()
+  await bulkBar.getByRole('button', { name: 'Tout désélectionner' }).click()
+  await page.waitForTimeout(400)
+  await expect(bulkBar).toHaveCount(0)
+
+  // 3. Ouvrir le menu d'actions ne doit PAS ouvrir la fiche.
+  await page.getByRole('button', { name: /Actions pour/ }).first().click()
+  await page.waitForTimeout(400)
+  expect(await isOpened(), "le menu d'actions ne doit pas ouvrir la fiche").toBe(false)
+  await page.keyboard.press('Escape')
+  await page.waitForTimeout(400)
+
+  // 4. Cliquer ailleurs dans la ligne DOIT ouvrir la fiche.
+  await page.getByRole('cell', { name: 'Tunis', exact: true }).first().click()
+  await page.waitForTimeout(500)
+  expect(await isOpened(), 'un clic sur la ligne doit ouvrir la fiche').toBe(true)
+
+  // 5. Un encours inconnu s'affiche « — », jamais « 0 ».
+  await page.getByRole('button', { name: '2', exact: true }).first().click()
+  await page.waitForTimeout(700)
+  await expect(page.getByRole('cell', { name: '—', exact: true }).first()).toBeVisible()
 })

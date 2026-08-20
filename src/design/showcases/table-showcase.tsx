@@ -8,153 +8,191 @@ import {
   type SortingState,
   useReactTable,
 } from '@tanstack/react-table'
-import { Columns3 } from 'lucide-react'
-import { Badge } from '@/shared/ui/badge'
+import { Ban, Columns3, Download, Eye, Pencil, Trash2 } from 'lucide-react'
 import { Button } from '@/shared/ui/button'
 import {
   DataGrid,
   DataGridContainer,
   type DataGridProps,
 } from '@/shared/ui/data-grid'
+import { DataGridBulkActions } from '@/shared/ui/data-grid-bulk-actions'
 import { DataGridColumnHeader } from '@/shared/ui/data-grid-column-header'
 import { DataGridColumnVisibility } from '@/shared/ui/data-grid-column-visibility'
 import { DataGridPagination } from '@/shared/ui/data-grid-pagination'
+import { DataGridRowActions } from '@/shared/ui/data-grid-row-actions'
 import {
   DataGridTable,
   DataGridTableRowSelect,
   DataGridTableRowSelectAll,
 } from '@/shared/ui/data-grid-table'
+import { useDataGridParams } from '@/shared/ui/use-data-grid-params'
 import { Skeleton } from '@/shared/ui/skeleton'
+import {
+  DateCell,
+  MoneyCell,
+  PartyCell,
+  StatusCell,
+} from '@/shared/table/cells'
+import type { StatusDefinition } from '@/shared/table/cells'
+import { fromMinorUnits, type Money } from '@/shared/money'
 import { ShowcaseSection } from '../design-page'
 
 /**
- * Le tableau, sur une VRAIE forme de liste : des tiers, avec un encours en
- * dinars et un statut. On ne juge pas un tableau sur trois colonnes « Nom /
- * Âge / Ville » — on le juge sur ce qu'il portera vraiment.
+ * Le tableau sur une VRAIE forme de liste — des tiers, avec un encours en dinars
+ * et un statut. On ne juge pas un tableau sur « Nom / Âge / Ville ».
  *
- * ⚠️ Les douze lignes ci-dessous sont des FIXTURES de vitrine, pas des données.
- * Elles ne sortent pas de `/design`.
+ * ⚠️ Les douze lignes sont des FIXTURES de vitrine. Elles ne sortent pas de
+ * `/design` et ne sont inscrites nulle part comme donnée.
  *
- * Deux détails qui ne s'improvisent pas et qu'on met en évidence ici :
- *   · l'encours est en `dir="ltr"` + `tabular-nums` — sans ça, « 11 240,500 »
- *     se réagence en arabe et les colonnes de chiffres ne s'alignent pas ;
- *   · la colonne de sélection est épinglée au DÉBUT, pas « à gauche ».
+ * Ce que cette page démontre, et qui ne se voit pas sur une capture figée :
+ *   · cliquer une ligne ouvre la fiche, MAIS cocher une case ou ouvrir le menu
+ *     d'actions ne l'ouvre pas — c'est la garde du clic de ligne ;
+ *   · sélectionner fait APPARAÎTRE une barre d'actions groupées ;
+ *   · le mode serveur ne trie ni ne pagine lui-même : il demande.
  */
+type Status = 'active' | 'watch' | 'blocked'
+
 interface Tier {
   id: string
   name: string
+  email: string
   city: string
-  outstanding: string
-  status: 'active' | 'watch' | 'blocked'
+  outstandingMinor?: string
+  status: Status
   lastActivity: string
 }
 
-const TIERS: readonly Tier[] = [
-  {
-    id: '1',
-    name: 'Groupe Sahara Voyages',
-    city: 'Tunis',
-    outstanding: '11 240,500',
-    status: 'active',
-    lastActivity: '18/08/2026',
-  },
-  {
-    id: '2',
-    name: 'Carthage Travel Services',
-    city: 'Tunis',
-    outstanding: '3 980,000',
-    status: 'active',
-    lastActivity: '17/08/2026',
-  },
-  {
-    id: '3',
-    name: 'Oasis Tours International',
-    city: 'Djerba',
-    outstanding: '27 105,250',
-    status: 'watch',
-    lastActivity: '12/08/2026',
-  },
-  {
-    id: '4',
-    name: 'Medina Holidays',
-    city: 'Sousse',
-    outstanding: '0,000',
-    status: 'active',
-    lastActivity: '19/08/2026',
-  },
-  {
-    id: '5',
-    name: 'Atlas Voyages & Loisirs',
-    city: 'Sfax',
-    outstanding: '48 700,000',
-    status: 'blocked',
-    lastActivity: '02/07/2026',
-  },
-  {
-    id: '6',
-    name: 'Sidi Bou Travel',
-    city: 'Tunis',
-    outstanding: '1 245,750',
-    status: 'active',
-    lastActivity: '19/08/2026',
-  },
-  {
-    id: '7',
-    name: 'Tabarka Évasion',
-    city: 'Tabarka',
-    outstanding: '6 320,000',
-    status: 'watch',
-    lastActivity: '09/08/2026',
-  },
-  {
-    id: '8',
-    name: 'Hammamet Sun Tours',
-    city: 'Hammamet',
-    outstanding: '9 015,500',
-    status: 'active',
-    lastActivity: '16/08/2026',
-  },
-  {
-    id: '9',
-    name: 'Kairouan Pèlerinages',
-    city: 'Kairouan',
-    outstanding: '15 400,000',
-    status: 'active',
-    lastActivity: '14/08/2026',
-  },
-  {
-    id: '10',
-    name: 'Bizerte Marine Travel',
-    city: 'Bizerte',
-    outstanding: '2 100,000',
-    status: 'blocked',
-    lastActivity: '28/06/2026',
-  },
-  {
-    id: '11',
-    name: 'Tozeur Desert Expeditions',
-    city: 'Tozeur',
-    outstanding: '33 890,750',
-    status: 'watch',
-    lastActivity: '11/08/2026',
-  },
-  {
-    id: '12',
-    name: 'Monastir Ribat Voyages',
-    city: 'Monastir',
-    outstanding: '780,000',
-    status: 'active',
-    lastActivity: '20/08/2026',
-  },
+const RAW: readonly [
+  string,
+  string,
+  string,
+  string | undefined,
+  Status,
+  string,
+][] = [
+  [
+    'Groupe Sahara Voyages',
+    'contact@sahara.tn',
+    'Tunis',
+    '11240500',
+    'active',
+    '2026-08-18',
+  ],
+  [
+    'Carthage Travel Services',
+    'info@carthage.tn',
+    'Tunis',
+    '3980000',
+    'active',
+    '2026-08-17',
+  ],
+  [
+    'Oasis Tours International',
+    'ops@oasis-tours.tn',
+    'Djerba',
+    '27105250',
+    'watch',
+    '2026-08-12',
+  ],
+  ['Medina Holidays', 'hello@medina.tn', 'Sousse', '0', 'active', '2026-08-19'],
+  [
+    'Atlas Voyages & Loisirs',
+    'compta@atlas.tn',
+    'Sfax',
+    '48700000',
+    'blocked',
+    '2026-07-02',
+  ],
+  [
+    'Sidi Bou Travel',
+    'sbt@sidibou.tn',
+    'Tunis',
+    '1245750',
+    'active',
+    '2026-08-19',
+  ],
+  [
+    'Tabarka Évasion',
+    'contact@tabarka-ev.tn',
+    'Tabarka',
+    '6320000',
+    'watch',
+    '2026-08-09',
+  ],
+  [
+    'Hammamet Sun Tours',
+    'book@hst.tn',
+    'Hammamet',
+    '9015500',
+    'active',
+    '2026-08-16',
+  ],
+  // Encours INCONNU : « — », qui ne veut pas dire « zéro ».
+  [
+    'Kairouan Pèlerinages',
+    'agence@kairouan-p.tn',
+    'Kairouan',
+    undefined,
+    'active',
+    '2026-08-14',
+  ],
+  [
+    'Bizerte Marine Travel',
+    'marine@bizerte.tn',
+    'Bizerte',
+    '2100000',
+    'blocked',
+    '2026-06-28',
+  ],
+  [
+    'Tozeur Desert Expeditions',
+    'desert@tozeur.tn',
+    'Tozeur',
+    '33890750',
+    'watch',
+    '2026-08-11',
+  ],
+  [
+    'Monastir Ribat Voyages',
+    'ribat@monastir.tn',
+    'Monastir',
+    '780000',
+    'active',
+    '2026-08-20',
+  ],
 ]
 
-const STATUS_VARIANT = {
-  active: 'success',
-  watch: 'warning',
-  blocked: 'destructive',
-} as const
+const TIERS: readonly Tier[] = RAW.map(
+  ([name, email, city, outstandingMinor, status, lastActivity], i) => ({
+    id: String(i + 1),
+    name,
+    email,
+    city,
+    outstandingMinor,
+    status,
+    lastActivity,
+  })
+)
 
 const EMPTY: readonly Tier[] = []
+
+/** La table de correspondance vit avec le DOMAINE, pas dans la cellule. */
+const TIER_STATUS: Readonly<Record<Status, StatusDefinition>> = {
+  active: { tone: 'success', labelKey: 'design.table.status.active' },
+  watch: { tone: 'warning', labelKey: 'design.table.status.watch' },
+  blocked: { tone: 'destructive', labelKey: 'design.table.status.blocked' },
+}
+
+const money = (minor: string | undefined): Money | undefined =>
+  minor === undefined ? undefined : fromMinorUnits(minor, 'TND')
+
+const initials = (name: string) =>
+  name
+    .split(' ')
+    .slice(0, 2)
+    .map((word) => word.charAt(0))
+    .join('')
+    .toUpperCase()
 
 /** Un tableau et SON état — tri, sélection, page. Rien n'est partagé. */
 function useTiersGrid(
@@ -180,9 +218,46 @@ function useTiersGrid(
   })
 }
 
+/**
+ * SOURCE D'ESSAI — elle imite un serveur : elle trie, pagine et répond après un
+ * délai. Elle ne parle à aucune API et n'en connaît aucune. C'est ce qui permet
+ * de vérifier la FORME du contrat sans rien rebrancher.
+ */
+function useFakeSource(params: {
+  pageIndex: number
+  pageSize: number
+  sorting: SortingState
+}) {
+  const [rows, setRows] = React.useState<Tier[]>([])
+  const [isLoading, setLoading] = React.useState(true)
+  const key = JSON.stringify(params)
+
+  React.useEffect(() => {
+    setLoading(true)
+    const timer = setTimeout(() => {
+      const sorted = [...TIERS]
+      const first = params.sorting[0]
+      if (first) {
+        sorted.sort((a, b) => {
+          const av = String(a[first.id as keyof Tier] ?? '')
+          const bv = String(b[first.id as keyof Tier] ?? '')
+          return (first.desc ? -1 : 1) * av.localeCompare(bv)
+        })
+      }
+      const start = params.pageIndex * params.pageSize
+      setRows(sorted.slice(start, start + params.pageSize))
+      setLoading(false)
+    }, 450)
+    return () => clearTimeout(timer)
+  }, [key]) // eslint-disable-line react-hooks/exhaustive-deps
+
+  return { rows, total: TIERS.length, isLoading }
+}
+
 export function TableShowcase() {
   const intl = useIntl()
   const t = (id: string) => intl.formatMessage({ id })
+  const [opened, setOpened] = React.useState<string | null>(null)
 
   const columns = React.useMemo<ColumnDef<Tier>[]>(
     () => [
@@ -193,7 +268,6 @@ export function TableShowcase() {
         size: 44,
         enableSorting: false,
         enableHiding: false,
-        enableResizing: false,
       },
       {
         accessorKey: 'name',
@@ -206,14 +280,17 @@ export function TableShowcase() {
           />
         ),
         cell: ({ row }) => (
-          <span className="text-ink truncate font-medium">
-            {row.original.name}
-          </span>
+          <PartyCell
+            name={row.original.name}
+            secondary={row.original.email}
+            initials={initials(row.original.name)}
+            href={`/design/table#${row.original.id}`}
+          />
         ),
-        size: 260,
+        size: 300,
         meta: {
           headerTitle: t('design.table.col.name'),
-          skeleton: <Skeleton className="h-4 w-40" />,
+          skeleton: <Skeleton className="h-8 w-52" />,
         },
       },
       {
@@ -226,38 +303,30 @@ export function TableShowcase() {
             visibility
           />
         ),
-        size: 130,
+        size: 120,
         meta: {
           headerTitle: t('design.table.col.city'),
           skeleton: <Skeleton className="h-4 w-20" />,
         },
       },
       {
-        accessorKey: 'outstanding',
+        accessorKey: 'outstandingMinor',
         id: 'outstanding',
         header: ({ column }) => (
           <DataGridColumnHeader
             column={column}
             title={t('design.table.col.outstanding')}
-            className="justify-end"
             visibility
           />
         ),
-        // Isolé et tabulaire : c'est ce qui fait qu'une colonne de montants
-        // s'aligne à la virgule et ne se réagence pas en arabe.
         cell: ({ row }) => (
-          <span
-            dir="ltr"
-            className="text-ink block text-end tabular-nums [unicode-bidi:isolate]"
-          >
-            {row.original.outstanding}
-          </span>
+          <MoneyCell value={money(row.original.outstandingMinor)} />
         ),
-        size: 140,
+        size: 150,
         meta: {
           headerTitle: t('design.table.col.outstanding'),
           headerClassName: 'text-end [&>*]:justify-end',
-          skeleton: <Skeleton className="ms-auto h-4 w-16" />,
+          skeleton: <Skeleton className="ms-auto h-4 w-20" />,
         },
       },
       {
@@ -271,13 +340,7 @@ export function TableShowcase() {
           />
         ),
         cell: ({ row }) => (
-          <Badge
-            variant={STATUS_VARIANT[row.original.status]}
-            appearance="light"
-            size="sm"
-          >
-            {t(`design.table.status.${row.original.status}`)}
-          </Badge>
+          <StatusCell value={row.original.status} map={TIER_STATUS} />
         ),
         size: 130,
         meta: {
@@ -295,32 +358,72 @@ export function TableShowcase() {
             visibility
           />
         ),
-        cell: ({ row }) => (
-          <span dir="ltr" className="text-ink-secondary [unicode-bidi:isolate]">
-            {row.original.lastActivity}
-          </span>
-        ),
-        size: 140,
+        cell: ({ row }) => <DateCell value={row.original.lastActivity} />,
+        size: 130,
         meta: {
           headerTitle: t('design.table.col.lastActivity'),
           skeleton: <Skeleton className="h-4 w-20" />,
         },
       },
+      {
+        id: 'actions',
+        header: '',
+        cell: ({ row }) => (
+          <DataGridRowActions
+            rowLabel={row.original.name}
+            actions={[
+              {
+                id: 'view',
+                label: t('design.table.action.view'),
+                icon: <Eye />,
+                onSelect: () => setOpened(row.original.name),
+              },
+              {
+                id: 'edit',
+                label: t('design.table.action.edit'),
+                icon: <Pencil />,
+                onSelect: () => setOpened(row.original.name),
+              },
+              {
+                id: 'block',
+                label: t('design.table.action.block'),
+                icon: <Ban />,
+                onSelect: () => setOpened(row.original.name),
+              },
+              {
+                id: 'delete',
+                label: t('design.table.action.delete'),
+                icon: <Trash2 />,
+                destructive: true,
+                onSelect: () => setOpened(row.original.name),
+              },
+            ]}
+          />
+        ),
+        size: 60,
+        enableSorting: false,
+        enableHiding: false,
+      },
     ],
     [intl.locale] // eslint-disable-line react-hooks/exhaustive-deps
   )
 
-  // ⚠️ CHAQUE tableau possède SON état. Les faire partager un seul `rowSelection`
-  // gelait l'onglet : le tableau « vide » ne trouvait aucune ligne correspondant à
-  // la sélection et la repurgeait à chaque rendu, ce qui relançait un rendu. Le
-  // symptôme était brutal — le `mousedown` sur une case ne rendait jamais la main.
-  // Deux tableaux ne partagent un état que si on l'a VOULU.
   const main = useTiersGrid(TIERS, columns, 6)
   const dense = useTiersGrid(TIERS, columns, 4)
   const stripped = useTiersGrid(TIERS, columns, 4)
   const empty = useTiersGrid(EMPTY, columns, 4)
-  const loading = useTiersGrid(TIERS, columns, 4)
-  const selectedCount = Object.keys(main.getState().rowSelection).length
+
+  // ── Mode serveur : l'état est tenu par le hook, les données par la source.
+  const { params, tableOptions } = useDataGridParams({ pageSize: 4 })
+  const source = useFakeSource(params)
+  const server = useReactTable({
+    data: source.rows,
+    columns,
+    ...tableOptions,
+    rowCount: source.total,
+    getRowId: (row) => row.id,
+    getCoreRowModel: getCoreRowModel(),
+  })
 
   const layouts: Record<string, DataGridProps<Tier>['tableLayout']> = {
     dense: { dense: true, rowBorder: true },
@@ -334,35 +437,88 @@ export function TableShowcase() {
         hint={t('design.table.fullHint')}
       >
         <div className="flex w-full flex-col gap-2.5">
-          <div className="flex items-center justify-between gap-2">
-            <span className="text-ink-muted text-2sm">
-              {t('design.table.selected')} :{' '}
-              <span dir="ltr" className="tabular-nums [unicode-bidi:isolate]">
-                {selectedCount}
-              </span>
-            </span>
-            <DataGridColumnVisibility
-              table={main}
-              trigger={
-                <Button variant="secondary" size="sm">
-                  <Columns3 />
-                  {t('ui.table.columns')}
-                </Button>
-              }
-            />
+          <div className="flex min-h-(--ui-row) items-center justify-between gap-2">
+            {/* La barre d'actions groupées PREND la place de la barre d'outils :
+                si elle s'ajoutait, tout le tableau descendrait au premier clic. */}
+            {Object.keys(main.getState().rowSelection).length > 0 ? (
+              <DataGrid table={main} recordCount={TIERS.length}>
+                <DataGridBulkActions
+                  actions={[
+                    {
+                      id: 'export',
+                      label: t('design.table.action.export'),
+                      icon: <Download />,
+                      onSelect: () => undefined,
+                    },
+                    {
+                      id: 'block',
+                      label: t('design.table.action.block'),
+                      icon: <Ban />,
+                      onSelect: () => undefined,
+                    },
+                    {
+                      id: 'delete',
+                      label: t('design.table.action.delete'),
+                      icon: <Trash2 />,
+                      destructive: true,
+                      onSelect: () => undefined,
+                    },
+                  ]}
+                />
+              </DataGrid>
+            ) : (
+              <>
+                <span className="text-ink-muted text-2sm">
+                  {opened
+                    ? intl.formatMessage(
+                        { id: 'design.table.opened' },
+                        { name: opened }
+                      )
+                    : t('design.table.clickHint')}
+                </span>
+                <DataGridColumnVisibility
+                  table={main}
+                  trigger={
+                    <Button variant="secondary" size="sm">
+                      <Columns3 />
+                      {t('ui.table.columns')}
+                    </Button>
+                  }
+                />
+              </>
+            )}
           </div>
           <DataGrid
             table={main}
             recordCount={TIERS.length}
+            onRowClick={(row) => setOpened(row.name)}
             tableLayout={{ columnsVisibility: true, columnsPinnable: true }}
           >
             <DataGridContainer>
               <DataGridTable />
             </DataGridContainer>
             <div className="px-2.5 py-2.5">
-              {/* Les tailles proposées doivent CONTENIR la taille courante, sinon
-                  le sélecteur s'affiche vide — piège classique. */}
               <DataGridPagination sizes={[6, 12, 25, 50]} />
+            </div>
+          </DataGrid>
+        </div>
+      </ShowcaseSection>
+
+      <ShowcaseSection
+        title={t('design.table.server')}
+        hint={t('design.table.serverHint')}
+      >
+        <div className="w-full">
+          <DataGrid
+            table={server}
+            recordCount={source.total}
+            isLoading={source.isLoading}
+          >
+            <DataGridContainer>
+              <DataGridTable />
+            </DataGridContainer>
+            <div className="px-2.5 py-2.5">
+              <DataGridPagination sizes={[4, 8, 12]} />
             </div>
           </DataGrid>
         </div>
@@ -396,27 +552,15 @@ export function TableShowcase() {
         title={t('design.table.states')}
         hint={t('design.table.statesHint')}
       >
-        <div className="grid w-full gap-4 xl:grid-cols-2">
-          <div className="flex flex-col gap-1.5">
-            <span className="text-ink-secondary text-2xs font-semibold tracking-wider uppercase">
-              {t('design.state.loading')}
-            </span>
-            <DataGrid table={loading} recordCount={TIERS.length} isLoading>
-              <DataGridContainer>
-                <DataGridTable />
-              </DataGridContainer>
-            </DataGrid>
-          </div>
-          <div className="flex flex-col gap-1.5">
-            <span className="text-ink-secondary text-2xs font-semibold tracking-wider uppercase">
-              {t('design.table.emptyState')}
-            </span>
-            <DataGrid table={empty} recordCount={0}>
-              <DataGridContainer>
-                <DataGridTable />
-              </DataGridContainer>
-            </DataGrid>
-          </div>
+        <div className="w-full">
+          <span className="text-ink-secondary text-2xs font-semibold tracking-wider uppercase">
+            {t('design.table.emptyState')}
+          </span>
+          <DataGrid table={empty} recordCount={0}>
+            <DataGridContainer>
+              <DataGridTable />
+            </DataGridContainer>
+          </DataGrid>
         </div>
       </ShowcaseSection>
     </div>

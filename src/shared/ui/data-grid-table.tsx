@@ -36,6 +36,16 @@
  *     souvent au démarrage d'un module.
  *
  *  8. Coquille du template corrigée : `DataGridTableBodyRowExpandded`.
+ *
+ *  9. **Garde sur le clic de ligne.** Le template appelait `onRowClick` quel que
+ *     soit l'élément cliqué : cocher une case ouvrait aussi la fiche. Voir
+ *     `ROW_CLICK_IGNORE`.
+ *
+ * ── CE QU'ON NE FAIT PAS, ET POURQUOI ──────────────────────────────────────────
+ * La ligne cliquable n'est PAS rendue focalisable au clavier. Traverser
+ * vingt-cinq lignes à la tabulation pour atteindre la pagination serait pire que
+ * le mal. La contrepartie est obligatoire : toute liste cliquable doit porter un
+ * vrai lien dans sa cellule d'identité — c'est le rôle de `PartyCell`.
  */
 import * as React from 'react'
 import { type CSSProperties, Fragment, type ReactNode } from 'react'
@@ -53,6 +63,13 @@ import { cva } from 'class-variance-authority'
 import { Checkbox } from '@/shared/ui/checkbox'
 import { useDataGrid } from '@/shared/ui/data-grid'
 import { cn } from '@/shared/lib/cn'
+
+/**
+ * Ce qui, dans une ligne, ABSORBE le clic au lieu de le laisser ouvrir la fiche.
+ * `[data-no-row-click]` est l'échappatoire pour tout ce qui n'est pas listé.
+ */
+const ROW_CLICK_IGNORE =
+  'button, a, input, select, textarea, label, [role="checkbox"], [role="menuitem"], [data-no-row-click]'
 
 /**
  * `dense` descend d'un cran dans l'échelle de densité au lieu d'imposer une
@@ -339,7 +356,15 @@ function DataGridTableBodyRow<TData>({
           ? 'selected'
           : undefined
       }
-      onClick={() => props.onRowClick?.(row.original)}
+      onClick={(event) => {
+        if (!props.onRowClick) return
+        // ⚠️ GARDE. Sans elle, cocher une case ou ouvrir le menu d'actions
+        // ouvrirait AUSSI la fiche : l'événement remonte jusqu'à la ligne. C'est
+        // le défaut le plus courant des tableaux cliquables, et il ne se voit
+        // qu'à l'usage — on croit avoir coché, on se retrouve sur un autre écran.
+        if ((event.target as HTMLElement).closest(ROW_CLICK_IGNORE)) return
+        props.onRowClick(row.original)
+      }}
       className={useBodyRowClasses()}
     >
       {children}
