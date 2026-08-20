@@ -77,5 +77,17 @@
   "design.palette.focusHint": "حلقة واحدة للنظام كلّه، مع نسختها للخطر.",
   "design.button.variantsHint": "خمس صيغ لا ثماني: لكل واحدة دور مُسمّى.",
   "design.button.disabledHint": "المعطّل محايد، لا لون العلامة بشفافية مخفّضة.",
-  "design.button.loadingHint": "أثناء التنفيذ: الخلفية ثابتة، ويخفّ العنوان وحده."
+  "design.button.loadingHint": "أثناء التنفيذ: الخلفية ثابتة، ويخفّ العنوان وحده.",
+  "design.state.filled": "مملوء",
+  "design.state.readonly": "للقراءة فقط",
+  "design.state.invalid": "غير صالح",
+  "design.input.statesHint": "«للقراءة فقط» ليس «معطّلاً»: يجب أن يبقى النصّ مقروءًا.",
+  "design.input.invalidExample": "عنوان بريد إلكتروني ناقص.",
+  "design.input.withIcon": "مع أيقونة",
+  "design.input.wrapperHint": "التركيز على الإطار لا على الحقل، وإلّا تداخلت حلقتان.",
+  "design.input.groups": "المجموعات",
+  "design.input.groupsHint": "الملحق والحقل والزر تُقرأ ككائن واحد.",
+  "design.input.types": "الأنواع",
+  "design.input.nativeDate": "تاريخ أصلي — يُتجنّب",
+  "design.input.typesHint": "الحقول الأصلية (ملف، تاريخ) تتبع لغة المتصفّح لا لغتنا."
 }

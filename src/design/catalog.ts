@@ -32,7 +32,14 @@ export const CATALOG: readonly CatalogGroup[] = [
           'cinq variantes au lieu de huit ; états en couleurs et non en opacités ; désactivé neutre ; hauteurs indexées sur --ui-row. Le détail et les motifs sont en tête de button.tsx.',
         ported: true,
       },
-      { id: 'input', titleKey: 'design.comp.input', ported: false },
+      {
+        id: 'input',
+        titleKey: 'design.comp.input',
+        source: 'full/src/components/ui/input.tsx',
+        adapted:
+          'hauteurs sur --ui-row ; anneau de focus unique ; désactivé neutre ; lecture seule distincte du désactivé ; survol ajouté ; ombres retirées. Détail en tête de input.tsx.',
+        ported: true,
+      },
       { id: 'select', titleKey: 'design.comp.select', ported: false },
       { id: 'checkbox', titleKey: 'design.comp.checkbox', ported: false },
       { id: 'radio', titleKey: 'design.comp.radio', ported: false },

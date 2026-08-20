@@ -77,5 +77,17 @@
   "design.palette.focusHint": "One ring for the whole system, plus its danger variant.",
   "design.button.variantsHint": "Five variants, not eight: each one has a named role.",
   "design.button.disabledHint": "Disabled = neutral. Never the brand colour at reduced opacity.",
-  "design.button.loadingHint": "Loading: the fill stays put, only the label softens."
+  "design.button.loadingHint": "Loading: the fill stays put, only the label softens.",
+  "design.state.filled": "Filled",
+  "design.state.readonly": "Read-only",
+  "design.state.invalid": "Invalid",
+  "design.input.statesHint": "Read-only ≠ disabled: the text must stay legible.",
+  "design.input.invalidExample": "Incomplete email address.",
+  "design.input.withIcon": "With icon",
+  "design.input.wrapperHint": "Focus lands on the frame, not the field — otherwise two rings nest.",
+  "design.input.groups": "Groups",
+  "design.input.groupsHint": "Addon, field and button read as a single object.",
+  "design.input.types": "Types",
+  "design.input.nativeDate": "native date — avoid",
+  "design.input.typesHint": "Native controls (file, date) keep the browser’s language, not ours."
 }

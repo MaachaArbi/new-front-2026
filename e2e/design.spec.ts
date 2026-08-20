@@ -68,6 +68,27 @@ test('système de design — palette et bouton', async ({ page }) => {
   await set({ 'ostravel-theme': 'light', 'i18n-language': 'ar' })
   await shot('bouton-arabe')
 
+  // ── Champ de saisie. Le focus est capturé POUR DE BON : on pose le curseur
+  //    dans un champ plutôt que de simuler l'état en dur dans la vitrine.
+  await set({ 'ostravel-theme': 'light', 'i18n-language': 'fr' })
+  await page.goto('/design/input')
+  await page.waitForTimeout(1400)
+  await shot('champ-clair')
+
+  await page.getByPlaceholder('Raison sociale').click()
+  await page.waitForTimeout(400)
+  await shot('champ-focus')
+
+  await page.locator('input[aria-invalid]').first().click()
+  await page.waitForTimeout(400)
+  await shot('champ-focus-invalide')
+
+  await set({ 'ostravel-theme': 'dark' })
+  await shot('champ-sombre')
+
+  await set({ 'ostravel-theme': 'light', 'i18n-language': 'ar' })
+  await shot('champ-arabe')
+
   // ── Densités, sur le bouton : c'est là que --ui-row se juge.
   await set({ 'i18n-language': 'fr' })
   await page.evaluate(() => {
