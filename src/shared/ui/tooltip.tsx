@@ -3,8 +3,8 @@
  *
  * ── ÉCARTS ASSUMÉS ─────────────────────────────────────────────────────────────
  *
- *  1. La variante `dark` écrivait `bg-zinc-950 dark:bg-zinc-300` — des couleurs
- *     LITTÉRALES, hors système. Remplacées par `bg-ink text-ink-inverse` : les deux
+ *  1. La variante `dark` écrivait deux couleurs LITTÉRALES de la palette
+ *     Tailwind (une très sombre, son inverse clair en thème sombre), hors système. Remplacées par `bg-ink text-ink-inverse` : les deux
  *     jetons s'inversent déjà avec le thème, donc l'infobulle reste sombre sur
  *     clair et claire sur sombre, exactement comme le template, mais sans une seule
  *     couleur en dur. C'est le test de la couche de raccordement.
@@ -51,7 +51,7 @@ function TooltipTrigger(
 }
 
 const tooltipVariants = cva(
-  'animate-in fade-in-0 zoom-in-95 data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95 data-[side=bottom]:slide-in-from-top-2 data-[side=top]:slide-in-from-bottom-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 z-50 overflow-hidden rounded-md px-3 py-1.5 text-xs shadow-md shadow-black/5',
+  'animate-in fade-in-0 zoom-in-95 data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95 data-[side=bottom]:slide-in-from-top-2 data-[side=top]:slide-in-from-bottom-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 z-50 overflow-hidden rounded-md px-3 py-1.5 text-xs shadow-md shadow-shade',
   {
     variants: {
       variant: {

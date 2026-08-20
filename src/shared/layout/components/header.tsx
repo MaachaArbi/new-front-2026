@@ -86,7 +86,7 @@ export function Header() {
           <UserDropdownMenu
             trigger={
               <img
-                className="size-9 shrink-0 cursor-pointer rounded-full border-2 border-green-500"
+                className="border-fill-success size-9 shrink-0 cursor-pointer rounded-full border-2"
                 src="/media/avatars/300-2.png"
                 alt={t('layout.account')}
               />

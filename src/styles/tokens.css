@@ -184,6 +184,43 @@
   /* Focus — un seul anneau pour tout le système */
   --focus-ring: 0 0 0 3px var(--blue-200);
   --focus-ring-danger: 0 0 0 3px var(--red-200);
+
+  /* ─── Hors planche : trois rôles que le lint « couleur littérale » a rendus
+     nécessaires. Chacun remplace une couleur qui était écrite en dur dans un
+     composant et qui, à ce titre, n'aurait suivi AUCUN changement de palette. */
+
+  /* Voile des surfaces flottantes (dialogue, feuille). Ce n'est pas une teinte
+     de la palette : c'est de l'obscurcissement, il reste noir dans les deux
+     thèmes — seule son opacité change. */
+  --scrim: rgb(0 0 0 / 30%);
+
+  /* Teinte des ombres portées. En sombre, une ombre à 5 % ne se voit pas. */
+  --shade: rgb(0 0 0 / 5%);
+
+  /* Curseur de l'interrupteur : il reste clair sur les deux thèmes, parce
+     qu'il doit trancher sur la piste, coché comme décoché. */
+  --fill-thumb: var(--neutral-0);
+
+  /* ─── TEINTES DE MODULE ────────────────────────────────────────────────────
+     Une couleur par module, portée par son icône dans le menu. C'est ce qui
+     plaisait dans le rail de layout-21 : on repère un module à sa teinte avant
+     d'avoir lu son nom.
+
+     ⚠️ VALEURS PROVISOIRES. Elles viennent du rail Metronic et n'ont pas encore
+     été accordées au Bleu de Prusse — dix teintes vives posées à côté d'un
+     primaire sourd, ça peut jurer. À trancher avec la vague « barre latérale ».
+     Elles vivent ici, et non dans `nav.config.ts`, pour qu'un accord se fasse
+     en une passe au lieu de dix. */
+  --module-parties: oklch(0.606 0.25 292.717);
+  --module-bookings: oklch(0.704 0.14 182.503);
+  --module-folders: oklch(0.685 0.169 237.323);
+  --module-products: oklch(0.769 0.188 70.08);
+  --module-pricing: oklch(0.645 0.246 16.439);
+  --module-invoicing: oklch(0.696 0.17 162.48);
+  --module-settlements: oklch(0.768 0.233 130.85);
+  --module-cash: oklch(0.715 0.143 215.221);
+  --module-insights: oklch(0.585 0.233 277.117);
+  --module-journal: oklch(0.553 0.013 58.071);
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════
@@ -242,6 +279,10 @@
 
   --focus-ring: 0 0 0 3px rgb(94 138 164 / 45%);
   --focus-ring-danger: 0 0 0 3px rgb(179 57 47 / 45%);
+
+  --scrim: rgb(0 0 0 / 50%);
+  --shade: rgb(0 0 0 / 40%);
+  --fill-thumb: var(--neutral-0);
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════
@@ -349,6 +390,13 @@
   --color-info-accent: var(--fill-info);
   --color-info-foreground: var(--on-info);
   --color-info-soft: var(--bg-info);
+  /* ⚠️ Ces quatre-là étaient CONSOMMÉS par badge.tsx sans jamais être définis :
+     il retombait donc en silence sur le bleu et le rouge bruts de Tailwind,
+     hors système, insensibles à tout changement de palette. */
+  --color-primary-accent: var(--fill-primary);
+  --color-primary-soft: var(--bg-primary);
+  --color-destructive-accent: var(--fill-danger);
+  --color-destructive-soft: var(--bg-danger);
 }
 
 [data-theme='dark'] {
@@ -481,6 +529,20 @@
   --color-fill-ghost-hover: var(--fill-ghost-hover);
   --color-fill-ghost-active: var(--fill-ghost-active);
   --color-fill-disabled: var(--fill-disabled);
+  --color-fill-thumb: var(--fill-thumb);
+  --color-scrim: var(--scrim);
+  --color-shade: var(--shade);
+
+  --color-module-parties: var(--module-parties);
+  --color-module-bookings: var(--module-bookings);
+  --color-module-folders: var(--module-folders);
+  --color-module-products: var(--module-products);
+  --color-module-pricing: var(--module-pricing);
+  --color-module-invoicing: var(--module-invoicing);
+  --color-module-settlements: var(--module-settlements);
+  --color-module-cash: var(--module-cash);
+  --color-module-insights: var(--module-insights);
+  --color-module-journal: var(--module-journal);
 
   --color-fill-success: var(--fill-success);
   --color-bg-success: var(--bg-success);

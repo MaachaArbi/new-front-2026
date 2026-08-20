@@ -136,7 +136,7 @@ export const CATALOG: readonly CatalogGroup[] = [
         titleKey: 'design.comp.tooltip',
         source: 'full/src/components/ui/tooltip.tsx',
         adapted:
-          "la variante sombre écrivait bg-zinc-950 / dark:bg-zinc-300 — des couleurs littérales hors système. Remplacées par des jetons qui s'inversent déjà avec le thème.",
+          "la variante sombre écrivait deux couleurs littérales de la palette Tailwind, hors système. Remplacées par des jetons qui s'inversent déjà avec le thème.",
         ported: true,
       },
       {

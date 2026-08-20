@@ -29,6 +29,7 @@ export interface NavEntry {
   readonly icon: LucideIcon
   readonly path: string
   /** Couleur d'identité du module — le seul usage de couleur saturée du menu. */
+  /** Teinte du module, définie dans `tokens.css` — jamais une couleur en clair. */
   readonly tint: string
   readonly count?: number
 }
@@ -46,21 +47,21 @@ export const NAV_GROUPS: readonly NavGroup[] = [
         titleKey: 'nav.parties',
         icon: Users,
         path: '/parties',
-        tint: 'text-violet-500',
+        tint: 'text-module-parties',
         count: 128,
       },
       {
         titleKey: 'nav.bookings',
         icon: ShoppingCart,
         path: '/bookings',
-        tint: 'text-teal-500',
+        tint: 'text-module-bookings',
         count: 42,
       },
       {
         titleKey: 'nav.folders',
         icon: Folder,
         path: '/folders',
-        tint: 'text-sky-500',
+        tint: 'text-module-folders',
         count: 8,
       },
     ],
@@ -72,13 +73,13 @@ export const NAV_GROUPS: readonly NavGroup[] = [
         titleKey: 'nav.products',
         icon: Boxes,
         path: '/products',
-        tint: 'text-amber-500',
+        tint: 'text-module-products',
       },
       {
         titleKey: 'nav.pricing',
         icon: Tags,
         path: '/pricing',
-        tint: 'text-rose-500',
+        tint: 'text-module-pricing',
       },
     ],
   },
@@ -89,20 +90,20 @@ export const NAV_GROUPS: readonly NavGroup[] = [
         titleKey: 'nav.invoicing',
         icon: FileSpreadsheet,
         path: '/invoicing',
-        tint: 'text-emerald-500',
+        tint: 'text-module-invoicing',
         count: 18,
       },
       {
         titleKey: 'nav.settlements',
         icon: FileText,
         path: '/settlements',
-        tint: 'text-lime-500',
+        tint: 'text-module-settlements',
       },
       {
         titleKey: 'nav.cash',
         icon: Wallet,
         path: '/cash',
-        tint: 'text-cyan-500',
+        tint: 'text-module-cash',
       },
     ],
   },
@@ -113,13 +114,13 @@ export const NAV_GROUPS: readonly NavGroup[] = [
         titleKey: 'nav.statistics',
         icon: BarChart3,
         path: '/statistics',
-        tint: 'text-indigo-500',
+        tint: 'text-module-insights',
       },
       {
         titleKey: 'nav.journal',
         icon: History,
         path: '/journal',
-        tint: 'text-stone-500',
+        tint: 'text-module-journal',
       },
     ],
   },
@@ -144,7 +145,7 @@ export const SAVED_VIEWS: readonly SavedView[] = [
     titleKey: 'nav.view.overLimit',
     path: '/parties?view=over-limit',
     count: 4,
-    tone: 'bg-[var(--fill-warning)]',
+    tone: 'bg-fill-warning',
   },
   {
     titleKey: 'nav.view.expiring',
