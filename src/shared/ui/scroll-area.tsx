@@ -16,6 +16,17 @@ import { cn } from '@/shared/lib/cn'
  * **prend 15 px de largeur** et affiche ses flèches. Celle-ci est posée en
  * surimpression, ne consomme rien, et n'apparaît qu'au défilement.
  *
+ * ── CORRECTION du 21/08 : la barre passait DERRIÈRE le contenu ─────────────────
+ * La barre est une SŒUR du contenu, posée en absolu, sans `z-index`. Tout ce qui
+ * porte un `z-index` à l'intérieur — l'en-tête collant d'un tableau (`z-20`), une
+ * colonne épinglée (`z-1`) — remontait donc au-dessus d'elle, parce que le
+ * conteneur ne créait aucun contexte d'empilement.
+ *
+ * `isolate` sur le conteneur règle la classe entière du problème : les `z-index`
+ * du contenu restent CONFINÉS à l'intérieur, et la barre, sœur suivante, passe
+ * devant quoi qu'on y mette. Relever le `z-index` de la barre aurait marché une
+ * fois, jusqu'à ce qu'une page y pose un `z-50`.
+ *
  * ── AJOUT du 21/08 : la barre HORIZONTALE ──────────────────────────────────────
  * Le template n'en pose qu'une, verticale. Il en faut une seconde depuis qu'un
  * tableau peut être plus large que son panneau (colonnes redimensionnées) : sans
@@ -40,7 +51,10 @@ function ScrollArea({
     >
       <ScrollAreaPrimitive.Viewport
         ref={viewportRef}
-        className={cn('h-full w-full rounded-[inherit]', viewportClassName)}
+        className={cn(
+          'isolate h-full w-full rounded-[inherit]',
+          viewportClassName
+        )}
       >
         {children}
       </ScrollAreaPrimitive.Viewport>
