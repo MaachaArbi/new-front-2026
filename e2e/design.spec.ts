@@ -115,3 +115,83 @@ test('système de design — palette et bouton', async ({ page }) => {
   })
   await shot('bouton-confort')
 })
+
+/**
+ * Vague 1 — sélecteur, cases et radios, zone de texte, étiquette, mot de passe.
+ *
+ * Deux choses ne se capturent pas d'elles-mêmes et sont donc PROVOQUÉES ici :
+ * la liste ouverte d'un sélecteur (elle vit dans un portail) et le basculement de
+ * l'œil du mot de passe (c'est un comportement, pas un état).
+ */
+test('système de design — vague 1', async ({ page }) => {
+  test.setTimeout(240_000)
+
+  const set = async (entries: Record<string, string>) => {
+    await page.evaluate((o) => {
+      for (const [k, v] of Object.entries(o)) localStorage.setItem(k, v)
+    }, entries)
+    await page.reload()
+    await page.waitForTimeout(1400)
+  }
+  const shot = async (name: string) => {
+    await page.waitForTimeout(600)
+    await page.screenshot({ path: `${SHOTS}/${name}.png` })
+  }
+  const visit = async (id: string) => {
+    await page.goto(`/design/${id}`)
+    await page.waitForTimeout(1400)
+  }
+
+  await page.goto('/design/select')
+  await set({ 'ostravel-theme': 'light', 'i18n-language': 'fr' })
+
+  // ── Sélecteur
+  await shot('selecteur-clair')
+  await page.locator('#select-repos').click()
+  await shot('selecteur-ouvert')
+  await page.keyboard.press('Escape')
+
+  // La coche du côté « end » : c'est l'écart d'API qu'on a fait, il doit se voir.
+  await page.locator('#select-ind-end').click()
+  await shot('selecteur-coche-end')
+  await page.keyboard.press('Escape')
+
+  await set({ 'ostravel-theme': 'dark' })
+  await shot('selecteur-sombre')
+
+  await set({ 'ostravel-theme': 'light', 'i18n-language': 'ar' })
+  await shot('selecteur-arabe')
+  await page.locator('#select-repos').click()
+  await shot('selecteur-ouvert-arabe')
+  await page.keyboard.press('Escape')
+
+  // ── Cases et radios
+  await set({ 'i18n-language': 'fr' })
+  await visit('choice')
+  await shot('choix-clair')
+  await set({ 'ostravel-theme': 'dark' })
+  await shot('choix-sombre')
+  await set({ 'ostravel-theme': 'light', 'i18n-language': 'ar' })
+  await shot('choix-arabe')
+
+  // ── Zone de texte
+  await set({ 'i18n-language': 'fr' })
+  await visit('textarea')
+  await shot('zone-texte-clair')
+  await set({ 'ostravel-theme': 'dark' })
+  await shot('zone-texte-sombre')
+
+  // ── Étiquette
+  await set({ 'ostravel-theme': 'light' })
+  await visit('label')
+  await shot('etiquette-clair')
+
+  // ── Mot de passe : l'œil se CLIQUE, on ne simule pas.
+  await visit('password')
+  await shot('mot-de-passe-clair')
+  await page.locator('#p1').locator('..').getByRole('button').click()
+  await shot('mot-de-passe-revele')
+  await set({ 'i18n-language': 'ar' })
+  await shot('mot-de-passe-arabe')
+  await set({ 'i18n-language': 'fr' })
+})

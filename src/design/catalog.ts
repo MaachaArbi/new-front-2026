@@ -40,9 +40,47 @@ export const CATALOG: readonly CatalogGroup[] = [
           'hauteurs sur --ui-row ; anneau de focus unique ; désactivé neutre ; lecture seule distincte du désactivé ; survol ajouté ; ombres retirées. Détail en tête de input.tsx.',
         ported: true,
       },
-      { id: 'select', titleKey: 'design.comp.select', ported: false },
-      { id: 'checkbox', titleKey: 'design.comp.checkbox', ported: false },
-      { id: 'radio', titleKey: 'design.comp.radio', ported: false },
+      {
+        id: 'password',
+        titleKey: 'design.comp.password',
+        source:
+          'aucune — écrit par nous (le template le recompose 4 fois, en RTL cassé)',
+        adapted:
+          'bâti sur Input + Button ; bouton en propriété logique (end-0) ; libellé traduit et aria-pressed',
+        ported: true,
+      },
+      {
+        id: 'select',
+        titleKey: 'design.comp.select',
+        source: 'full/src/components/ui/select.tsx',
+        adapted:
+          "indicatorPosition passe de left|right à start|end — l'API mentait en arabe ; hauteurs sur --ui-row ; focus, désactivé et invalide alignés sur le système",
+        ported: true,
+      },
+      {
+        id: 'choice',
+        titleKey: 'design.comp.choice',
+        source: 'full/src/components/ui/{checkbox,radio-group}.tsx',
+        adapted:
+          'désactivé neutre MAIS état encore lisible (le template masquait la coche) ; variante radio « mono » retirée (elle ne faisait rien) ; tailles volontairement NON indexées sur la densité',
+        ported: true,
+      },
+      {
+        id: 'textarea',
+        titleKey: 'design.comp.textarea',
+        source: 'full/src/components/ui/textarea.tsx',
+        adapted:
+          'mêmes écarts que le champ de saisie ; lecture seule lisible au lieu de opacity-70',
+        ported: true,
+      },
+      {
+        id: 'label',
+        titleKey: 'design.comp.label',
+        source: 'full/src/components/ui/label.tsx',
+        adapted:
+          'opacity-50 sur peer-disabled remplacé par la couleur de texte désactivée',
+        ported: true,
+      },
       {
         id: 'switch',
         titleKey: 'design.comp.switch',
