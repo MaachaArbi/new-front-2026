@@ -2,6 +2,7 @@ import { Route, Routes } from 'react-router-dom'
 import { Layout } from '@/shared/layout'
 import { DesignSidebar } from '@/design/design-sidebar'
 import { DesignPage } from '@/design/design-page'
+import { PartiesListPage } from '@/modules/parties/parties-list-page'
 
 /**
  * Routage — la coquille et rien d'autre pour l'instant.
@@ -20,6 +21,9 @@ export function Router() {
         <Route path="/design/:componentId" element={<DesignPage />} />
       </Route>
       <Route element={<Layout />}>
+        {/* Premier écran réel. STATIQUE : fixtures en mémoire, aucune API
+            (règle du 20/08). Ce qui manque est au registre. */}
+        <Route path="/parties" element={<PartiesListPage />} />
         <Route path="*" element={<Blank />} />
       </Route>
     </Routes>

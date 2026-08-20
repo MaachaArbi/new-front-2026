@@ -166,3 +166,40 @@ doit atterrir ici le jour où on la crée._
   **triables** : c'est cohérent avec la règle du 19/08 (concevoir l'UI
   indépendamment des API), mais **ça mordra au branchement**. Débloqué par :
   `sort=` dans le contrat de liste (phase 2).
+
+## Liste Tiers — premier écran réel (20/08)
+
+L'écran `/parties` est **entièrement statique** : fixtures en mémoire, source
+d'essai avec délai simulé. Aucune API n'est appelée.
+
+### Champs renseignés dans les fixtures mais VIDES dans la base
+Le scan du 04/08 : `logoUrl`, `phonePrimary` et `country` sont vides sur
+**0 / 106 000** lignes. Les fixtures les renseignent — règle du 19/08, on conçoit
+l'écran complet — mais **l'écran doit tenir le vide**, et deux lignes le
+vérifient exprès (Slim Ferchichi, Nour Travel : ni téléphone, ni pays, ni bureau).
+- **Statut : À ALIMENTER côté données**, pas côté écran. Les colonnes restent
+  affichées, le vide s'écrit « — » ([[afficher-les-champs-vides]]).
+
+### Colonnes absentes, et c'est voulu
+- **Pas de solde ni d'encours.** Le solde existe par (tiers × rôle × bureau ×
+  devise) et n'est jamais un chiffre unique. Un total dans la liste serait FAUX,
+  pas approximatif. Vit dans l'écran **Règlements**.
+- **Pas de compteurs réseau/affiliés** — écran **Réseau** (décision back 04/08).
+
+### Filtres
+- **V1 livrés** : recherche (une boîte → nom, courriel, téléphone), nature, rôle,
+  état, bureau, pays. C'est exactement le contrat figé.
+- **Phase 2** : forme juridique, « créé entre ». Non affichés.
+- Les options de `bureau` viendront de `/me` (entier `officeAccountId`), celles de
+  `pays` du référentiel fermé `countries`. Aujourd'hui : déduites des fixtures.
+
+### Tri — écart déjà signalé, ici concret
+Les en-têtes sont triables ; le contrat fige `display_name ASC` sans `sort=`
+(choix de performance, ~51 ms sur 50k). Le défaut de l'écran EST `display_name`
+croissant, donc le comportement au branchement sera correct **tant qu'on ne
+clique pas un en-tête**. Débloqué par : `sort=` dans le contrat (phase 2).
+
+### Compteur
+Il dit « **N que vous pouvez voir** », jamais « N tiers ». Le cloisonnement RLS
+est par bureau : la liste n'est jamais complète, et un compteur muet mentirait à
+l'agent qui ne voit que son périmètre.
