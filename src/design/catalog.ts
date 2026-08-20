@@ -155,7 +155,15 @@ export const CATALOG: readonly CatalogGroup[] = [
           "ombre retirée (la classe du template, « black/5 », n'existait pas) ; garde du contexte impossible retirée ; séparateur pris tel quel",
         ported: true,
       },
-      { id: 'table', titleKey: 'design.comp.table', ported: false },
+      {
+        id: 'table',
+        titleKey: 'design.comp.table',
+        source:
+          'full/src/components/ui/data-grid{,-table,-column-header,-pagination,-column-visibility}.tsx',
+        adapted:
+          'épinglage de colonnes corrigé en propriétés logiques (vrai bug RTL, calculé en JS donc hors de portée du lint) ; hauteur de ligne sur --ui-row ; ligne sélectionnée en --bg-primary et non en gris ; « 1 – 25 sur 128 » isolé en LTR ; moveColumn left|right → start|end ; tous les libellés traduits',
+        ported: true,
+      },
     ],
   },
 ]

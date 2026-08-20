@@ -11,6 +11,7 @@ import { LabelShowcase } from './showcases/label-showcase'
 import { PasswordShowcase } from './showcases/password-showcase'
 import { DialogShowcase } from './showcases/dialog-showcase'
 import { SelectShowcase } from './showcases/select-showcase'
+import { TableShowcase } from './showcases/table-showcase'
 import { TooltipShowcase } from './showcases/tooltip-showcase'
 import { TextareaShowcase } from './showcases/textarea-showcase'
 import { InputShowcase } from './showcases/input-showcase'
@@ -36,6 +37,7 @@ const SHOWCASES: Record<string, React.ComponentType> = {
   tooltip: TooltipShowcase,
   dialog: DialogShowcase,
   card: CardShowcase,
+  table: TableShowcase,
 }
 
 export function DesignPage() {

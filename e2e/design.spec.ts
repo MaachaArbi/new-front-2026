@@ -281,3 +281,56 @@ test('système de design — vague 2', async ({ page }) => {
   await shot('carte-arabe')
   await set({ 'i18n-language': 'fr' })
 })
+
+/**
+ * Le tableau. Trois captures qui comptent :
+ *   · la liste complète en français, pour juger la densité et l'alignement ;
+ *   · l'arabe, où la colonne de montants et « 1 – 6 sur 12 » doivent tenir ;
+ *   · le menu d'un en-tête ouvert, pour voir tri / épinglage / colonnes.
+ */
+test('système de design — tableau', async ({ page }) => {
+  test.setTimeout(240_000)
+
+  const set = async (entries: Record<string, string>) => {
+    await page.evaluate((o) => {
+      for (const [k, v] of Object.entries(o)) localStorage.setItem(k, v)
+    }, entries)
+    await page.reload()
+    await page.waitForTimeout(1600)
+  }
+  const shot = async (name: string) => {
+    await page.waitForTimeout(600)
+    await page.screenshot({ path: `${SHOTS}/${name}.png` })
+  }
+
+  await page.goto('/design/table')
+  await set({ 'ostravel-theme': 'light', 'i18n-language': 'fr' })
+  await shot('tableau-clair')
+
+  // Sélection de deux lignes : le filet de bord et le fond actif doivent se voir.
+  await page.getByLabel('Sélectionner la ligne').nth(0).click()
+  await page.getByLabel('Sélectionner la ligne').nth(2).click()
+  await shot('tableau-selection')
+
+  // Menu d'en-tête : tri, épinglage, colonnes.
+  await page.getByRole('button', { name: /Raison sociale/i }).first().click()
+  await shot('tableau-menu-colonne')
+  await page.keyboard.press('Escape')
+
+  await set({ 'ostravel-theme': 'dark' })
+  await shot('tableau-sombre')
+
+  await set({ 'ostravel-theme': 'light', 'i18n-language': 'ar' })
+  await shot('tableau-arabe')
+
+  // Densités : c'est ici que --ui-row se juge vraiment.
+  await set({ 'i18n-language': 'fr' })
+  await page.evaluate(() => {
+    document.documentElement.dataset.density = 'compact'
+  })
+  await shot('tableau-dense')
+  await page.evaluate(() => {
+    document.documentElement.dataset.density = 'cozy'
+  })
+  await shot('tableau-confort')
+})
