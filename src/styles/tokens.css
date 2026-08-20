@@ -376,27 +376,13 @@
   /* 8 px → `rounded-md` vaut 6 px, la valeur de la planche pour les contrôles. */
   --radius: 0.5rem;
 
-  /* Compatibilité `badge.tsx` — encore prélevé tel quel, pas encore
-     re-cartographié. `-accent` = aplat plein, `-soft` = fond tendre.
-     ⚠️ Le badge se sert de `-accent` À LA FOIS comme fond plein et comme
-     couleur de texte : ça tient en clair, c'est faible en sombre. À corriger
-     quand le badge passera à son tour — aucun écran ne l'affiche aujourd'hui. */
-  --color-success-accent: var(--fill-success);
-  --color-success-foreground: var(--on-success);
-  --color-success-soft: var(--bg-success);
-  --color-warning-accent: var(--fill-warning);
-  --color-warning-foreground: var(--on-warning);
-  --color-warning-soft: var(--bg-warning);
-  --color-info-accent: var(--fill-info);
-  --color-info-foreground: var(--on-info);
-  --color-info-soft: var(--bg-info);
-  /* ⚠️ Ces quatre-là étaient CONSOMMÉS par badge.tsx sans jamais être définis :
-     il retombait donc en silence sur le bleu et le rouge bruts de Tailwind,
-     hors système, insensibles à tout changement de palette. */
-  --color-primary-accent: var(--fill-primary);
-  --color-primary-soft: var(--bg-primary);
-  --color-destructive-accent: var(--fill-danger);
-  --color-destructive-soft: var(--bg-danger);
+  /* ─── Les douze jetons de compatibilité du badge ont été RETIRÉS le 20/08.
+     Ils servaient une cascade de replis du template qui portait un défaut :
+     `dark:bg-[var(--color-X-soft, …)]` et `dark:text-[var(--color-X-soft, …)]`
+     utilisaient LA MÊME variable pour le fond et pour le texte. Le template ne
+     tenait que parce que ses deux valeurs de repli différaient — définir le
+     jeton rendait l'étiquette INVISIBLE en mode sombre.
+     Le badge consomme désormais directement les rôles de la planche. */
 }
 
 [data-theme='dark'] {
@@ -545,11 +531,13 @@
   --color-module-journal: var(--module-journal);
 
   --color-fill-success: var(--fill-success);
+  --color-on-success: var(--on-success);
   --color-bg-success: var(--bg-success);
   --color-border-success: var(--border-success);
   --color-text-success: var(--text-success);
 
   --color-fill-warning: var(--fill-warning);
+  --color-on-warning: var(--on-warning);
   --color-bg-warning: var(--bg-warning);
   --color-border-warning: var(--border-warning);
   --color-text-warning: var(--text-warning);
@@ -563,6 +551,7 @@
   --color-text-danger: var(--text-danger);
 
   --color-fill-info: var(--fill-info);
+  --color-on-info: var(--on-info);
   --color-bg-info: var(--bg-info);
   --color-border-info: var(--border-info);
   --color-text-info: var(--text-info);

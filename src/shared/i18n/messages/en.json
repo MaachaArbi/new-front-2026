@@ -212,5 +212,13 @@
   "design.table.action.edit": "Edit",
   "design.table.action.block": "Block",
   "design.table.action.delete": "Delete",
-  "design.table.action.export": "Export"
+  "design.table.action.export": "Export",
+  "design.badge.sample": "Label",
+  "design.badge.hint.default": "Solid fill — for what must stand out.",
+  "design.badge.hint.light": "Soft fill — the default in a dense list.",
+  "design.badge.hint.outline": "Soft fill + border — when the page ground is already coloured.",
+  "design.badge.hint.ghost": "Text only, no fill, no padding.",
+  "design.badge.usage": "In use",
+  "design.badge.usageHint": "What the table actually shows.",
+  "design.badge.dot": "with dot"
 }

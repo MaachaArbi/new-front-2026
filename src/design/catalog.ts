@@ -104,6 +104,8 @@ export const CATALOG: readonly CatalogGroup[] = [
         id: 'badge',
         titleKey: 'design.comp.badge',
         source: 'starter-kit/src/components/ui/badge.tsx',
+        adapted:
+          "re-cartographié sur les rôles de la planche. Le template écrivait la MÊME variable pour le fond et pour le texte en mode sombre — l'étiquette devenait invisible dès qu'on définissait le jeton. Douze jetons de compatibilité retirés.",
         ported: true,
       },
       {

@@ -212,5 +212,13 @@
   "design.table.action.edit": "Modifier",
   "design.table.action.block": "Bloquer",
   "design.table.action.delete": "Supprimer",
-  "design.table.action.export": "Exporter"
+  "design.table.action.export": "Exporter",
+  "design.badge.sample": "Étiquette",
+  "design.badge.hint.default": "Aplat plein — pour ce qui doit trancher.",
+  "design.badge.hint.light": "Fond tendre — le défaut dans une liste dense.",
+  "design.badge.hint.outline": "Fond tendre + bordure — quand le fond de page est déjà coloré.",
+  "design.badge.hint.ghost": "Texte seul, sans fond ni retrait.",
+  "design.badge.usage": "En situation",
+  "design.badge.usageHint": "Ce que le tableau affiche vraiment.",
+  "design.badge.dot": "avec pastille"
 }

@@ -4,6 +4,7 @@ import { useIntl } from 'react-intl'
 import { FileCode2, Wrench } from 'lucide-react'
 import { CATALOG } from './catalog'
 import { ButtonShowcase } from './showcases/button-showcase'
+import { BadgeShowcase } from './showcases/badge-showcase'
 import { CalendarShowcase } from './showcases/calendar-showcase'
 import { CardShowcase } from './showcases/card-showcase'
 import { ChoiceShowcase } from './showcases/choice-showcase'
@@ -38,6 +39,7 @@ const SHOWCASES: Record<string, React.ComponentType> = {
   dialog: DialogShowcase,
   card: CardShowcase,
   table: TableShowcase,
+  badge: BadgeShowcase,
 }
 
 export function DesignPage() {

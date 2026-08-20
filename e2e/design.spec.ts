@@ -381,3 +381,41 @@ test('tableau — garde du clic, sélection, valeur inconnue', async ({ page }) 
   await page.waitForTimeout(700)
   await expect(page.getByRole('cell', { name: '—', exact: true }).first()).toBeVisible()
 })
+
+/**
+ * Le badge, en clair ET en sombre.
+ *
+ * C'est ICI qu'on aurait vu, avant de le livrer, que le texte d'une étiquette
+ * prenait la couleur de son fond en mode sombre. Le défaut est resté invisible
+ * tant qu'aucun écran n'affichait de badge d'état.
+ */
+test('système de design — badge', async ({ page }) => {
+  test.setTimeout(120_000)
+  const set = async (entries: Record<string, string>) => {
+    await page.evaluate((o) => {
+      for (const [k, v] of Object.entries(o)) localStorage.setItem(k, v)
+    }, entries)
+    await page.reload()
+    await page.waitForTimeout(1400)
+  }
+  await page.goto('/design/badge')
+  await set({ 'ostravel-theme': 'light', 'i18n-language': 'fr' })
+  await page.waitForTimeout(600)
+  await page.screenshot({ path: `${SHOTS}/badge-clair.png` })
+  await set({ 'ostravel-theme': 'dark' })
+  await page.waitForTimeout(600)
+  await page.screenshot({ path: `${SHOTS}/badge-sombre.png` })
+
+  // Le contrôle qui compte : le texte ne doit JAMAIS avoir la couleur du fond.
+  const collisions = await page.evaluate(() => {
+    const out: string[] = []
+    for (const el of document.querySelectorAll('[data-slot=badge]')) {
+      const s = getComputedStyle(el)
+      if (s.color === s.backgroundColor) out.push(el.textContent ?? '?')
+    }
+    return out
+  })
+  console.log('BADGES texte = fond :', collisions.length)
+  expect(collisions, 'aucun badge ne doit avoir le texte de la couleur du fond').toEqual([])
+  await set({ 'ostravel-theme': 'light' })
+})

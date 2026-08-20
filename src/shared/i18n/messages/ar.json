@@ -212,5 +212,13 @@
   "design.table.action.edit": "تعديل",
   "design.table.action.block": "حجب",
   "design.table.action.delete": "حذف",
-  "design.table.action.export": "تصدير"
+  "design.table.action.export": "تصدير",
+  "design.badge.sample": "وسم",
+  "design.badge.hint.default": "لون كامل — لما يجب أن يبرز.",
+  "design.badge.hint.light": "خلفية خفيفة — الافتراضي في قائمة كثيفة.",
+  "design.badge.hint.outline": "خلفية خفيفة مع حدّ — حين تكون أرضية الصفحة ملوّنة.",
+  "design.badge.hint.ghost": "نصّ فقط، بلا خلفية ولا حشو.",
+  "design.badge.usage": "في الاستعمال",
+  "design.badge.usageHint": "ما يعرضه الجدول فعلًا.",
+  "design.badge.dot": "مع نقطة"
 }
