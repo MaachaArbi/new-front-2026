@@ -282,5 +282,9 @@
   "parties.action.edit": "تعديل",
   "parties.action.disable": "تعطيل",
   "parties.action.delete": "حذف",
-  "parties.action.export": "تصدير"
+  "parties.action.export": "تصدير",
+  "ui.table.density": "الكثافة",
+  "ui.table.density.compact": "مضغوط",
+  "ui.table.density.default": "عادي",
+  "ui.table.density.comfortable": "فسيح"
 }

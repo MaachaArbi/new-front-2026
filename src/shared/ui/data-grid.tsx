@@ -24,7 +24,7 @@
  * décision qui compte dans un ERP : elle décide combien de lignes un agent voit
  * sans défiler. `tableLayout.dense` se combine avec elle au lieu de la doubler.
  */
-import { createContext, type ReactNode, useContext } from 'react'
+import { createContext, type ReactNode, useContext, useState } from 'react'
 import type {
   ColumnFiltersState,
   RowData,
@@ -61,11 +61,20 @@ export type DataGridApiResponse<T> = {
   pagination: { total: number; page: number }
 }
 
+/**
+ * Les trois crans de hauteur de ligne. Ils se COMBINENT avec le réglage global de
+ * densité (`--ui-row`) au lieu de le remplacer : « condensé » d'un utilisateur qui
+ * a déjà choisi l'affichage compact est plus serré que celui d'un autre.
+ */
+export type DataGridDensityValue = 'compact' | 'default' | 'comfortable'
+
 export interface DataGridContextProps<TData extends object> {
   props: DataGridProps<TData>
   table: Table<TData>
   recordCount: number
   isLoading: boolean
+  density: DataGridDensityValue
+  setDensity: (value: DataGridDensityValue) => void
 }
 
 export type DataGridRequestParams = {
@@ -87,8 +96,8 @@ export interface DataGridProps<TData extends object> {
   loadingMessage?: ReactNode | string
   emptyMessage?: ReactNode | string
   tableLayout?: {
-    /** Resserre encore les lignes, EN PLUS du réglage global de densité. */
-    dense?: boolean
+    /** Cran de DÉPART. L'utilisateur peut en changer par la barre d'outils. */
+    density?: DataGridDensityValue
     cellBorder?: boolean
     rowBorder?: boolean
     rowRounded?: boolean
@@ -134,6 +143,14 @@ function DataGridProvider<TData extends object>({
   table,
   ...props
 }: DataGridProps<TData> & { table: Table<TData> }) {
+  // La densité vit ICI, pas dans la page : elle doit être réglable depuis la
+  // barre d'outils de N'IMPORTE quel tableau, sans que chaque écran la recâble.
+  // ⚠️ Elle ne SURVIT PAS au rechargement — la persistance en préférences
+  // utilisateur est en phase 2 (décision du 04/08). Inscrit au registre.
+  const [density, setDensity] = useState<DataGridDensityValue>(
+    props.tableLayout?.density ?? 'default'
+  )
+
   return (
     <DataGridContext.Provider
       value={{
@@ -141,6 +158,8 @@ function DataGridProvider<TData extends object>({
         table,
         recordCount: props.recordCount,
         isLoading: props.isLoading ?? false,
+        density,
+        setDensity,
       }}
     >
       {children}
@@ -156,7 +175,7 @@ function DataGrid<TData extends object>({
   const defaultProps: Partial<DataGridProps<TData>> = {
     loadingMode: 'skeleton',
     tableLayout: {
-      dense: false,
+      density: 'default',
       cellBorder: false,
       rowBorder: true,
       rowRounded: false,

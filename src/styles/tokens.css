@@ -455,6 +455,7 @@
   --ui-row: 2.125rem; /* 34 px — la taille « md » de la planche */
   --ui-row-sm: calc(var(--ui-row) - 0.375rem); /* −6 px */
   --ui-row-lg: calc(var(--ui-row) + 0.375rem); /* +6 px */
+  --ui-row-xl: calc(var(--ui-row) + 1rem); /* +16 px — cran « aéré » des tableaux */
   --ui-scale: 1;
 }
 :root[data-density='compact'] { --ui-row: 1.75rem; } /* 28 px */

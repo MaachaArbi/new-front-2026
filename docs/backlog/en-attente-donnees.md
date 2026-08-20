@@ -203,3 +203,12 @@ clique pas un en-tête**. Débloqué par : `sort=` dans le contrat (phase 2).
 Il dit « **N que vous pouvez voir** », jamais « N tiers ». Le cloisonnement RLS
 est par bureau : la liste n'est jamais complète, et un compteur muet mentirait à
 l'agent qui ne voit que son périmètre.
+
+### Densité et disposition des colonnes — non persistées (21/08)
+Le tableau offre trois crans (condensé · normal · aéré) et le redimensionnement
+des colonnes. **Rien ne survit au rechargement.**
+- **Statut : COMPORTEMENT COMPLET, PERSISTANCE MANQUANTE.** Débloqué par le même
+  endpoint que les vues nommées — préférences utilisateur (phase 2 du 04/08, qui
+  disait déjà « idem disposition colonnes + densité »).
+- ⚠️ Rappel : **pas le `localStorage`**, il ne suit pas l'agent d'un poste à
+  l'autre. C'est la même décision que pour les vues.

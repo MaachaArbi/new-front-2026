@@ -78,8 +78,9 @@ const ROW_CLICK_IGNORE =
 const headerCellSpacingVariants = cva('', {
   variants: {
     size: {
-      dense: 'h-(--ui-row) px-2.5',
+      compact: 'h-(--ui-row) px-2.5',
       default: 'h-(--ui-row-lg) px-4',
+      comfortable: 'h-(--ui-row-xl) px-4',
     },
   },
   defaultVariants: { size: 'default' },
@@ -87,14 +88,22 @@ const headerCellSpacingVariants = cva('', {
 
 const bodyCellSpacingVariants = cva('', {
   variants: {
-    size: { dense: 'px-2.5 py-2', default: 'px-4 py-3' },
+    size: {
+      compact: 'px-2.5 py-1.5',
+      default: 'px-4 py-3',
+      comfortable: 'px-4 py-4',
+    },
   },
   defaultVariants: { size: 'default' },
 })
 
 const bodyRowHeightVariants = cva('', {
   variants: {
-    size: { dense: 'h-(--ui-row)', default: 'h-(--ui-row-lg)' },
+    size: {
+      compact: 'h-(--ui-row)',
+      default: 'h-(--ui-row-lg)',
+      comfortable: 'h-(--ui-row-xl)',
+    },
   },
   defaultVariants: { size: 'default' },
 })
@@ -189,15 +198,13 @@ function DataGridTableHeadRowCell<TData>({
   dndRef?: React.Ref<HTMLTableCellElement>
   dndStyle?: CSSProperties
 }) {
-  const { props } = useDataGrid()
+  const { props, density } = useDataGrid()
   const { column } = header
   const isPinned = column.getIsPinned()
   const isLastLeftPinned = isPinned === 'left' && column.getIsLastColumn('left')
   const isFirstRightPinned =
     isPinned === 'right' && column.getIsFirstColumn('right')
-  const headerCellSpacing = headerCellSpacingVariants({
-    size: props.tableLayout?.dense ? 'dense' : 'default',
-  })
+  const headerCellSpacing = headerCellSpacingVariants({ size: density })
 
   return (
     <th
@@ -278,12 +285,10 @@ function DataGridTableBody({ children }: { children: ReactNode }) {
 
 /** Classes partagées par la ligne réelle et la ligne squelette. */
 function useBodyRowClasses() {
-  const { props, table } = useDataGrid()
+  const { props, table, density } = useDataGrid()
 
   return cn(
-    bodyRowHeightVariants({
-      size: props.tableLayout?.dense ? 'dense' : 'default',
-    }),
+    bodyRowHeightVariants({ size: density }),
     'hover:bg-accent data-[state=selected]:bg-bg-primary',
     props.onRowClick && 'cursor-pointer',
     !props.tableLayout?.stripped &&
@@ -308,10 +313,8 @@ function DataGridTableBodyRowSkeletonCell<TData>({
   children: ReactNode
   column: Column<TData>
 }) {
-  const { props, table } = useDataGrid()
-  const bodyCellSpacing = bodyCellSpacingVariants({
-    size: props.tableLayout?.dense ? 'dense' : 'default',
-  })
+  const { props, table, density } = useDataGrid()
+  const bodyCellSpacing = bodyCellSpacingVariants({ size: density })
 
   return (
     <td
@@ -402,15 +405,13 @@ function DataGridTableBodyRowCell<TData>({
   dndRef?: React.Ref<HTMLTableCellElement>
   dndStyle?: CSSProperties
 }) {
-  const { props } = useDataGrid()
+  const { props, density } = useDataGrid()
   const { column, row } = cell
   const isPinned = column.getIsPinned()
   const isLastLeftPinned = isPinned === 'left' && column.getIsLastColumn('left')
   const isFirstRightPinned =
     isPinned === 'right' && column.getIsFirstColumn('right')
-  const bodyCellSpacing = bodyCellSpacingVariants({
-    size: props.tableLayout?.dense ? 'dense' : 'default',
-  })
+  const bodyCellSpacing = bodyCellSpacingVariants({ size: density })
 
   return (
     <td

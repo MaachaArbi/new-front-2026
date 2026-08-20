@@ -282,5 +282,9 @@
   "parties.action.edit": "Modifier",
   "parties.action.disable": "Désactiver",
   "parties.action.delete": "Supprimer",
-  "parties.action.export": "Exporter"
+  "parties.action.export": "Exporter",
+  "ui.table.density": "Densité",
+  "ui.table.density.compact": "Condensé",
+  "ui.table.density.default": "Normal",
+  "ui.table.density.comfortable": "Aéré"
 }

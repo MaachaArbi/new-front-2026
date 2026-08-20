@@ -38,7 +38,18 @@ test('liste Tiers — captures', async ({ page }) => {
   await set({ 'ostravel-theme': 'light', 'i18n-language': 'ar' })
   await page.waitForTimeout(700)
   await page.screenshot({ path: `${SHOTS}/tiers-liste-arabe.png` })
+
+  // Les trois crans de densité, côte à côte — c'est la mesure qui compte dans un
+  // ERP : combien de lignes l'agent voit sans défiler.
   await set({ 'i18n-language': 'fr' })
+  await page.goto('/parties')
+  await page.waitForTimeout(1600)
+  for (const [level, name] of [['condense', 'Condensé'], ['aere', 'Aéré']] as const) {
+    await page.getByRole('button', { name: 'Densité' }).click()
+    await page.getByRole('menuitem', { name }).click()
+    await page.waitForTimeout(600)
+    await page.screenshot({ path: `${SHOTS}/tiers-liste-${level}.png` })
+  }
 })
 
 test('liste Tiers — les décisions du 04/08 tiennent', async ({ page }) => {

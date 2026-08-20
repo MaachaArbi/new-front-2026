@@ -11,6 +11,7 @@ import { DataGrid, DataGridContainer } from '@/shared/ui/data-grid'
 import { DataGridBulkActions } from '@/shared/ui/data-grid-bulk-actions'
 import { DataGridColumnHeader } from '@/shared/ui/data-grid-column-header'
 import { DataGridColumnVisibility } from '@/shared/ui/data-grid-column-visibility'
+import { DataGridDensity } from '@/shared/ui/data-grid-density'
 import { DataGridPagination } from '@/shared/ui/data-grid-pagination'
 import { DataGridRowActions } from '@/shared/ui/data-grid-row-actions'
 import {
@@ -374,6 +375,11 @@ export function PartiesListPage() {
     rowCount: source.total,
     getRowId: (row) => row.publicId,
     enableRowSelection: true,
+    // `onChange` : la colonne suit le curseur pendant le glissé. `onEnd` ne
+    // redessine qu'au relâchement — on ne voit pas ce qu'on fait.
+    enableColumnResizing: true,
+    columnResizeMode: 'onChange',
+    enableColumnPinning: true,
     getCoreRowModel: getCoreRowModel(),
   })
 
@@ -385,6 +391,11 @@ export function PartiesListPage() {
       recordCount={source.total}
       isLoading={source.isLoading}
       emptyMessage={t('parties.empty')}
+      tableLayout={{
+        columnsVisibility: true,
+        columnsResizable: true,
+        columnsPinnable: true,
+      }}
       // GOUTTIÈRE (décision 04/08) : la bande touche les bords, mais le CONTENU
       // de la première et de la dernière colonne s'aligne sur le retrait de page.
       // Sans elle, le texte du tableau démarre 14 px avant le titre — l'œil le
@@ -461,6 +472,7 @@ export function PartiesListPage() {
                       </Button>
                     }
                   />
+                  <DataGridDensity label={false} />
                   <SavedViews />
                   <ExportButton recordCount={source.total} />
                 </>
