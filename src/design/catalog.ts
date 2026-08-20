@@ -29,7 +29,7 @@ export const CATALOG: readonly CatalogGroup[] = [
         titleKey: 'design.comp.button',
         source: 'full/src/components/ui/button.tsx',
         adapted:
-          'hauteurs figées (h-10 / h-8.5 / h-7) remplacées par --ui-row et ses dérivées',
+          'cinq variantes au lieu de huit ; états en couleurs et non en opacités ; désactivé neutre ; hauteurs indexées sur --ui-row. Le détail et les motifs sont en tête de button.tsx.',
         ported: true,
       },
       { id: 'input', titleKey: 'design.comp.input', ported: false },
@@ -47,6 +47,14 @@ export const CATALOG: readonly CatalogGroup[] = [
   {
     titleKey: 'design.group.foundations',
     entries: [
+      {
+        id: 'palette',
+        titleKey: 'design.comp.palette',
+        source: 'planche « Bleu de Prusse » — Arbi, 20/08',
+        adapted:
+          "couches 1 et 2 reprises telles quelles ; ajout d'une couche de raccordement vers les noms ReUI, des surfaces de barre latérale, et renommage de --text-primary-role en --text-link",
+        ported: true,
+      },
       {
         id: 'badge',
         titleKey: 'design.comp.badge',

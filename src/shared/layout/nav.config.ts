@@ -144,7 +144,7 @@ export const SAVED_VIEWS: readonly SavedView[] = [
     titleKey: 'nav.view.overLimit',
     path: '/parties?view=over-limit',
     count: 4,
-    tone: 'bg-[var(--color-warning-foreground)]',
+    tone: 'bg-[var(--fill-warning)]',
   },
   {
     titleKey: 'nav.view.expiring',

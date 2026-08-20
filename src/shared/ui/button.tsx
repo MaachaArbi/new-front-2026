@@ -1,15 +1,38 @@
 /**
- * BOUTON — **prélevé** de `vendor-metronic/full/src/components/ui/button.tsx`.
+ * BOUTON — anatomie prélevée de `vendor-metronic/full/src/components/ui/button.tsx`,
+ * **re-cartographiée sur le système « Bleu de Prusse »** (décision B du 20/08).
  *
- * Adaptations, et elles seules :
- *  · le chemin d'import de `cn` ;
- *  · **les hauteurs figées deviennent des multiples de `--ui-row`** (décision B du
- *    19/08). Le template écrit `h-10`, `h-8.5`, `h-7`. Les garder aurait rendu le
- *    réglage de densité cosmétique : seul le texte aurait changé de taille, alors que
- *    c'est la HAUTEUR DE LIGNE qui décide combien de lignes un agent voit sans
- *    défiler. C'est l'adaptation standard de tout composant dimensionné.
+ * Ce qui est conservé du template : la structure `cva`, `data-slot`, `asChild`,
+ * `ButtonArrow`, le mode icône, et les tailles indexées sur `--ui-row` pour que le
+ * réglage de densité agisse sur la HAUTEUR DE LIGNE et pas seulement sur le texte.
  *
- * Correspondance : md = --ui-row (34 px en densité normale), sm et lg en dérivent.
+ * Ce que la planche remplace, et pourquoi — ce sont des ÉCARTS ASSUMÉS au template,
+ * pas des oublis :
+ *
+ *  1. CINQ variantes au lieu de huit. `mono`, `dashed`, `dim`, `foreground` et
+ *     `inverse` disparaissent : aucune n'avait de rôle défini dans un ERP, et une
+ *     variante sans rôle finit par être choisie au hasard. `outline` devient
+ *     `secondary` (c'est le même bouton : fond neutre, bordure franche), et `link`
+ *     passe de « mode » à variante — c'est une intention, pas une mise en forme.
+ *
+ *  2. Les états ne sont plus des OPACITÉS mais des couleurs. Le template écrit
+ *     `hover:bg-primary/90` ; la planche donne un fill de survol et un fill d'appui
+ *     (`--blue-800`, `--blue-900`). Une teinte assombrie se lit comme un appui ; la
+ *     même teinte à 90 % se lit comme un début de chargement.
+ *
+ *  3. DÉSACTIVÉ = neutre, jamais la couleur de marque en opacité réduite. Le
+ *     template fait `disabled:opacity-60` : un bouton bleu délavé se lit comme
+ *     « en cours » ou « cassé ». Un bouton neutre se lit comme « indisponible ».
+ *
+ *  4. EN COURS : le fond ne change pas. Un bouton qui pâlit au clic donne
+ *     l'impression d'avoir sauté ; seul le libellé s'adoucit (0,85).
+ *
+ *  5. Ni ombre ni anneau composite : un seul `--focus-ring` pour tout le système
+ *     (et sa variante danger). Le template posait `shadow-xs` sur cinq variantes —
+ *     une ombre sur un bouton plein n'ajoute rien à 34 px de haut.
+ *
+ * Reste de Metronic, délibérément : les icônes des variantes neutres sont à 60 %
+ * d'opacité. À pleine densité d'encre elles concurrencent le libellé.
  */
 import * as React from 'react'
 import { cva, type VariantProps } from 'class-variance-authority'
@@ -18,366 +41,75 @@ import { Slot as SlotPrimitive } from 'radix-ui'
 import { cn } from '@/shared/lib/cn'
 
 const buttonVariants = cva(
-  'cursor-pointer group whitespace-nowrap focus-visible:outline-hidden inline-flex items-center justify-center has-data-[arrow=true]:justify-between whitespace-nowrap text-sm font-medium ring-offset-background transition-[color,box-shadow] disabled:pointer-events-none disabled:opacity-60 [&_svg]:shrink-0',
+  `group inline-flex cursor-pointer items-center justify-center whitespace-nowrap
+   has-data-[arrow=true]:justify-between
+   border border-transparent font-medium outline-hidden
+   transition-[background-color,border-color,box-shadow] duration-[120ms] ease-out
+   focus-visible:[box-shadow:var(--focus-ring)]
+   disabled:cursor-not-allowed disabled:border-border-disabled disabled:bg-fill-disabled disabled:text-ink-disabled
+   aria-disabled:cursor-not-allowed aria-disabled:border-border-disabled aria-disabled:bg-fill-disabled aria-disabled:text-ink-disabled
+   data-[loading=true]:pointer-events-none data-[loading=true]:cursor-wait
+   [&_[data-slot=button-label]]:transition-opacity
+   data-[loading=true]:[&_[data-slot=button-label]]:opacity-85
+   [&_svg]:shrink-0`,
   {
     variants: {
       variant: {
         primary:
-          'bg-primary text-primary-foreground hover:bg-primary/90 data-[state=open]:bg-primary/90',
-        mono: 'bg-zinc-950 text-white dark:bg-zinc-300 dark:text-black hover:bg-zinc-950/90 dark:hover:bg-zinc-300/90 data-[state=open]:bg-zinc-950/90 dark:data-[state=open]:bg-zinc-300/90',
-        destructive:
-          'bg-destructive text-destructive-foreground hover:bg-destructive/90 data-[state=open]:bg-destructive/90',
+          'bg-fill-primary text-on-primary hover:bg-fill-primary-hover active:bg-fill-primary-active data-[state=open]:bg-fill-primary-hover',
         secondary:
-          'bg-secondary text-secondary-foreground hover:bg-secondary/90 data-[state=open]:bg-secondary/90',
-        outline:
-          'bg-background text-accent-foreground border border-input hover:bg-accent data-[state=open]:bg-accent',
-        dashed:
-          'text-accent-foreground border border-input border-dashed bg-background hover:bg-accent hover:text-accent-foreground data-[state=open]:text-accent-foreground',
+          'border-border-strong bg-fill-secondary text-ink hover:border-border-stronger hover:bg-fill-secondary-hover active:bg-fill-secondary-active data-[state=open]:bg-fill-secondary-hover',
         ghost:
-          'text-accent-foreground hover:bg-accent hover:text-accent-foreground data-[state=open]:bg-accent data-[state=open]:text-accent-foreground',
-        dim: 'text-muted-foreground hover:text-foreground data-[state=open]:text-foreground',
-        foreground: '',
-        inverse: '',
-      },
-      appearance: {
-        default: '',
-        ghost: '',
-      },
-      underline: {
-        solid: '',
-        dashed: '',
-      },
-      underlined: {
-        solid: '',
-        dashed: '',
+          'text-ink-secondary hover:bg-fill-ghost-hover hover:text-ink active:bg-fill-ghost-active data-[state=open]:bg-fill-ghost-hover data-[state=open]:text-ink',
+        destructive:
+          'bg-fill-danger text-on-danger hover:bg-fill-danger-hover active:bg-fill-danger-active focus-visible:[box-shadow:var(--focus-ring-danger)] data-[state=open]:bg-fill-danger-hover',
+        link: 'bg-transparent text-ink-link hover:underline hover:underline-offset-[3px]',
       },
       size: {
-        lg: 'h-(--ui-row-lg) rounded-md px-4 text-sm gap-1.5 [&_svg:not([class*=size-])]:size-4',
-        md: 'h-(--ui-row) rounded-md px-3 gap-1.5 text-[0.8125rem] leading-(--text-sm--line-height) [&_svg:not([class*=size-])]:size-4',
-        sm: 'h-(--ui-row-sm) rounded-md px-2.5 gap-1.25 text-xs [&_svg:not([class*=size-])]:size-3.5',
-        icon: 'size-(--ui-row) rounded-md [&_svg:not([class*=size-])]:size-4 shrink-0',
+        sm: 'h-(--ui-row-sm) gap-1 rounded-md px-2.5 text-xs [&_svg:not([class*=size-])]:size-3.5',
+        md: 'text-2sm h-(--ui-row) gap-1.5 rounded-md px-3.5 [&_svg:not([class*=size-])]:size-4',
+        lg: 'h-(--ui-row-lg) gap-1.5 rounded-md px-4 text-sm [&_svg:not([class*=size-])]:size-4',
       },
-      autoHeight: {
-        true: '',
-        false: '',
+      /** `icon` rend le bouton CARRÉ : la largeur suit la hauteur de ligne. */
+      mode: {
+        default: '',
+        icon: 'shrink-0 px-0',
       },
       shape: {
         default: '',
         circle: 'rounded-full',
       },
-      mode: {
-        default:
-          'focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2',
-        icon: 'focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 shrink-0',
-        link: 'text-primary h-auto p-0 bg-transparent rounded-none hover:bg-transparent data-[state=open]:bg-transparent',
-        input: `
-            justify-start font-normal hover:bg-background [&_svg]:transition-colors [&_svg]:hover:text-foreground data-[state=open]:bg-background 
-            focus-visible:border-ring focus-visible:outline-hidden focus-visible:ring-[3px] focus-visible:ring-ring/30 
-            [[data-state=open]>&]:border-ring [[data-state=open]>&]:outline-hidden [[data-state=open]>&]:ring-[3px] 
-            [[data-state=open]>&]:ring-ring/30 
-            aria-invalid:border-destructive/60 aria-invalid:ring-destructive/10 dark:aria-invalid:border-destructive dark:aria-invalid:ring-destructive/20
-            in-data-[invalid=true]:border-destructive/60 in-data-[invalid=true]:ring-destructive/10  dark:in-data-[invalid=true]:border-destructive dark:in-data-[invalid=true]:ring-destructive/20
-          `,
-      },
-      placeholder: {
-        true: 'text-muted-foreground',
-        false: '',
-      },
     },
     compoundVariants: [
-      // Icons opacity for default mode
+      // Le lien n'est pas un contrôle : ni hauteur de ligne, ni fond, ni bordure.
+      // En compound pour passer APRÈS les tailles dans l'ordre de sortie de cva.
       {
-        variant: 'ghost',
-        mode: 'default',
+        variant: 'link',
+        className:
+          'h-auto rounded-none border-transparent px-1 hover:bg-transparent',
+      },
+      // Désactivé : ghost et lien n'ont pas de fond à neutraliser.
+      {
+        variant: ['ghost', 'link'],
+        className:
+          'disabled:border-transparent disabled:bg-transparent aria-disabled:border-transparent aria-disabled:bg-transparent aria-disabled:no-underline',
+      },
+      // Icônes des variantes neutres — retenu de Metronic (voir l'en-tête).
+      {
+        variant: ['secondary', 'ghost'],
         className:
           '[&_svg:not([role=img]):not([class*=text-]):not([class*=opacity-])]:opacity-60',
       },
-      {
-        variant: 'outline',
-        mode: 'default',
-        className:
-          '[&_svg:not([role=img]):not([class*=text-]):not([class*=opacity-])]:opacity-60',
-      },
-      {
-        variant: 'dashed',
-        mode: 'default',
-        className:
-          '[&_svg:not([role=img]):not([class*=text-]):not([class*=opacity-])]:opacity-60',
-      },
-      {
-        variant: 'secondary',
-        mode: 'default',
-        className:
-          '[&_svg:not([role=img]):not([class*=text-]):not([class*=opacity-])]:opacity-60',
-      },
-
-      // Icons opacity for default mode
-      {
-        variant: 'outline',
-        mode: 'input',
-        className:
-          '[&_svg:not([role=img]):not([class*=text-]):not([class*=opacity-])]:opacity-60',
-      },
-      {
-        variant: 'outline',
-        mode: 'icon',
-        className:
-          '[&_svg:not([role=img]):not([class*=text-]):not([class*=opacity-])]:opacity-60',
-      },
-
-      // Auto height
-      {
-        size: 'md',
-        autoHeight: true,
-        className: 'h-auto min-h-8.5',
-      },
-      {
-        size: 'sm',
-        autoHeight: true,
-        className: 'h-auto min-h-7',
-      },
-      {
-        size: 'lg',
-        autoHeight: true,
-        className: 'h-auto min-h-10',
-      },
-
-      // Shadow support
-      {
-        variant: 'primary',
-        mode: 'default',
-        appearance: 'default',
-        className: 'shadow-xs shadow-black/5',
-      },
-      {
-        variant: 'mono',
-        mode: 'default',
-        appearance: 'default',
-        className: 'shadow-xs shadow-black/5',
-      },
-      {
-        variant: 'secondary',
-        mode: 'default',
-        appearance: 'default',
-        className: 'shadow-xs shadow-black/5',
-      },
-      {
-        variant: 'outline',
-        mode: 'default',
-        appearance: 'default',
-        className: 'shadow-xs shadow-black/5',
-      },
-      {
-        variant: 'dashed',
-        mode: 'default',
-        appearance: 'default',
-        className: 'shadow-xs shadow-black/5',
-      },
-      {
-        variant: 'destructive',
-        mode: 'default',
-        appearance: 'default',
-        className: 'shadow-xs shadow-black/5',
-      },
-
-      // Shadow support
-      {
-        variant: 'primary',
-        mode: 'icon',
-        appearance: 'default',
-        className: 'shadow-xs shadow-black/5',
-      },
-      {
-        variant: 'mono',
-        mode: 'icon',
-        appearance: 'default',
-        className: 'shadow-xs shadow-black/5',
-      },
-      {
-        variant: 'secondary',
-        mode: 'icon',
-        appearance: 'default',
-        className: 'shadow-xs shadow-black/5',
-      },
-      {
-        variant: 'outline',
-        mode: 'icon',
-        appearance: 'default',
-        className: 'shadow-xs shadow-black/5',
-      },
-      {
-        variant: 'dashed',
-        mode: 'icon',
-        appearance: 'default',
-        className: 'shadow-xs shadow-black/5',
-      },
-      {
-        variant: 'destructive',
-        mode: 'icon',
-        appearance: 'default',
-        className: 'shadow-xs shadow-black/5',
-      },
-
-      // Link
-      {
-        variant: 'primary',
-        mode: 'link',
-        underline: 'solid',
-        className:
-          'font-medium text-primary hover:text-primary/90 [&_svg:not([role=img]):not([class*=text-])]:opacity-60 hover:underline hover:underline-offset-4 hover:decoration-solid',
-      },
-      {
-        variant: 'primary',
-        mode: 'link',
-        underline: 'dashed',
-        className:
-          'font-medium text-primary hover:text-primary/90 [&_svg:not([role=img]):not([class*=text-])]:opacity-60 hover:underline hover:underline-offset-4 hover:decoration-dashed decoration-1',
-      },
-      {
-        variant: 'primary',
-        mode: 'link',
-        underlined: 'solid',
-        className:
-          'font-medium text-primary hover:text-primary/90 [&_svg:not([role=img]):not([class*=text-])]:opacity-60 underline underline-offset-4 decoration-solid',
-      },
-      {
-        variant: 'primary',
-        mode: 'link',
-        underlined: 'dashed',
-        className:
-          'font-medium text-primary hover:text-primary/90 [&_svg]:opacity-60 underline underline-offset-4 decoration-dashed decoration-1',
-      },
-
-      {
-        variant: 'inverse',
-        mode: 'link',
-        underline: 'solid',
-        className:
-          'font-medium text-inherit [&_svg:not([role=img]):not([class*=text-])]:opacity-60 hover:underline hover:underline-offset-4 hover:decoration-solid',
-      },
-      {
-        variant: 'inverse',
-        mode: 'link',
-        underline: 'dashed',
-        className:
-          'font-medium text-inherit [&_svg:not([role=img]):not([class*=text-])]:opacity-60 hover:underline hover:underline-offset-4 hover:decoration-dashed decoration-1',
-      },
-      {
-        variant: 'inverse',
-        mode: 'link',
-        underlined: 'solid',
-        className:
-          'font-medium text-inherit [&_svg:not([role=img]):not([class*=text-])]:opacity-60 underline underline-offset-4 decoration-solid',
-      },
-      {
-        variant: 'inverse',
-        mode: 'link',
-        underlined: 'dashed',
-        className:
-          'font-medium text-inherit [&_svg:not([role=img]):not([class*=text-])]:opacity-60 underline underline-offset-4 decoration-dashed decoration-1',
-      },
-
-      {
-        variant: 'foreground',
-        mode: 'link',
-        underline: 'solid',
-        className:
-          'font-medium text-foreground [&_svg:not([role=img]):not([class*=text-])]:opacity-60 hover:underline hover:underline-offset-4 hover:decoration-solid',
-      },
-      {
-        variant: 'foreground',
-        mode: 'link',
-        underline: 'dashed',
-        className:
-          'font-medium text-foreground [&_svg:not([role=img]):not([class*=text-])]:opacity-60 hover:underline hover:underline-offset-4 hover:decoration-dashed decoration-1',
-      },
-      {
-        variant: 'foreground',
-        mode: 'link',
-        underlined: 'solid',
-        className:
-          'font-medium text-foreground [&_svg:not([role=img]):not([class*=text-])]:opacity-60 underline underline-offset-4 decoration-solid',
-      },
-      {
-        variant: 'foreground',
-        mode: 'link',
-        underlined: 'dashed',
-        className:
-          'font-medium text-foreground [&_svg:not([role=img]):not([class*=text-])]:opacity-60 underline underline-offset-4 decoration-dashed decoration-1',
-      },
-
-      // Ghost
-      {
-        variant: 'primary',
-        appearance: 'ghost',
-        className:
-          'bg-transparent text-primary/90 hover:bg-primary/5 data-[state=open]:bg-primary/5',
-      },
-      {
-        variant: 'destructive',
-        appearance: 'ghost',
-        className:
-          'bg-transparent text-destructive/90 hover:bg-destructive/5 data-[state=open]:bg-destructive/5',
-      },
-      {
-        variant: 'ghost',
-        mode: 'icon',
-        className: 'text-muted-foreground',
-      },
-
-      // Size
-      {
-        size: 'sm',
-        mode: 'icon',
-        className: 'w-7 h-7 p-0 [[&_svg:not([class*=size-])]:size-3.5',
-      },
-      {
-        size: 'md',
-        mode: 'icon',
-        className: 'w-8.5 h-8.5 p-0 [&_svg:not([class*=size-])]:size-4',
-      },
-      {
-        size: 'icon',
-        className: 'w-8.5 h-8.5 p-0 [&_svg:not([class*=size-])]:size-4',
-      },
-      {
-        size: 'lg',
-        mode: 'icon',
-        className: 'w-10 h-10 p-0 [&_svg:not([class*=size-])]:size-4',
-      },
-
-      // Input mode
-      {
-        mode: 'input',
-        placeholder: true,
-        variant: 'outline',
-        className: 'font-normal text-muted-foreground',
-      },
-      {
-        mode: 'input',
-        variant: 'outline',
-        size: 'sm',
-        className: 'gap-1.25',
-      },
-      {
-        mode: 'input',
-        variant: 'outline',
-        size: 'md',
-        className: 'gap-1.5',
-      },
-      {
-        mode: 'input',
-        variant: 'outline',
-        size: 'lg',
-        className: 'gap-1.5',
-      },
+      // Bouton carré : la largeur suit la taille.
+      { mode: 'icon', size: 'sm', className: 'w-(--ui-row-sm)' },
+      { mode: 'icon', size: 'md', className: 'w-(--ui-row)' },
+      { mode: 'icon', size: 'lg', className: 'w-(--ui-row-lg)' },
     ],
     defaultVariants: {
       variant: 'primary',
-      mode: 'default',
       size: 'md',
+      mode: 'default',
       shape: 'default',
-      appearance: 'default',
     },
   }
 )
@@ -387,17 +119,15 @@ function Button({
   selected,
   variant,
   shape,
-  appearance,
   mode,
   size,
-  autoHeight,
-  underlined,
-  underline,
+  loading = false,
   asChild = false,
-  placeholder = false,
   ...props
 }: React.ComponentProps<'button'> &
   VariantProps<typeof buttonVariants> & {
+    /** Marque l'action en cours : le fond ne bouge pas, le libellé s'adoucit. */
+    loading?: boolean
     selected?: boolean
     asChild?: boolean
   }) {
@@ -406,28 +136,31 @@ function Button({
     <Comp
       data-slot="button"
       className={cn(
-        buttonVariants({
-          variant,
-          size,
-          shape,
-          appearance,
-          mode,
-          autoHeight,
-          placeholder,
-          underlined,
-          underline,
-          className,
-        }),
-        asChild && props.disabled && 'pointer-events-none opacity-50'
+        buttonVariants({ variant, size, shape, mode, className }),
+        // `asChild` rend un <a> : `disabled` n'existe pas sur un lien, il faut
+        // couper les événements à la main.
+        asChild &&
+          props.disabled &&
+          'bg-fill-disabled text-ink-disabled border-border-disabled pointer-events-none'
       )}
       {...(selected && { 'data-state': 'open' })}
+      {...(loading && { 'data-loading': 'true', 'aria-busy': true })}
       {...props}
     />
   )
 }
 
+/**
+ * Le libellé d'un bouton qui peut passer « en cours ». Facultatif partout
+ * ailleurs : c'est le seul élément que l'état de chargement adoucit, le fond
+ * devant rester stable.
+ */
+function ButtonLabel({ className, ...props }: React.ComponentProps<'span'>) {
+  return <span data-slot="button-label" className={className} {...props} />
+}
+
 interface ButtonArrowProps extends React.SVGProps<SVGSVGElement> {
-  icon?: LucideIcon // Allows passing any Lucide icon
+  icon?: LucideIcon
 }
 
 function ButtonArrow({
@@ -444,4 +177,4 @@ function ButtonArrow({
   )
 }
 
-export { Button, ButtonArrow, buttonVariants }
+export { Button, ButtonArrow, ButtonLabel, buttonVariants }

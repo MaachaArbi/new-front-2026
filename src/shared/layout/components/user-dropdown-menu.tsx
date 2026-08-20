@@ -10,6 +10,10 @@
  * Adaptations, et elles seules : chemins d'import, `react-router` → `react-router-dom`,
  * et `toAbsoluteUrl()` retiré (nos médias sont servis depuis `public/`).
  *
+ * Écart AJOUTÉ le 20/08 : le bouton « Logout » passe de `variant="outline"` à
+ * `variant="secondary"`. Le système de design ramène le bouton à cinq variantes
+ * et `outline` y a été renommé `secondary` — c'est le même bouton.
+ *
  * Deux adaptations FORCÉES par notre configuration, notées ici pour qu'on sache
  * qu'elles ne sont pas des choix :
  *  · `IdCard` n'existe pas dans notre version de lucide (0.408) → `ContactRound` ;
@@ -255,7 +259,7 @@ export function UserDropdownMenu({ trigger }: { trigger: ReactNode }) {
           </div>
         </DropdownMenuItem>
         <div className="mt-1 p-2">
-          <Button variant="outline" size="sm" className="w-full">
+          <Button variant="secondary" size="sm" className="w-full">
             Logout
           </Button>
         </div>

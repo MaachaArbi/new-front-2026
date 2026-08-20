@@ -1,6 +1,6 @@
 import { useIntl } from 'react-intl'
 import { Check, Loader2, Plus, Trash2 } from 'lucide-react'
-import { Button } from '@/shared/ui/button'
+import { Button, ButtonLabel } from '@/shared/ui/button'
 import { ShowcaseItem, ShowcaseSection } from '../design-page'
 
 /**
@@ -9,28 +9,45 @@ import { ShowcaseItem, ShowcaseSection } from '../design-page'
  * On ne montre pas seulement le cas confortable : c'est en oubliant les états
  * désactivé, en cours et destructeur qu'on les redécouvre écran par écran, et c'est
  * là qu'un produit paraît improvisé.
+ *
+ * Les cinq variantes sont montrées AUSSI en désactivé, côte à côte : la règle de la
+ * planche — « désactivé neutre, jamais la marque en opacité réduite » — ne se juge
+ * qu'en voyant les deux lignes l'une sous l'autre.
  */
+const VARIANTS = [
+  'primary',
+  'secondary',
+  'ghost',
+  'destructive',
+  'link',
+] as const
+
 export function ButtonShowcase() {
   const intl = useIntl()
   const t = (id: string) => intl.formatMessage({ id })
 
-  const VARIANTS = [
-    'primary',
-    'mono',
-    'destructive',
-    'secondary',
-    'outline',
-    'dashed',
-    'ghost',
-    'dim',
-  ] as const
-
   return (
     <div className="flex flex-col gap-4">
-      <ShowcaseSection title={t('design.states.variants')}>
+      <ShowcaseSection
+        title={t('design.states.variants')}
+        hint={t('design.button.variantsHint')}
+      >
         {VARIANTS.map((variant) => (
           <ShowcaseItem key={variant} label={variant}>
             <Button variant={variant}>Enregistrer</Button>
+          </ShowcaseItem>
+        ))}
+      </ShowcaseSection>
+
+      <ShowcaseSection
+        title={t('design.state.disabled')}
+        hint={t('design.button.disabledHint')}
+      >
+        {VARIANTS.map((variant) => (
+          <ShowcaseItem key={variant} label={variant}>
+            <Button variant={variant} disabled>
+              Enregistrer
+            </Button>
           </ShowcaseItem>
         ))}
       </ShowcaseSection>
@@ -41,31 +58,46 @@ export function ButtonShowcase() {
       >
         {(['sm', 'md', 'lg'] as const).map((size) => (
           <ShowcaseItem key={size} label={size}>
-            <Button variant="outline" size={size}>
+            <Button variant="secondary" size={size}>
               Enregistrer
             </Button>
           </ShowcaseItem>
         ))}
-        <ShowcaseItem label={t('design.state.iconOnly')}>
-          <Button variant="outline" mode="icon" aria-label="Ajouter">
-            <Plus />
-          </Button>
-        </ShowcaseItem>
+        {(['sm', 'md', 'lg'] as const).map((size) => (
+          <ShowcaseItem
+            key={size}
+            label={`${t('design.state.iconOnly')} · ${size}`}
+          >
+            <Button
+              variant="secondary"
+              mode="icon"
+              size={size}
+              aria-label="Ajouter"
+            >
+              <Plus />
+            </Button>
+          </ShowcaseItem>
+        ))}
       </ShowcaseSection>
 
-      <ShowcaseSection title={t('design.states.states')}>
+      <ShowcaseSection
+        title={t('design.states.states')}
+        hint={t('design.button.loadingHint')}
+      >
         <ShowcaseItem label={t('design.state.default')}>
-          <Button variant="primary">Enregistrer</Button>
-        </ShowcaseItem>
-        <ShowcaseItem label={t('design.state.disabled')}>
-          <Button variant="primary" disabled>
-            Enregistrer
+          <Button variant="primary">
+            <ButtonLabel>Enregistrer</ButtonLabel>
           </Button>
         </ShowcaseItem>
         <ShowcaseItem label={t('design.state.loading')}>
-          <Button variant="primary" disabled>
+          <Button variant="primary" loading>
             <Loader2 className="animate-spin" />
-            Enregistrement…
+            <ButtonLabel>Enregistrement…</ButtonLabel>
+          </Button>
+        </ShowcaseItem>
+        <ShowcaseItem label={t('design.state.disabled')}>
+          <Button variant="primary" disabled>
+            <ButtonLabel>Enregistrer</ButtonLabel>
           </Button>
         </ShowcaseItem>
         <ShowcaseItem label="destructive">
@@ -78,21 +110,19 @@ export function ButtonShowcase() {
 
       <ShowcaseSection title={t('design.states.withIcon')}>
         <ShowcaseItem label="icône · texte">
-          <Button variant="outline">
+          <Button variant="secondary">
             <Plus />
             Ajouter
           </Button>
         </ShowcaseItem>
         <ShowcaseItem label="texte · icône">
-          <Button variant="outline">
+          <Button variant="secondary">
             Valider
             <Check />
           </Button>
         </ShowcaseItem>
-        <ShowcaseItem label="mode lien">
-          <Button variant="primary" mode="link">
-            Tout l’historique
-          </Button>
+        <ShowcaseItem label="lien">
+          <Button variant="link">Tout l’historique</Button>
         </ShowcaseItem>
       </ShowcaseSection>
     </div>

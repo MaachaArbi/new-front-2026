@@ -4,6 +4,7 @@ import { useIntl } from 'react-intl'
 import { FileCode2, Wrench } from 'lucide-react'
 import { CATALOG } from './catalog'
 import { ButtonShowcase } from './showcases/button-showcase'
+import { PaletteShowcase } from './showcases/palette-showcase'
 
 /**
  * Une page par composant : sa source, ses écarts, puis tous ses états.
@@ -14,6 +15,7 @@ import { ButtonShowcase } from './showcases/button-showcase'
  */
 const SHOWCASES: Record<string, React.ComponentType> = {
   button: ButtonShowcase,
+  palette: PaletteShowcase,
 }
 
 export function DesignPage() {

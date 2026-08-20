@@ -1,9 +1,11 @@
 @import 'tailwindcss';
 @import './tokens.css';
 
-/* Indispensable en Tailwind v4 : sans ça, dark: suit l'OS et non la classe */
-@custom-variant dark (&:is(.dark *));
-@custom-variant light (&:not(.dark *));
+/* Indispensable en Tailwind v4 : sans ça, `dark:` suit l'OS et non notre attribut.
+   Décision A du 20/08 : le thème vit dans `data-theme` (et non `class="dark"`),
+   pour que les planches du système de design s'appliquent verbatim. */
+@custom-variant dark (&:is([data-theme='dark'] *));
+@custom-variant light (&:not([data-theme='dark'] *));
 
 @layer base {
   * {

@@ -1,36 +1,38 @@
 import * as React from 'react'
 
 /**
- * PRÉFÉRENCES D'AFFICHAGE — accent, barre latérale, police.
+ * PRÉFÉRENCES D'AFFICHAGE — barre latérale, police.
  *
  * Le thème clair/sombre reste chez `next-themes` (il a déjà la reprise système et
- * l'anti-clignotement). Les trois autres axes vivent ici, sous la même forme : un
+ * l'anti-clignotement). Les deux autres axes vivent ici, sous la même forme : un
  * attribut `data-*` sur `<html>`, lu par la cascade CSS de `tokens.css`. Aucun style
  * n'est calculé en JavaScript — le rendu React n'a rien à en savoir.
  *
- * Ce qui N'EST PAS ouvert, et pourquoi : la densité et la taille de l'interface.
- * Elles supposeraient de faire passer 206 tailles figées de `shared/ui` par des
- * variables, et surtout de promettre 400 combinaisons que personne ne peut vérifier.
- * Décision du 19/08 : quatre axes garantis valent mieux que six approximatifs.
+ * L'axe ACCENT est retiré (décision C du 20/08). La palette « Bleu de Prusse » est
+ * un système ACCORDÉ : ses neutres portent la teinte du primaire (chroma ≈ 0,006).
+ * Proposer un accent ambre ou indigo par-dessus des neutres bleutés ferait jurer
+ * toute l'interface — l'option aurait été une façon de laisser l'utilisateur casser
+ * le produit. Une seule palette, tenue. Restaurable : l'axe ne coûtait qu'une
+ * cascade CSS, il n'a laissé aucune trace ailleurs.
+ *
+ * Ce qui N'EST PAS ouvert non plus : la densité et la taille de l'interface. Les
+ * variables existent (`--ui-row`, `--ui-scale`) et les composants les lisent, mais
+ * on ne promet pas des centaines de combinaisons que personne ne peut vérifier.
  */
 
-export const ACCENTS = ['teal', 'indigo', 'steel', 'amber'] as const
 export const SIDEBARS = ['dark', 'light'] as const
 export const FONTS = ['inter', 'plex', 'barlow', 'system'] as const
 
-export type Accent = (typeof ACCENTS)[number]
 export type SidebarTone = (typeof SIDEBARS)[number]
 export type FontChoice = (typeof FONTS)[number]
 
 export interface DisplayPreferences {
-  accent: Accent
   sidebar: SidebarTone
   font: FontChoice
 }
 
-/** Défauts : accent maison, menu sombre (le contraste ancre la navigation), Inter. */
+/** Défauts : menu sombre (le contraste ancre la navigation), Inter. */
 export const DEFAULT_PREFERENCES: DisplayPreferences = {
-  accent: 'teal',
   sidebar: 'dark',
   font: 'inter',
 }
@@ -79,9 +81,6 @@ export function readPreferences(): DisplayPreferences {
       return DEFAULT_PREFERENCES
     const record = parsed as Record<string, unknown>
     return {
-      accent: isOneOf(ACCENTS, record.accent)
-        ? record.accent
-        : DEFAULT_PREFERENCES.accent,
       sidebar: isOneOf(SIDEBARS, record.sidebar)
         ? record.sidebar
         : DEFAULT_PREFERENCES.sidebar,
@@ -97,7 +96,6 @@ export function readPreferences(): DisplayPreferences {
 
 export function applyPreferences(preferences: DisplayPreferences): void {
   const root = document.documentElement
-  root.dataset.accent = preferences.accent
   root.dataset.sidebar = preferences.sidebar
   root.dataset.font = preferences.font
   ensureFontLoaded(preferences.font)

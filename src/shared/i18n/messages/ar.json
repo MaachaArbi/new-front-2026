@@ -67,5 +67,15 @@
   "design.state.disabled": "معطّل",
   "design.state.loading": "جارٍ",
   "design.state.iconOnly": "أيقونة فقط",
-  "design.density.hint": "يتبع الارتفاع إعداد الكثافة — بدّله للحكم على الحالات الثلاث."
+  "design.density.hint": "يتبع الارتفاع إعداد الكثافة — بدّله للحكم على الحالات الثلاث.",
+  "design.comp.palette": "لوحة الألوان",
+  "design.palette.ramps": "التدرّجات",
+  "design.palette.rampsHint": "الطبقة ١ — لا يستهلكها أي مكوّن مباشرة.",
+  "design.palette.roles": "الأدوار",
+  "design.palette.rolesHint": "الطبقة ٢ — ما تستعمله المكوّنات. القيم مقروءة من الصفحة لا منسوخة.",
+  "design.palette.focus": "حلقة التركيز",
+  "design.palette.focusHint": "حلقة واحدة للنظام كلّه، مع نسختها للخطر.",
+  "design.button.variantsHint": "خمس صيغ لا ثماني: لكل واحدة دور مُسمّى.",
+  "design.button.disabledHint": "المعطّل محايد، لا لون العلامة بشفافية مخفّضة.",
+  "design.button.loadingHint": "أثناء التنفيذ: الخلفية ثابتة، ويخفّ العنوان وحده."
 }

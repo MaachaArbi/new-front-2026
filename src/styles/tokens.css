@@ -1,191 +1,384 @@
 /**
- * Tokens sémantiques — prélevés de Metronic/ReUI `config.reui.css` (ADR-F01, ADR-F03).
- * Source (lecture seule) : /home/ubuntu/vendor-metronic/full/src/css/config.reui.css
+ * ═══════════════════════════════════════════════════════════════════════════
+ * SYSTÈME DE COULEUR — « Bleu de Prusse »
+ * ═══════════════════════════════════════════════════════════════════════════
  *
- * Écarts assumés à l'import (ADR-F18) :
- *  - `--color-mono` / `--color-mono-foreground` NON prélevés : ils aliasaient
- *    `--mono` / `--mono-foreground`, jamais définis dans la source (défaut connu).
- *  - `--primary` en clair passé de `blue-500` (3,68:1) à `blue-600` (WCAG AA) — S3a §3.4.
+ * Trois couches, et l'ordre compte :
  *
- * S3c — palette sombre à trois niveaux de surface + token `--sidebar` (rail/menu
- * le plus sombre) + états pastel. Voir docs/decisions/2026-07-24-palette-sombre-trois-niveaux.md.
- * Le mode clair n'est PAS modifié (tokens existants inchangés) ; S3c n'y AJOUTE
- * que les nouveaux tokens `--sidebar` et `--color-*` d'état.
+ *   1. PRIMITIVES   les rampes brutes. On ne les consomme JAMAIS dans un
+ *                   composant. Elles n'ont pas de sens, seulement une valeur.
+ *   2. RÔLES        ce que les composants utilisent : `--fill-primary`,
+ *                   `--text-muted`, `--border-strong`. Un rôle dit à quoi sert
+ *                   la couleur, pas laquelle elle est.
+ *   3. RACCORDEMENT nos noms hérités de ReUI/Metronic (`--primary`,
+ *                   `--foreground`, `--muted`…) DÉFINIS À PARTIR des rôles.
+ *
+ * Pourquoi la troisième couche. Les composants prélevés du template consomment
+ * `bg-primary`, `text-muted-foreground`, `border-input`. Adopter directement les
+ * noms de rôles obligerait à réécrire chaque composant prélevé — et le
+ * « à l'identique » est justement ce qui nous protège des dérives. Le
+ * raccordement garde les deux : la palette exacte, les composants intacts.
+ *
+ * Les couches 1 et 2 sont reprises TELLES QUELLES de la planche fournie par
+ * Arbi. Écarts, et eux seuls :
+ *   · le sélecteur du mode sombre passe de `[data-theme="dark"]`… à rien : on a
+ *     aligné `next-themes` sur `data-theme` (décision A du 20/08), donc la
+ *     planche s'applique verbatim ;
+ *   · les surfaces de la BARRE LATÉRALE sont ajoutées : la planche décrit une
+ *     page, pas un menu sombre posé sur une interface claire. Dérivées de la
+ *     rampe bleue (et non des neutres) pour qu'elles s'accordent au primaire ;
+ *   · `--text-primary-role` renommé `--text-link`. Le nom d'origine ne venait
+ *     que de la collision avec `--text-primary` ; `--text-link` dit ce que le
+ *     jeton fait. Même valeur, même usage.
+ *
+ * RÈGLE : aucune couleur littérale dans un composant. Une seule exception
+ * tolérée — les rampes ci-dessous.
  */
 
-/** Colors - https://tailwindcss.com/docs/colors **/
 :root {
-  --background: var(--color-white);
-  --foreground: #1c1917; /* stone-900 — neutres CHAUDS (identité « Encre ») */
-  --card: var(--color-white);
-  --card-foreground: #1c1917;
-  --popover: var(--color-white);
-  --popover-foreground: #1c1917;
-  /* ACCENT (liens, onglet actif, indicateurs) — sarcelle profonde, 5,9:1 sur blanc. */
-  --primary: #0f766e;
-  --primary-foreground: var(--color-white);
+  /* ─────────────────────────────────────────────────────────────────────────
+     COUCHE 1 — PRIMITIVES
+     ───────────────────────────────────────────────────────────────────────── */
 
-  /* ENCRE — réservé à l'action principale (bouton CTA). Séparé de l'accent :
-     un lien ne doit pas être noir, un bouton principal ne doit pas être un lien. */
-  --ink: #1c1917;
-  --ink-foreground: var(--color-white);
-  --secondary: #f5f5f4; /* stone-100 */
-  --secondary-foreground: #1c1917;
-  --muted: #f5f5f4;
-  --muted-foreground: #78716c; /* stone-500 */
-  --accent: #f5f5f4;
-  --accent-foreground: #1c1917;
+  /* Primaire — Bleu de Prusse (OKLCH h ≈ 240) */
+  --blue-25: #f6f9fb;
+  --blue-50: #edf3f7;
+  --blue-100: #d9e5ec;
+  --blue-200: #b6ccd9;
+  --blue-300: #8aacc0;
+  --blue-400: #5e8aa4;
+  --blue-500: #3d6e8b;
+  --blue-600: #275672;
+  --blue-700: #16394f;
+  --blue-800: #102c3d;
+  --blue-900: #0a1d29;
+  --blue-950: #06121a;
 
-  /* Bande de titre de carte / en-tête de tableau — le SEUL gris de l'intérieur. */
-  --strip: #fafaf9; /* stone-50 */
-  --destructive: var(--color-red-600);
-  --destructive-foreground: var(--color-white);
-  --chart-1: var(--color-blue-500);
-  --chart-2: var(--color-green-500);
-  --chart-3: var(--color-yellow-500);
-  --chart-4: var(--color-red-500);
-  --chart-5: var(--color-purple-500);
-  /* DEUX niveaux de bordure (comme Metronic) : filet clair pour la STRUCTURE,
-     bordure plus franche pour les CONTRÔLES (boutons, champs). */
-  --border: #e7e5e4; /* stone-200 — structure */
-  --input: #d6d3d1; /* stone-300 — contrôles, volontairement plus net */
-  --ring: #a8a29e; /* stone-400 */
-  --radius: 0.625rem; /* 10px */
+  /* Neutres teintés bleu (chroma ≈ 0.006 — jamais du gris pur) */
+  --neutral-0: #ffffff;
+  --neutral-25: #fbfcfc;
+  --neutral-50: #f7f8f9;
+  --neutral-100: #eff1f3;
+  --neutral-200: #e2e6e9;
+  --neutral-300: #cbd1d6;
+  --neutral-400: #99a2a9;
+  --neutral-500: #6b757d;
+  --neutral-600: #515a61;
+  --neutral-700: #3b4349;
+  --neutral-800: #2c333a;
+  --neutral-900: #1a1f24;
+  --neutral-950: #0f1317;
 
-  /* Menu BLANC, identique au contenu (layout-21 Metronic : le panneau latéral est
-     `bg-background`, c'est le fond de page gris qui crée la séparation). */
-  --sidebar: var(--background);
-  --sidebar-foreground: var(--foreground);
+  /* Succès */
+  --green-50: #ecf5f0;
+  --green-100: #d2e7dd;
+  --green-200: #a9cfbf;
+  --green-500: #33845f;
+  --green-600: #2a7d5c;
+  --green-700: #1f6b4d;
+  --green-800: #164f39;
+  --green-900: #0e3527;
 
-  /* S3c — états pastel (clair : fond tendre + texte foncé de la même famille).
-     Consommés par badge.tsx via var(--color-*-accent / --color-*-foreground). */
-  --color-success-accent: #dcfce7;
-  --color-success-foreground: #166534;
-  --color-warning-accent: #fef9c3;
-  --color-warning-foreground: #854d0e;
-  --color-info-accent: #dbeafe;
-  --color-info-foreground: #1e40af;
+  /* Alerte */
+  --amber-50: #fcf4e4;
+  --amber-100: #f7e4be;
+  --amber-200: #efce8c;
+  --amber-500: #c98f1d;
+  --amber-600: #be8412;
+  --amber-700: #b07908;
+  --amber-800: #8a5e06;
+  --amber-900: #5c3e04;
+
+  /* Erreur / destructif */
+  --red-50: #fbedec;
+  --red-100: #f3d2cf;
+  --red-200: #e6aba6;
+  --red-500: #c24138;
+  --red-600: #b3392f;
+  --red-700: #a8322b;
+  --red-800: #82251f;
+  --red-900: #571815;
+
+  /* Info (bleu clair, volontairement distinct du primaire — avec un primaire
+     bleu, un « info » bleu identique serait invisible) */
+  --sky-50: #eaf2fa;
+  --sky-100: #cce0f1;
+  --sky-200: #a3c6e4;
+  --sky-600: #3078b5;
+  --sky-700: #2a6ba8;
+  --sky-800: #1e5183;
+  --sky-900: #143756;
+
+  /* ─────────────────────────────────────────────────────────────────────────
+     COUCHE 2 — RÔLES
+     ───────────────────────────────────────────────────────────────────────── */
+
+  /* Surfaces (0 = page, 3 = flottant) */
+  --surface-0: var(--neutral-50);
+  --surface-1: var(--neutral-25);
+  --surface-2: var(--neutral-0);
+  --surface-3: var(--neutral-0);
+
+  /* Texte */
+  --text-primary: var(--neutral-900); /* 15,8:1 sur blanc */
+  --text-secondary: var(--neutral-600); /*  8,1:1 */
+  --text-muted: var(--neutral-500); /*  4,7:1 — AA petit texte */
+  --text-disabled: var(--neutral-400); /* jamais pour du texte à lire */
+  --text-inverse: var(--neutral-0);
+
+  /* Bordures */
+  --border: var(--neutral-200); /* filet par défaut */
+  --border-strong: var(--neutral-300); /* champs, survol */
+  --border-stronger: var(--neutral-400); /* séparateurs lourds */
+
+  /* Rôle : primaire (action principale) */
+  --fill-primary: var(--blue-700);
+  --fill-primary-hover: var(--blue-800);
+  --fill-primary-active: var(--blue-900);
+  --on-primary: var(--neutral-0);
+  --bg-primary: var(--blue-50); /* tuiles, badges, lignes actives */
+  --border-primary: var(--blue-200);
+  --text-link: var(--blue-600); /* liens, valeurs cliquables */
+
+  /* Rôle : succès */
+  --fill-success: var(--green-700);
+  --fill-success-hover: var(--green-800);
+  --on-success: var(--neutral-0);
+  --bg-success: var(--green-50);
+  --border-success: var(--green-200);
+  --text-success: var(--green-800);
+
+  /* Rôle : alerte */
+  --fill-warning: var(--amber-700);
+  --fill-warning-hover: var(--amber-800);
+  --on-warning: var(--neutral-0);
+  --bg-warning: var(--amber-50);
+  --border-warning: var(--amber-200);
+  --text-warning: var(--amber-800);
+
+  /* Rôle : danger */
+  --fill-danger: var(--red-700);
+  --fill-danger-hover: var(--red-800);
+  --fill-danger-active: var(--red-900);
+  --on-danger: var(--neutral-0);
+  --bg-danger: var(--red-50);
+  --border-danger: var(--red-200);
+  --text-danger: var(--red-800);
+
+  /* Rôle : info */
+  --fill-info: var(--sky-700);
+  --on-info: var(--neutral-0);
+  --bg-info: var(--sky-50);
+  --border-info: var(--sky-200);
+  --text-info: var(--sky-800);
+
+  /* Contrôles neutres (secondaire, ghost, désactivé) */
+  --fill-secondary: var(--neutral-0);
+  --fill-secondary-hover: var(--neutral-50);
+  --fill-secondary-active: var(--neutral-100);
+  --fill-ghost-hover: var(--neutral-100);
+  --fill-ghost-active: var(--neutral-200);
+  --fill-disabled: var(--neutral-100);
+  --border-disabled: var(--neutral-200);
+
+  /* Focus — un seul anneau pour tout le système */
+  --focus-ring: 0 0 0 3px var(--blue-200);
+  --focus-ring-danger: 0 0 0 3px var(--red-200);
 }
 
-.dark {
-  /* Trois niveaux de surface (S3c §4.2/§4.3) :
-     rail/menu (--sidebar) < fond de page (--background) < cartes (--card). */
-  --background: #1c1a19; /* fond de page — neutres chauds */
-  --foreground: #e7e5e4;
-  --card: #232120;
-  --card-foreground: #e7e5e4;
-  --popover: #232120;
-  --popover-foreground: #e7e5e4;
-  --primary: #2dd4bf; /* sarcelle claire — lisible sur fond sombre */
-  --primary-foreground: #0c2a26;
-  /* En sombre l'ENCRE s'inverse : le CTA devient clair sur fond sombre. */
-  --ink: #fafaf9;
-  --ink-foreground: #1c1917;
-  --secondary: #232120;
-  --secondary-foreground: #e7e5e4;
-  --muted: #232120;
-  --muted-foreground: #a8a29e;
-  --accent: #292524;
-  --accent-foreground: #e7e5e4;
-  --strip: #201e1d;
-  --destructive: var(--color-red-600);
-  --destructive-foreground: var(--color-white);
-  --chart-1: var(--color-blue-500);
-  --chart-2: var(--color-green-500);
-  --chart-3: var(--color-yellow-500);
-  --chart-4: var(--color-red-500);
-  --chart-5: var(--color-purple-500);
-  --border: #37332f;
-  --input: #4a443f; /* contrôles : plus net que la structure */
-  --ring: #57534e;
-
-  /* Rail et menu latéral — surface la plus sombre */
-  /* Sombre : le menu suit aussi le fond des panneaux (cohérence layout-21). */
-  --sidebar: var(--background);
-  --sidebar-foreground: var(--foreground);
-
-  /* États pastel (sombre : fond très sourd + texte clair de la même famille) */
-  --color-success-accent: #16291f;
-  --color-success-foreground: #86efac;
-  --color-warning-accent: #2a2415;
-  --color-warning-foreground: #fcd34d;
-  --color-info-accent: #1b2436;
-  --color-info-foreground: #93c5fd;
-}
-
-/** Theme Setup **/
 /* ═══════════════════════════════════════════════════════════════════════════
-   PRÉFÉRENCES D'AFFICHAGE — quatre axes, quatre attributs sur <html>.
+   MODE SOMBRE — le primaire remonte à 500/400 : le 700 est trop foncé pour
+   porter du blanc sur un fond sombre.
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+[data-theme='dark'] {
+  --surface-0: var(--neutral-950);
+  --surface-1: #14181c;
+  --surface-2: #1a1f24;
+  --surface-3: #21272d;
+
+  --text-primary: #edeff1;
+  --text-secondary: #a8b1b8;
+  --text-muted: #7c868d;
+  --text-disabled: #565f66;
+  --text-inverse: var(--neutral-950);
+
+  --border: #2b3238;
+  --border-strong: #3a424a;
+  --border-stronger: #4c555d;
+
+  --fill-primary: var(--blue-500);
+  --fill-primary-hover: var(--blue-400);
+  --fill-primary-active: var(--blue-300);
+  --on-primary: var(--neutral-0);
+  --bg-primary: #16303f;
+  --border-primary: #2e5a75;
+  --text-link: var(--blue-300);
+
+  --fill-success: var(--green-600);
+  --bg-success: #133024;
+  --text-success: #7fc4a4;
+
+  --fill-warning: var(--amber-600);
+  --bg-warning: #362708;
+  --text-warning: #e2b565;
+
+  --fill-danger: var(--red-600);
+  --fill-danger-hover: var(--red-500);
+  --bg-danger: #3a1714;
+  --text-danger: #e39b94;
+
+  --fill-info: var(--sky-600);
+  --bg-info: #11293f;
+  --text-info: #8fbee2;
+
+  --fill-secondary: transparent;
+  --fill-secondary-hover: rgb(255 255 255 / 6%);
+  --fill-secondary-active: rgb(255 255 255 / 10%);
+  --fill-ghost-hover: rgb(255 255 255 / 6%);
+  --fill-ghost-active: rgb(255 255 255 / 10%);
+  --fill-disabled: rgb(255 255 255 / 5%);
+  --border-disabled: rgb(255 255 255 / 8%);
+
+  --focus-ring: 0 0 0 3px rgb(94 138 164 / 45%);
+  --focus-ring-danger: 0 0 0 3px rgb(179 57 47 / 45%);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   BARRE LATÉRALE — hors planche, dérivée de la rampe bleue
    ═══════════════════════════════════════════════════════════════════════════
 
-   Décision du 19/08 : on ouvre QUATRE réglages à l'utilisateur — thème, barre
-   latérale, accent, police — et **pas** la densité ni la taille. Ces deux-là
-   demanderaient de faire passer 206 tailles figées de `shared/ui` par des
-   variables, et surtout de promettre des centaines de combinaisons que personne
-   ne peut vérifier. Les quatre retenus ne coûtent rien : ce sont déjà des
-   jetons ; il suffit de les redéfinir par attribut.
-
-   Le thème vit dans `class="dark"` (next-themes). Les trois autres sont des
-   attributs `data-*` posés sur <html> : aucune règle JS dans le rendu, une
-   seule cascade CSS, et le réglage s'applique avant la première peinture.
-
-   Règle : ne JAMAIS écrire une couleur en dur dans un composant. Aujourd'hui
-   le code de production n'en contient aucune — c'est ce qui rend l'accent
-   commutable pour rien. Toute couleur littérale ajoutée ici casserait l'axe.  */
-
-/* ── Accent ─────────────────────────────────────────────────────────────────
-   Une seule teinte pilote `--primary` (liens, onglet actif, indicateurs) et
-   son halo. Elle ne touche PAS `--ink` : le bouton principal reste encre, et
-   les couleurs d'état (succès, alerte, erreur) gardent leur sens propre —
-   un accent qui repeindrait le rouge d'une erreur détruirait l'information. */
-:root[data-accent='teal'] { --primary: #0f766e; }
-:root[data-accent='indigo'] { --primary: #3730a3; }
-:root[data-accent='steel'] { --primary: #4b6b8a; }
-:root[data-accent='amber'] { --primary: #b45309; }
-
-.dark[data-accent='teal'] { --primary: #2dd4bf; }
-.dark[data-accent='indigo'] { --primary: #a5b4fc; }
-.dark[data-accent='steel'] { --primary: #93b0cc; }
-.dark[data-accent='amber'] { --primary: #fbbf24; }
-
-/* ── Barre latérale ─────────────────────────────────────────────────────────
    Axe INDÉPENDANT du thème : on peut vouloir un menu sombre sur une interface
-   claire (c'est le défaut retenu — le contraste ancre la navigation et laisse
-   le contenu respirer). Les quatre combinaisons thème × barre sont donc
-   déclarées explicitement, jamais déduites. */
+   claire (c'est le défaut — le contraste ancre la navigation et laisse le
+   contenu respirer). Les quatre combinaisons sont déclarées, jamais déduites.
+
+   Pourquoi le BLEU et non les neutres : un menu gris posé à côté d'un primaire
+   bleu fait tache. Le menu prend la même famille que l'action principale. */
 :root[data-sidebar='dark'] {
-  --sidebar: #1c1917; /* encre CHAUDE — la même que `--ink`, pas un gris froid */
-  --sidebar-foreground: #e7e5e4;
-  --sidebar-muted: #8a827c;
-  --sidebar-border: #2e2a27;
+  --sidebar: var(--blue-900);
+  --sidebar-foreground: var(--blue-50);
+  --sidebar-muted: var(--blue-300);
+  --sidebar-border: var(--blue-800);
   --sidebar-hover: rgb(255 255 255 / 7%);
-  --sidebar-active: rgb(255 255 255 / 10%);
+  --sidebar-active: rgb(255 255 255 / 12%);
 }
 :root[data-sidebar='light'] {
-  --sidebar: var(--background);
-  --sidebar-foreground: var(--foreground);
-  --sidebar-muted: var(--muted-foreground);
+  --sidebar: var(--surface-2);
+  --sidebar-foreground: var(--text-primary);
+  --sidebar-muted: var(--text-muted);
   --sidebar-border: var(--border);
-  --sidebar-hover: var(--accent);
-  --sidebar-active: var(--muted);
+  --sidebar-hover: var(--fill-ghost-hover);
+  --sidebar-active: var(--fill-ghost-active);
 }
-/* En thème sombre, une barre « claire » ne redevient pas blanche : elle prend
-   la surface la plus haute du triptyque sombre, sinon elle éblouit. */
-.dark[data-sidebar='light'] {
-  --sidebar: #262322;
-  --sidebar-foreground: var(--foreground);
-  --sidebar-muted: var(--muted-foreground);
+/* En thème sombre, le menu « sombre » descend d'un cran pour rester la surface
+   la plus basse ; le menu « clair » ne redevient PAS blanc — il éblouirait. */
+[data-theme='dark'][data-sidebar='dark'] {
+  --sidebar: var(--blue-950);
+  --sidebar-foreground: var(--text-primary);
+  --sidebar-muted: var(--text-muted);
   --sidebar-border: var(--border);
-  --sidebar-hover: var(--accent);
-  --sidebar-active: var(--muted);
+  --sidebar-hover: rgb(255 255 255 / 6%);
+  --sidebar-active: rgb(255 255 255 / 10%);
+}
+[data-theme='dark'][data-sidebar='light'] {
+  --sidebar: var(--surface-3);
+  --sidebar-foreground: var(--text-primary);
+  --sidebar-muted: var(--text-muted);
+  --sidebar-border: var(--border);
+  --sidebar-hover: var(--fill-ghost-hover);
+  --sidebar-active: var(--fill-ghost-active);
 }
 
-/* ── Police ─────────────────────────────────────────────────────────────────
+/* ═══════════════════════════════════════════════════════════════════════════
+   COUCHE 3 — RACCORDEMENT
+   ═══════════════════════════════════════════════════════════════════════════
+
+   Nos noms hérités de ReUI/Metronic, définis À PARTIR des rôles ci-dessus.
+   Rien ici n'invente une couleur : chaque ligne est une redirection. Un
+   composant prélevé continue d'écrire `bg-primary` et reçoit `--fill-primary`.
+
+   Ces noms ne sont PAS un second système : ils existent pour que le prélèvement
+   à l'identique reste possible. Un composant qu'on re-cartographie (le bouton
+   l'est déjà) consomme directement les rôles et n'a plus besoin d'eux. */
+:root {
+  --background: var(--surface-2); /* panneaux et cartes : blanc */
+  --foreground: var(--text-primary);
+  --card: var(--surface-2);
+  --card-foreground: var(--text-primary);
+  --popover: var(--surface-3);
+  --popover-foreground: var(--text-primary);
+
+  --primary: var(--fill-primary);
+  --primary-foreground: var(--on-primary);
+
+  --secondary: var(--fill-ghost-hover);
+  --secondary-foreground: var(--text-primary);
+
+  /* `--muted` porte DEUX usages hérités : le fond de page (le layout applique
+     `bg-muted` sur le corps) et les aplats discrets. Les deux veulent la même
+     valeur — la surface 0. */
+  --muted: var(--surface-0);
+  --muted-foreground: var(--text-muted);
+
+  --accent: var(--fill-ghost-hover); /* survol */
+  --accent-foreground: var(--text-primary);
+
+  --destructive: var(--fill-danger);
+  --destructive-foreground: var(--on-danger);
+
+  /* `--border` et `--border-strong` viennent de la couche 2 ; `--input` est le
+     nom ReUI de la bordure de CONTRÔLE, volontairement plus nette que celle de
+     structure. */
+  --input: var(--border-strong);
+  --ring: var(--blue-400);
+
+  /* 8 px → `rounded-md` vaut 6 px, la valeur de la planche pour les contrôles. */
+  --radius: 0.5rem;
+
+  /* Compatibilité `badge.tsx` — encore prélevé tel quel, pas encore
+     re-cartographié. `-accent` = aplat plein, `-soft` = fond tendre.
+     ⚠️ Le badge se sert de `-accent` À LA FOIS comme fond plein et comme
+     couleur de texte : ça tient en clair, c'est faible en sombre. À corriger
+     quand le badge passera à son tour — aucun écran ne l'affiche aujourd'hui. */
+  --color-success-accent: var(--fill-success);
+  --color-success-foreground: var(--on-success);
+  --color-success-soft: var(--bg-success);
+  --color-warning-accent: var(--fill-warning);
+  --color-warning-foreground: var(--on-warning);
+  --color-warning-soft: var(--bg-warning);
+  --color-info-accent: var(--fill-info);
+  --color-info-foreground: var(--on-info);
+  --color-info-soft: var(--bg-info);
+}
+
+[data-theme='dark'] {
+  --background: var(--surface-2);
+  --foreground: var(--text-primary);
+  --card: var(--surface-2);
+  --card-foreground: var(--text-primary);
+  --popover: var(--surface-3);
+  --popover-foreground: var(--text-primary);
+
+  --primary: var(--fill-primary);
+  --primary-foreground: var(--on-primary);
+  --secondary: var(--surface-3);
+  --secondary-foreground: var(--text-primary);
+  --muted: var(--surface-0);
+  --muted-foreground: var(--text-muted);
+  --accent: var(--fill-ghost-hover);
+  --accent-foreground: var(--text-primary);
+  --destructive: var(--fill-danger);
+  --destructive-foreground: var(--on-danger);
+  --input: var(--border-strong);
+  --ring: var(--blue-400);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   POLICE — axe de préférence conservé
+   ═══════════════════════════════════════════════════════════════════════════
    `--font-ui` porte l'interface, `--font-display` les chiffres et les titres.
-   Un condensé pour les nombres donne la densité sans rétrécir le texte lu —
-   c'est le seul endroit où les deux diffèrent. Les piles de repli ont des
-   métriques proches pour que la substitution ne fasse pas sauter la mise en
-   page pendant le chargement. */
+   Les piles de repli ont des métriques proches pour que la substitution ne
+   fasse pas sauter la mise en page pendant le chargement. */
 :root {
   --font-ui:
     'Inter', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto,
@@ -194,16 +387,16 @@
 }
 :root[data-font='plex'] {
   --font-ui:
-    'IBM Plex Sans', ui-sans-serif, system-ui, -apple-system, 'Segoe UI',
-    Roboto, Arial, sans-serif;
+    'IBM Plex Sans', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto,
+    Arial, sans-serif;
   --font-disp:
     'IBM Plex Sans Condensed', 'IBM Plex Sans', ui-sans-serif, system-ui,
     sans-serif;
 }
 :root[data-font='barlow'] {
   --font-ui:
-    'Barlow', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto,
-    Arial, sans-serif;
+    'Barlow', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, Arial,
+    sans-serif;
   --font-disp: 'Barlow Condensed', 'Barlow', ui-sans-serif, sans-serif;
 }
 :root[data-font='system'] {
@@ -213,44 +406,40 @@
   --font-disp: var(--font-ui);
 }
 
-/* ── Densité et taille ──────────────────────────────────────────────────────
-   Deux variables, lues par CHAQUE composant dès sa création.
+/* ═══════════════════════════════════════════════════════════════════════════
+   DENSITÉ ET TAILLE
+   ═══════════════════════════════════════════════════════════════════════════
+   `--ui-row`   hauteur d'une ligne et d'un contrôle — c'est elle qui décide
+                combien de lignes tiennent dans un tableau, donc combien l'agent
+                voit sans défiler. C'est la variable qui compte au comptoir.
+   `--ui-scale` multiplicateur du texte. Séparé de la densité : on peut vouloir
+                des lignes serrées ET un texte lisible.
 
-   Le coût annoncé en début de semaine (« trop cher ») portait sur le rattrapage de
-   206 tailles déjà écrites en dur. La bibliothèque repart de zéro : intégrer la
-   densité maintenant ne coûte rien, l'ajouter après coûterait tout.
-
-   `--ui-row`   hauteur d'une ligne et d'un contrôle — c'est elle qui décide combien
-                de lignes tiennent dans un tableau, donc combien l'agent voit sans
-                défiler. C'est la variable qui compte au comptoir.
-   `--ui-scale` multiplicateur du texte. Séparé de la densité : on peut vouloir des
-                lignes serrées ET un texte lisible, ce sont deux besoins distincts
-                (l'un vient de l'écran, l'autre des yeux).
-
-   Garantie limitée et assumée : chaque axe est garanti seul ; seuls TROIS
+   Garantie limitée et assumée : chaque axe est garanti seul ; seuls trois
    préréglages nommés sont réellement vérifiés (comptoir · standard · confort). */
 :root {
-  --ui-row: 2.125rem; /* 34 px — dense, le défaut. C'est la taille « md ». */
-  --ui-row-sm: calc(var(--ui-row) - 0.375rem); /* -6 px */
+  --ui-row: 2.125rem; /* 34 px — la taille « md » de la planche */
+  --ui-row-sm: calc(var(--ui-row) - 0.375rem); /* −6 px */
   --ui-row-lg: calc(var(--ui-row) + 0.375rem); /* +6 px */
   --ui-scale: 1;
 }
 :root[data-density='compact'] { --ui-row: 1.75rem; } /* 28 px */
 :root[data-density='cozy'] { --ui-row: 2.5rem; } /* 40 px */
-
 :root[data-scale='small'] { --ui-scale: 0.9375; }
 :root[data-scale='large'] { --ui-scale: 1.0625; }
 
+/* ═══════════════════════════════════════════════════════════════════════════
+   SURFACE TAILWIND — ce que les composants peuvent écrire
+   ═══════════════════════════════════════════════════════════════════════════ */
 @theme inline {
-  /** Typographie — Inter (chargée dans index.html), comme le socle Metronic. **/
   --font-sans: var(--font-ui);
   --font-display: var(--font-disp);
 
-  /** Deux crans SOUS l'échelle Tailwind — repris tels quels du socle Metronic.
-      Sans eux, tout le texte dense reste à 14 px et l'interface paraît « grosse ».
-      Usage : `text-2sm` = zones denses (cellules, lignes de liste, méta),
-      `text-2xs` = micro-labels en capitales. **/
-  /* Tout le barème suit `--ui-scale` : une seule variable déplace l'échelle. */
+  /* Deux crans SOUS l'échelle Tailwind, repris du socle Metronic. Sans eux tout
+     le texte dense reste à 14 px et l'interface paraît « grosse ».
+     `text-2sm` = zones denses (cellules, lignes de liste, méta).
+     `text-2xs` = micro-labels en capitales.
+     Tout le barème suit `--ui-scale` : une variable déplace l'échelle entière. */
   --text-xs: calc(0.75rem * var(--ui-scale));
   --text-sm: calc(0.875rem * var(--ui-scale));
   --text-base: calc(1rem * var(--ui-scale));
@@ -261,38 +450,86 @@
   --text-2xs: calc(0.6875rem * var(--ui-scale)); /* 11 px */
   --text-2xs--line-height: calc(0.825 / 0.6875);
 
-  /** Base Colors **/
+  --spacing-row: var(--ui-row);
+
+  /* ── Rôles, écrits directement (voie normale pour tout composant re-cartographié) */
+  --color-surface-0: var(--surface-0);
+  --color-surface-1: var(--surface-1);
+  --color-surface-2: var(--surface-2);
+  --color-surface-3: var(--surface-3);
+
+  /* Texte : préfixe `ink-` et non `text-`, sinon `text-primary` désignerait à la
+     fois une couleur et une taille de police — Tailwind v4 réserve `--text-*`
+     aux tailles. C'est le piège que la planche portait en germe. */
+  --color-ink: var(--text-primary);
+  --color-ink-secondary: var(--text-secondary);
+  --color-ink-muted: var(--text-muted);
+  --color-ink-disabled: var(--text-disabled);
+  --color-ink-inverse: var(--text-inverse);
+  --color-ink-link: var(--text-link);
+
+  --color-fill-primary: var(--fill-primary);
+  --color-fill-primary-hover: var(--fill-primary-hover);
+  --color-fill-primary-active: var(--fill-primary-active);
+  --color-on-primary: var(--on-primary);
+  --color-bg-primary: var(--bg-primary);
+  --color-border-primary: var(--border-primary);
+
+  --color-fill-secondary: var(--fill-secondary);
+  --color-fill-secondary-hover: var(--fill-secondary-hover);
+  --color-fill-secondary-active: var(--fill-secondary-active);
+  --color-fill-ghost-hover: var(--fill-ghost-hover);
+  --color-fill-ghost-active: var(--fill-ghost-active);
+  --color-fill-disabled: var(--fill-disabled);
+
+  --color-fill-success: var(--fill-success);
+  --color-bg-success: var(--bg-success);
+  --color-border-success: var(--border-success);
+  --color-text-success: var(--text-success);
+
+  --color-fill-warning: var(--fill-warning);
+  --color-bg-warning: var(--bg-warning);
+  --color-border-warning: var(--border-warning);
+  --color-text-warning: var(--text-warning);
+
+  --color-fill-danger: var(--fill-danger);
+  --color-fill-danger-hover: var(--fill-danger-hover);
+  --color-fill-danger-active: var(--fill-danger-active);
+  --color-on-danger: var(--on-danger);
+  --color-bg-danger: var(--bg-danger);
+  --color-border-danger: var(--border-danger);
+  --color-text-danger: var(--text-danger);
+
+  --color-fill-info: var(--fill-info);
+  --color-bg-info: var(--bg-info);
+  --color-border-info: var(--border-info);
+  --color-text-info: var(--text-info);
+
+  --color-border-strong: var(--border-strong);
+  --color-border-stronger: var(--border-stronger);
+  --color-border-disabled: var(--border-disabled);
+
+  /* ── Raccordement (voie de compatibilité pour les composants prélevés) */
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-
   --color-card: var(--card);
   --color-card-foreground: var(--card-foreground);
-
   --color-popover: var(--popover);
   --color-popover-foreground: var(--popover-foreground);
-
   --color-muted: var(--muted);
   --color-muted-foreground: var(--muted-foreground);
-
   --color-accent: var(--accent);
   --color-accent-foreground: var(--accent-foreground);
-
   --color-primary: var(--primary);
   --color-primary-foreground: var(--primary-foreground);
-
-  --spacing-row: var(--ui-row);
-  --color-ink: var(--ink);
-  --color-ink-foreground: var(--ink-foreground);
-
-  --color-strip: var(--strip);
-
   --color-secondary: var(--secondary);
   --color-secondary-foreground: var(--secondary-foreground);
-
   --color-destructive: var(--destructive);
   --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
 
-  /* Surface rail/menu (S3c) → utilitaires bg-sidebar / text-sidebar-foreground */
   --color-sidebar: var(--sidebar);
   --color-sidebar-foreground: var(--sidebar-foreground);
   --color-sidebar-muted: var(--sidebar-muted);
@@ -300,13 +537,8 @@
   --color-sidebar-hover: var(--sidebar-hover);
   --color-sidebar-active: var(--sidebar-active);
 
-  /** Base Styles **/
-  --color-border: var(--border);
-  --color-input: var(--input);
-  --color-ring: var(--ring);
-
   --radius-xl: calc(var(--radius) + 4px);
   --radius-lg: var(--radius);
-  --radius-md: calc(var(--radius) - 2px);
+  --radius-md: calc(var(--radius) - 2px); /* 6 px — contrôles */
   --radius-sm: calc(var(--radius) - 4px);
 }

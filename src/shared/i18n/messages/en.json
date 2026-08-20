@@ -67,5 +67,15 @@
   "design.state.disabled": "Disabled",
   "design.state.loading": "Loading",
   "design.state.iconOnly": "Icon only",
-  "design.density.hint": "Height follows the density setting — switch it to judge all three."
+  "design.density.hint": "Height follows the density setting — switch it to judge all three.",
+  "design.comp.palette": "Palette",
+  "design.palette.ramps": "Ramps",
+  "design.palette.rampsHint": "Layer 1 — never consumed directly by a component.",
+  "design.palette.roles": "Roles",
+  "design.palette.rolesHint": "Layer 2 — what components use. Values read from the page, not copied.",
+  "design.palette.focus": "Focus ring",
+  "design.palette.focusHint": "One ring for the whole system, plus its danger variant.",
+  "design.button.variantsHint": "Five variants, not eight: each one has a named role.",
+  "design.button.disabledHint": "Disabled = neutral. Never the brand colour at reduced opacity.",
+  "design.button.loadingHint": "Loading: the fill stays put, only the label softens."
 }

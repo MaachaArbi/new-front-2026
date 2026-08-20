@@ -73,7 +73,7 @@ export function Header() {
         </div>
 
         <div className="flex shrink-0 items-center gap-2">
-          <Button variant="outline" className="text-muted-foreground gap-2">
+          <Button variant="secondary" className="text-muted-foreground gap-2">
             <Search />
             <span className="text-2sm">{t('layout.search')}</span>
             <Kbd className="ms-4">⌘K</Kbd>

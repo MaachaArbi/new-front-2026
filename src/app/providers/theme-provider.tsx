@@ -8,7 +8,12 @@ import type { ComponentProps } from 'react'
  *  - le TooltipProvider que Metronic y avait glissé est retiré : un fournisseur
  *    de thème ne fournit pas d'infobulles (et le composant tooltip n'existe pas
  *    encore) ;
- *  - storageKey = 'ostravel-theme' (et non 'vite-theme').
+ *  - storageKey = 'ostravel-theme' (et non 'vite-theme') ;
+ *  - `attribute="data-theme"` et non `"class"` (décision A du 20/08). Les
+ *    planches du système de design sont écrites sur `[data-theme="dark"]` ;
+ *    aligner l'attribut évite de les retoucher à chaque livraison, et
+ *    `next-themes` garde sa reprise de la préférence système et son
+ *    anti-clignotement. La variante `dark:` de Tailwind suit dans globals.css.
  *
  * La bascule s'obtient via `useTheme()` importé directement de 'next-themes'.
  */
@@ -18,7 +23,7 @@ export function ThemeProvider({
 }: ComponentProps<typeof NextThemesProvider>) {
   return (
     <NextThemesProvider
-      attribute="class"
+      attribute="data-theme"
       defaultTheme="system"
       storageKey="ostravel-theme"
       enableSystem

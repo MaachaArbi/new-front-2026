@@ -67,5 +67,15 @@
   "design.state.disabled": "Désactivé",
   "design.state.loading": "En cours",
   "design.state.iconOnly": "Icône seule",
-  "design.density.hint": "La hauteur suit le réglage de densité — bascule-le pour juger les trois cas."
+  "design.density.hint": "La hauteur suit le réglage de densité — bascule-le pour juger les trois cas.",
+  "design.comp.palette": "Palette",
+  "design.palette.ramps": "Rampes",
+  "design.palette.rampsHint": "Couche 1 — jamais consommée directement par un composant.",
+  "design.palette.roles": "Rôles",
+  "design.palette.rolesHint": "Couche 2 — ce que les composants utilisent. Valeurs lues sur la page, pas recopiées.",
+  "design.palette.focus": "Anneau de focus",
+  "design.palette.focusHint": "Un seul anneau pour tout le système, et sa variante danger.",
+  "design.button.variantsHint": "Cinq variantes, pas huit : chacune a un rôle nommé.",
+  "design.button.disabledHint": "Désactivé = neutre. Jamais la couleur de marque en opacité réduite.",
+  "design.button.loadingHint": "En cours : le fond ne bouge pas, seul le libellé s’adoucit."
 }
