@@ -158,6 +158,14 @@ export const CATALOG: readonly CatalogGroup[] = [
         ported: true,
       },
       {
+        id: 'list',
+        titleKey: 'design.comp.list',
+        source: "aucune — écrite par nous, sur les décisions d'Arbi du 04/08",
+        adapted:
+          "recherche unique sur les clés · filtrage « modèle A » (barre en haut seule source, en-têtes = tri) · état dans l'URL, donc vue partageable par lien · vues nommées et export montrés mais ANNONCÉS en attente d'endpoint",
+        ported: true,
+      },
+      {
         id: 'table',
         titleKey: 'design.comp.table',
         source:

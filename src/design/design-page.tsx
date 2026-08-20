@@ -16,6 +16,7 @@ import { TableShowcase } from './showcases/table-showcase'
 import { TooltipShowcase } from './showcases/tooltip-showcase'
 import { TextareaShowcase } from './showcases/textarea-showcase'
 import { InputShowcase } from './showcases/input-showcase'
+import { ListShowcase } from './showcases/list-showcase'
 import { PaletteShowcase } from './showcases/palette-showcase'
 
 /**
@@ -40,6 +41,7 @@ const SHOWCASES: Record<string, React.ComponentType> = {
   card: CardShowcase,
   table: TableShowcase,
   badge: BadgeShowcase,
+  list: ListShowcase,
 }
 
 export function DesignPage() {

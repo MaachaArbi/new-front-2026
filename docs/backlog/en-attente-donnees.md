@@ -135,3 +135,34 @@ Un champ vide s'affiche « — » ; il ne se remplace jamais par une valeur inve
 ---
 _À compléter au fil des briques. Toute valeur en dur / « en attente » posée dans l'UI
 doit atterrir ici le jour où on la crée._
+
+## Page-liste (composant partagé, 20/08)
+
+### Vues enregistrées
+- **Vue ad hoc = l'URL** — **FAIT**, aucune dépendance : filtres, recherche, tri et
+  page vivent dans la barre d'adresse, la vue se partage par lien.
+- **Vues NOMMÉES** (en base, suivent l'utilisateur, partageables équipe) —
+  **Statut : COQUILLE VISIBLE**. Le menu « Vues » les annonce comme en attente et
+  « Enregistrer cette vue » est désactivé. Débloqué par : **endpoint préférences
+  utilisateur + vues nommées** (différé en phase 2 par la décision du 04/08).
+  ⚠️ Rappel de cette décision : **pas de `localStorage` comme source de vérité** —
+  il ne suit pas l'agent d'un poste à l'autre.
+
+### Export
+- **Export Excel / PDF** — **Statut : COQUILLE VISIBLE**. Le bouton existe, annonce
+  la portée (« emporte N lignes, filtres courants compris ») et ses deux entrées
+  sont désactivées. Débloqué par : **endpoint d'export généré côté SERVEUR**
+  (phase 2). Motif de la décision : un export client suppose d'avoir toutes les
+  lignes en mémoire — c'est ce qu'on fuit.
+
+### Options des facettes
+- Aujourd'hui alimentées par des **fixtures de vitrine**. En production elles
+  viennent des **référentiels** (`shared/referentials`), **jamais** d'un balayage
+  des valeurs distinctes sur 50 000 lignes (décision du 04/08).
+
+### Tri des colonnes — écart signalé
+- La décision verrouillée n° 1 du 04/08 disait **« tri fixe sur le nom en V1,
+  en-têtes non triables »**, faute de `sort=` côté back. Les en-têtes livrés sont
+  **triables** : c'est cohérent avec la règle du 19/08 (concevoir l'UI
+  indépendamment des API), mais **ça mordra au branchement**. Débloqué par :
+  `sort=` dans le contrat de liste (phase 2).

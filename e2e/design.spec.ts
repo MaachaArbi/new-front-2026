@@ -419,3 +419,76 @@ test('système de design — badge', async ({ page }) => {
   expect(collisions, 'aucun badge ne doit avoir le texte de la couleur du fond').toEqual([])
   await set({ 'ostravel-theme': 'light' })
 })
+
+/** La page-liste, en trois langues. */
+test('système de design — page-liste', async ({ page }) => {
+  test.setTimeout(180_000)
+  const set = async (entries: Record<string, string>) => {
+    await page.evaluate((o) => {
+      for (const [k, v] of Object.entries(o)) localStorage.setItem(k, v)
+    }, entries)
+    await page.reload()
+    await page.waitForTimeout(1600)
+  }
+  await page.goto('/design/list')
+  await set({ 'ostravel-theme': 'light', 'i18n-language': 'fr' })
+  await page.waitForTimeout(800)
+  await page.screenshot({ path: `${SHOTS}/liste-clair.png` })
+
+  // Avec des filtres actifs : c'est l'état qu'on voit le plus souvent.
+  await page.goto('/design/list?q=tour&city=Djerba,Tozeur&status=watch')
+  await page.waitForTimeout(1600)
+  await page.screenshot({ path: `${SHOTS}/liste-filtree.png` })
+
+  await set({ 'ostravel-theme': 'dark' })
+  await page.waitForTimeout(600)
+  await page.screenshot({ path: `${SHOTS}/liste-sombre.png` })
+
+  await set({ 'ostravel-theme': 'light', 'i18n-language': 'ar' })
+  await page.waitForTimeout(600)
+  await page.screenshot({ path: `${SHOTS}/liste-arabe.png` })
+  await set({ 'i18n-language': 'fr' })
+})
+
+/**
+ * L'ÉTAT DANS L'URL — la promesse de la page-liste.
+ *
+ * Si ces vérifications tombent, la vue n'est plus partageable par lien et le
+ * retour arrière du navigateur ment. Rien de tout ça ne se voit sur une capture.
+ */
+test('page-liste — l’état vit dans l’URL', async ({ page }) => {
+  test.setTimeout(180_000)
+  await page.goto('/design/list')
+  await page.waitForTimeout(1800)
+
+  // 1. La recherche arrive dans l'URL — après le délai, pas à chaque frappe.
+  await page.getByPlaceholder(/Nom, courriel/).fill('sahara')
+  await page.waitForTimeout(900)
+  expect(page.url(), 'la recherche doit être dans l’URL').toContain('q=sahara')
+
+  // 2. Une facette aussi, et elle est multivaluée.
+  // On vise la BARRE : « Ville » existe aussi comme en-tête de colonne, et
+  // c'est justement la distinction du modèle A — la barre filtre, l'en-tête trie.
+  const bar = page.locator('[data-slot=filter-bar]')
+  await bar.getByRole('button', { name: /^Ville/ }).click()
+  await page.getByRole('menuitemcheckbox', { name: 'Tunis' }).click()
+  await page.keyboard.press('Escape')
+  await page.waitForTimeout(700)
+  expect(page.url(), 'la facette doit être dans l’URL').toContain('city=Tunis')
+
+  // 3. Une puce nomme la facette et se retire.
+  await expect(page.getByText('Ville : Tunis')).toBeVisible()
+
+  // 4. « Tout effacer » nettoie l'URL.
+  await bar.getByRole('button', { name: 'Tout effacer' }).click()
+  await page.waitForTimeout(700)
+  expect(page.url(), 'tout effacer doit nettoyer l’URL').not.toContain('q=')
+  expect(page.url()).not.toContain('city=')
+
+  // 5. Un lien porte l'état complet : on y arrive directement.
+  await page.goto('/design/list?city=Djerba&status=watch')
+  await page.waitForTimeout(1800)
+  await expect(page.getByText('Ville : Djerba')).toBeVisible()
+  await expect(page.getByText(/Statut : À surveiller/)).toBeVisible()
+  await expect(page.getByRole('link', { name: /Oasis Tours/ })).toBeVisible()
+})
