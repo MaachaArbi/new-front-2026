@@ -195,3 +195,89 @@ test('système de design — vague 1', async ({ page }) => {
   await shot('mot-de-passe-arabe')
   await set({ 'i18n-language': 'fr' })
 })
+
+/**
+ * Vague 2 — infobulle, dialogue, feuille latérale, carte, séparateur.
+ *
+ * Tout ce lot vit dans des PORTAILS : rien n'apparaît sur une capture statique.
+ * Chaque état ouvert est donc provoqué — survol pour l'infobulle, clic pour le
+ * dialogue et la feuille. C'est plus lent, mais c'est la seule façon de voir ce
+ * qu'on livre.
+ */
+test('système de design — vague 2', async ({ page }) => {
+  test.setTimeout(300_000)
+
+  const set = async (entries: Record<string, string>) => {
+    await page.evaluate((o) => {
+      for (const [k, v] of Object.entries(o)) localStorage.setItem(k, v)
+    }, entries)
+    await page.reload()
+    await page.waitForTimeout(1400)
+  }
+  const shot = async (name: string) => {
+    await page.waitForTimeout(600)
+    await page.screenshot({ path: `${SHOTS}/${name}.png` })
+  }
+  const visit = async (id: string) => {
+    await page.goto(`/design/${id}`)
+    await page.waitForTimeout(1400)
+  }
+
+  await page.goto('/design/tooltip')
+  await set({ 'ostravel-theme': 'light', 'i18n-language': 'fr' })
+
+  // ── Infobulle : survol réel, pas un état figé.
+  await page.locator('#tt-dark').hover()
+  await shot('infobulle-sombre-sur-clair')
+  await page.locator('#tt-light').hover()
+  await shot('infobulle-claire')
+  await set({ 'ostravel-theme': 'dark' })
+  await page.locator('#tt-dark').hover()
+  await shot('infobulle-theme-sombre')
+
+  // ── Dialogue
+  await set({ 'ostravel-theme': 'light' })
+  await visit('dialog')
+  await shot('dialogue-ferme')
+  await page.locator('#dlg-form').click()
+  await shot('dialogue-formulaire')
+  await page.keyboard.press('Escape')
+  await page.waitForTimeout(500)
+  await page.locator('#dlg-danger').click()
+  await shot('dialogue-confirmation')
+  await page.keyboard.press('Escape')
+  await page.waitForTimeout(500)
+
+  // ── Feuille latérale : le côté « end » doit basculer avec la langue.
+  await page.locator('#sheet-end').click()
+  await shot('feuille-end-fr')
+  await page.keyboard.press('Escape')
+  await page.waitForTimeout(500)
+  await page.locator('#sheet-start').click()
+  await shot('feuille-start-fr')
+  await page.keyboard.press('Escape')
+
+  await set({ 'ostravel-theme': 'dark' })
+  await page.locator('#dlg-form').click()
+  await shot('dialogue-sombre')
+  await page.keyboard.press('Escape')
+
+  await set({ 'ostravel-theme': 'light', 'i18n-language': 'ar' })
+  await page.locator('#sheet-end').click()
+  await shot('feuille-end-arabe')
+  await page.keyboard.press('Escape')
+  await page.waitForTimeout(500)
+  await page.locator('#dlg-form').click()
+  await shot('dialogue-arabe')
+  await page.keyboard.press('Escape')
+
+  // ── Carte et séparateur
+  await set({ 'i18n-language': 'fr' })
+  await visit('card')
+  await shot('carte-clair')
+  await set({ 'ostravel-theme': 'dark' })
+  await shot('carte-sombre')
+  await set({ 'ostravel-theme': 'light', 'i18n-language': 'ar' })
+  await shot('carte-arabe')
+  await set({ 'i18n-language': 'fr' })
+})

@@ -131,8 +131,30 @@ export const CATALOG: readonly CatalogGroup[] = [
           "AUCUNE retouche visuelle : il consomme les noms que la couche de raccordement alimente déjà. Seuls la locale date-fns et le sens de lecture lui sont passés par l'appelant.",
         ported: true,
       },
-      { id: 'tooltip', titleKey: 'design.comp.tooltip', ported: false },
-      { id: 'dialog', titleKey: 'design.comp.dialog', ported: false },
+      {
+        id: 'tooltip',
+        titleKey: 'design.comp.tooltip',
+        source: 'full/src/components/ui/tooltip.tsx',
+        adapted:
+          "la variante sombre écrivait bg-zinc-950 / dark:bg-zinc-300 — des couleurs littérales hors système. Remplacées par des jetons qui s'inversent déjà avec le thème.",
+        ported: true,
+      },
+      {
+        id: 'dialog',
+        titleKey: 'design.comp.dialog',
+        source: 'full/src/components/ui/{dialog,sheet}.tsx',
+        adapted:
+          "feuille : side passe de left|right à start|end (même mensonge d'API que le sélecteur) ; dialogue centré par inset-0 m-auto au lieu de classes physiques ; space-x → gap-x ; bouton de fermeture doté d'un anneau de focus et d'un libellé traduit",
+        ported: true,
+      },
+      {
+        id: 'card',
+        titleKey: 'design.comp.card',
+        source: 'full/src/components/ui/{card,separator}.tsx',
+        adapted:
+          "ombre retirée (la classe du template, « black/5 », n'existait pas) ; garde du contexte impossible retirée ; séparateur pris tel quel",
+        ported: true,
+      },
       { id: 'table', titleKey: 'design.comp.table', ported: false },
     ],
   },

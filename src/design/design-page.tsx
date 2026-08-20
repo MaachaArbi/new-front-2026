@@ -5,10 +5,13 @@ import { FileCode2, Wrench } from 'lucide-react'
 import { CATALOG } from './catalog'
 import { ButtonShowcase } from './showcases/button-showcase'
 import { CalendarShowcase } from './showcases/calendar-showcase'
+import { CardShowcase } from './showcases/card-showcase'
 import { ChoiceShowcase } from './showcases/choice-showcase'
 import { LabelShowcase } from './showcases/label-showcase'
 import { PasswordShowcase } from './showcases/password-showcase'
+import { DialogShowcase } from './showcases/dialog-showcase'
 import { SelectShowcase } from './showcases/select-showcase'
+import { TooltipShowcase } from './showcases/tooltip-showcase'
 import { TextareaShowcase } from './showcases/textarea-showcase'
 import { InputShowcase } from './showcases/input-showcase'
 import { PaletteShowcase } from './showcases/palette-showcase'
@@ -30,6 +33,9 @@ const SHOWCASES: Record<string, React.ComponentType> = {
   textarea: TextareaShowcase,
   label: LabelShowcase,
   password: PasswordShowcase,
+  tooltip: TooltipShowcase,
+  dialog: DialogShowcase,
+  card: CardShowcase,
 }
 
 export function DesignPage() {
