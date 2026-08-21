@@ -212,3 +212,64 @@ des colonnes. **Rien ne survit au rechargement.**
   disait déjà « idem disposition colonnes + densité »).
 - ⚠️ Rappel : **pas le `localStorage`**, il ne suit pas l'agent d'un poste à
   l'autre. C'est la même décision que pour les vues.
+
+## Liste Tiers — ce qu'Arbi laisse ouvert (21/08)
+
+Arbi : *« la page liste tiers pour moi n'est pas finalisée à 100 % »*. Trois
+points, volontairement différés — il passe à la fiche pour pouvoir juger.
+
+### 0 · Composants de filtre à référentiel — UNE SEULE SOURCE
+Le filtre **pays** est aujourd'hui une facette générique : une liste de cases à
+cocher, sans recherche. Ça ne tient pas à 250 pays.
+
+Arbi : *« ça devra être un composant unique dans toute l'application pour
+toujours avoir une seule source »*. Donc **pas** une facette de plus, mais un
+`CountrySelect` partagé — celui qui existait dans l'ancien UI, avec drapeaux,
+recherche, mono et multi-sélection, et son drapeau mutualisé avec le champ
+téléphone ([[front-country-components]], [[front-phone-input-partage]]).
+
+Même besoin à venir pour **devise**, **bureau**, **hôtel**, **forme juridique** :
+tout référentiel long ou ouvert. La facette générique reste bonne pour les
+listes courtes et fermées (nature, rôle, état).
+- **Statut : À CONSTRUIRE.** Ni bloquant ni urgent — la liste marche.
+
+### 1 · Colonnes manquantes
+Plusieurs données ne figurent pas encore. Arbi : *« ce n'est pas un travail
+énorme d'ajouter des colonnes, c'est pour cette raison que je ne m'arrête pas
+là-dessus maintenant »*.
+- **Statut : À DISCUTER**, après la fiche. Le contrat de liste du 04/08 est la
+  borne : ce qu'il ne rend pas demandera une évolution back.
+
+### 2 · L'aspect du tableau lui-même
+Arbi attend **la page détail** pour juger s'il garde le tableau tel quel ou s'il
+demande des retouches. Il ne faut donc PAS considérer l'UI de la liste comme
+validée — seulement comme posée.
+- **Statut : EN ATTENTE DE JUGEMENT**, après la fiche.
+
+## Fiche Tiers — premier gabarit de fiche (21/08)
+
+Écran `/parties/{publicId}`, **entièrement statique** : une fixture calquée sur le
+contrat back du 07/08 (33 champs, six listes bornées). Aucune API.
+
+### Onglet Historique — vide
+Prévu, présent, **désactivé**. Débloqué par : l'incrément 2 de la livraison du
+05/08 (traçabilité), non construit.
+
+### Aucune action ne fait quoi que ce soit
+« Modifier », « Ajouter une pièce », le menu ⋯ de l'en-tête : coquilles. Débloqué
+par l'écran d'édition, qui demandera formulaire, notification et sélecteurs
+partagés (pays, téléphone, devise).
+
+### Rappel des deux règles respectées, à ne pas relâcher
+- **Règle n° 1 (06/08)** : aucun réglage de la fiche ne DÉCLENCHE quoi que ce
+  soit — les comportements vivront dans Réservations. Ne jamais écrire
+  « réservations bloquées au-delà » ni « en attente de validation ». Un test e2e
+  refuse ces formulations dans le texte de la page.
+- **Principe E** : montrer ce qui MANQUE (`hasFile`, `hasCertificate`,
+  `validatorStillQualified`). Un test e2e exige la présence des trois badges.
+
+### Enums sans libellé
+`functionCode` des règles d'approbation est affiché en **code brut**
+(`booking_override`) — le référentiel des fonctions existe côté back mais n'est
+pas branché. Idem `serviceTypeCode` des plafonds, non proposé (référentiel
+absent, petite demande back si voulu).

@@ -3,6 +3,7 @@ import { Layout } from '@/shared/layout'
 import { DesignSidebar } from '@/design/design-sidebar'
 import { DesignPage } from '@/design/design-page'
 import { PartiesListPage } from '@/modules/parties/parties-list-page'
+import { PartyDetailPage } from '@/modules/parties/party-detail-page'
 
 /**
  * Routage — la coquille et rien d'autre pour l'instant.
@@ -24,6 +25,7 @@ export function Router() {
         {/* Premier écran réel. STATIQUE : fixtures en mémoire, aucune API
             (règle du 20/08). Ce qui manque est au registre. */}
         <Route path="/parties" element={<PartiesListPage />} />
+        <Route path="/parties/:publicId" element={<PartyDetailPage />} />
         <Route path="*" element={<Blank />} />
       </Route>
     </Routes>

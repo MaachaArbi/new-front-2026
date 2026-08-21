@@ -14,6 +14,18 @@
  *  2. **La troncature.** Un nom long ne doit ni pousser les colonnes ni passer à
  *     la ligne : il se coupe, et le nom complet reste dans l'attribut `title`.
  *
+ *  2 bis. **`dir="auto"` sur le texte libre.** Un nom saisi par un agent peut être
+ *     latin ou arabe, et on ne sait pas lequel à l'avance. `auto` laisse le
+ *     navigateur trancher sur le premier caractère fort — c'est le seul cas où on
+ *     ne décide pas. La règle complète, qui vaut partout :
+ *
+ *       · texte LIBRE saisi par quelqu'un        → `dir="auto"` + isolation
+ *       · format UNIVERSEL (courriel, IBAN, tél) → `dir="ltr"` + isolation
+ *       · chaîne formatée par `Intl`             → isolation SEULE, jamais de `dir`
+ *
+ *     Sans `auto`, « 12, avenue Habib Bourguiba » s'affiche
+ *     « avenue Habib Bourguiba ,12 » sur une interface arabe : la virgule saute.
+ *
  *  3. **La ligne secondaire est ATTÉNUÉE, pas petite.** La réduire encore la
  *     rendrait illisible ; c'est le contraste qui doit dire « information de
  *     second rang », pas la taille.
@@ -52,13 +64,18 @@ function PartyCell({
       to={href}
       // `relative z-1` : le lien passe AU-DESSUS de la zone cliquable de la
       // ligne, pour que le clavier et le clic aboutissent au même endroit.
-      className="text-ink hover:text-ink-link relative z-1 truncate font-medium transition-colors"
+      dir="auto"
+      className="text-ink hover:text-ink-link relative z-1 truncate font-medium transition-colors [unicode-bidi:isolate]"
       title={name}
     >
       {name}
     </Link>
   ) : (
-    <span className="text-ink truncate font-medium" title={name}>
+    <span
+      dir="auto"
+      className="text-ink truncate font-medium [unicode-bidi:isolate]"
+      title={name}
+    >
       {name}
     </span>
   )
@@ -74,7 +91,11 @@ function PartyCell({
       <div className="flex min-w-0 flex-col">
         {label}
         {secondary && (
-          <span className="text-ink-muted truncate text-xs" title={secondary}>
+          <span
+            dir="auto"
+            className="text-ink-muted truncate text-xs [unicode-bidi:isolate]"
+            title={secondary}
+          >
             {secondary}
           </span>
         )}
