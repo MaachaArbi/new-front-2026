@@ -54,30 +54,35 @@ test('fiche Tiers — les deux règles d’Arbi tiennent', async ({ page }) => {
   await page.goto('/parties/p-001')
   await page.waitForTimeout(1800)
 
-  // ── PRINCIPE E : le manquant se voit.
-  await page.getByRole('tab', { name: /Documents/ }).click()
-  await page.waitForTimeout(500)
-  await expect(page.getByText('Sans scan')).toBeVisible()
+  // ── PRINCIPE E : ce qui MANQUE remonte de lui-même, dès l'ouverture.
+  //    Le point n'est pas qu'il soit trouvable — c'est qu'il soit AGRÉGÉ.
+  const todo = page.locator('text=À traiter').first()
+  await expect(todo).toBeVisible()
+  await expect(page.getByText('Adresse électronique non vérifiée')).toBeVisible()
+  await expect(page.getByText(/sans attestation/i)).toBeVisible()
+  await expect(page.getByText(/ne fait plus partie de l’équipe/)).toBeVisible()
+  await expect(page.getByText(/sans scan/i)).toBeVisible()
 
-  await page.getByRole('tab', { name: 'Finance' }).click()
-  await page.waitForTimeout(500)
-  await expect(page.getByText('Sans justificatif')).toBeVisible()
-  await expect(page.getByText('Validateur parti')).toBeVisible()
+  // ── LA CAPACITÉ : un chiffre PAR LIVRE, jamais un total.
+  //    Un livre = (tiers, rôle, bureau, devise). Additionner 26 500 TND et
+  //    1 800 EUR n'aurait aucun sens comptable.
+  const capacities = page.getByText('Capacité restante')
+  await expect(capacities).toHaveCount(2)
+  await expect(page.getByText('myGO Tunis', { exact: false }).first()).toBeVisible()
 
-  // Socle et rallonge se distinguent — l'un s'ajoute à l'autre et expire.
-  await expect(page.getByText('Socle').first()).toBeVisible()
-  await expect(page.getByText('Rallonge').first()).toBeVisible()
-  // Sans société = « Toutes les sociétés », jamais un vide.
-  await expect(page.getByText('Toutes les sociétés')).toBeVisible()
-
-  // ── RÈGLE N° 1 : aucun texte ne promet un effet.
+  // ── RÈGLE N° 1 (06/08) : aucun texte ne promet un effet.
+  //    Les comportements vivent dans Réservations, pas ici.
   const body = (await page.locator('body').innerText()).toLowerCase()
   for (const forbidden of [
     'réservations bloquées',
     'en attente de validation',
     'sera bloqué',
     'sera refusé',
+    'ne pourra pas',
   ]) {
-    expect(body, `« ${forbidden} » promet un effet — règle n° 1 du 06/08`).not.toContain(forbidden)
+    expect(
+      body,
+      `« ${forbidden} » promet un effet — règle n° 1 du 06/08`
+    ).not.toContain(forbidden)
   }
 })
